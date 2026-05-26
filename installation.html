@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Install HPR — Available on AUR, Windows installer, or build from source. Three commands on Linux, one installer on Windows.">
+  <title>Installation — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html" class="active">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Header -->
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Installation</span>
+        <h1>Get running in seconds.</h1>
+        <p class="hero-tagline">
+          AUR package, Windows installer, manual setup, or build from source. Pick your path.
+        </p>
+      </div>
+    </section>
+
+    <!-- Quick Install Options -->
+    <section class="section section-border" id="quick-install">
+      <div class="container">
+        <span class="section-label fade-in">Quick Install</span>
+        <h2 class="section-title fade-in">Choose your platform.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR ships as a single compiled binary. No runtime dependencies. No package managers pulling in half the internet.
+        </p>
+
+        <!-- Tabs -->
+        <div class="tabs fade-in" id="installTabs">
+          <button class="tab-btn active" data-tab="arch">Arch Linux (AUR)</button>
+          <button class="tab-btn" data-tab="linux">Linux (Manual)</button>
+          <button class="tab-btn" data-tab="windows">Windows</button>
+          <button class="tab-btn" data-tab="source">Build from Source</button>
+        </div>
+
+        <!-- Arch Linux -->
+        <div class="tab-panel active" id="tab-arch">
+          <div class="two-col fade-in">
+            <div>
+              <h3 style="margin-bottom: 16px;">AUR Package</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+                HPR is available on the AUR. Install with your preferred AUR helper.
+              </p>
+              <div class="code-block" style="margin-bottom: 24px;">
+                <span class="code-label">Terminal</span>
+                <pre><span class="code-fn">yay</span> -S <span class="code-string">hpr</span></pre>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-tertiary); line-height: 1.7;">
+                Or with <code>paru</code>:
+              </p>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre><span class="code-fn">paru</span> -S <span class="code-string">hpr</span></pre>
+              </div>
+            </div>
+            <div>
+              <div class="callout" style="margin-bottom: 24px;">
+                <div class="callout-title">AUR</div>
+                <p>The AUR package handles everything — building, dependencies, and placing config files. The simplest path for Arch users.</p>
+              </div>
+              <div class="card">
+                <h3>After Install</h3>
+                <p>Launch HPR from your application menu or terminal. Config files are placed automatically. Start tracking immediately.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linux Manual -->
+        <div class="tab-panel" id="tab-linux">
+          <div class="two-col fade-in">
+            <div>
+              <h3 style="margin-bottom: 16px;">Manual Install (Any Distro)</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+                Download the release binary and run the setup script. Three commands.
+              </p>
+              <div class="code-block" style="margin-bottom: 24px;">
+                <span class="code-label">Terminal</span>
+                <pre><span class="code-comment"># 1. Make the install script executable</span>
+<span class="code-fn">chmod</span> +x <span class="code-string">installHPRConfigAndUi.sh</span>
+
+<span class="code-comment"># 2. Run the setup (copies config + UI files)</span>
+<span class="code-fn">./installHPRConfigAndUi.sh</span>
+
+<span class="code-comment"># 3. Launch HPR</span>
+<span class="code-fn">./HPR</span></pre>
+              </div>
+              <div class="callout" style="margin-bottom: 24px;">
+                <div class="callout-title">Safe Overwrite</div>
+                <p>The setup script provides safe-overwrite prompts. If you've already customized your config or UI files, it asks before replacing them.</p>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom: 16px;">
+                <h3>File Locations</h3>
+                <div class="code-block" style="margin-top: 12px;">
+                  <pre><span class="code-comment">Config:</span>
+<span class="code-fn">~/.config/HPR/</span>
+  ├── config.csv
+  ├── aliases.csv
+  ├── tabAliases.csv
+  └── ui/
+      └── app-window.slint
+
+<span class="code-comment">Data:</span>
+<span class="code-fn">~/.local/share/HPR/HPR_DB/</span>
+  └── MM-YY/
+      └── DD-MM-YY.db</pre>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Platform Requirements</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">
+                  <strong>Hyprland:</strong> <code>jq</code><br>
+                  <strong>GNOME:</strong> <code>gdbus</code> + extension<br>
+                  <strong>KDE:</strong> <code>qdbus6</code> or <code>qdbus-qt6</code><br>
+                  <strong>Cinnamon:</strong> No extras
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div class="tab-panel" id="tab-windows">
+          <div class="two-col fade-in">
+            <div>
+              <h3 style="margin-bottom: 16px;">Windows Installer</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+                Download and run the setup executable. Inno Setup handles everything automatically.
+              </p>
+              <div class="card" style="margin-bottom: 24px;">
+                <h3>What the installer does</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span class="badge badge--green">1</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Places <code>aliases.csv</code>, <code>tabAliases.csv</code>, <code>config.csv</code>, and <code>ui/</code> folder into your config directory</span>
+                  </div>
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span class="badge badge--green">2</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Prompts before overwriting any existing customized files</span>
+                  </div>
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span class="badge badge--green">3</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Drops latest default UI into <code>ui-REFERENCEONLY/</code> for diffing</span>
+                  </div>
+                </div>
+              </div>
+              <a href="https://github.com/plexescor/HPR/releases" class="btn btn--primary" target="_blank" rel="noopener">
+                <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V2h3v6H12L8 12zM2 14h12v1H2v-1z"/></svg>
+                Download Latest Release
+              </a>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom: 16px;">
+                <h3>File Locations</h3>
+                <div class="code-block" style="margin-top: 12px;">
+                  <pre><span class="code-comment">Config:</span>
+<span class="code-fn">%APPDATA%\HPR\HPR_Config\</span>
+  ├── config.csv
+  ├── aliases.csv
+  ├── tabAliases.csv
+  └── ui\
+      └── app-window.slint
+
+<span class="code-comment">Data:</span>
+<span class="code-fn">%APPDATA%\HPR\HPR_DB\</span>
+  └── MM-YY\
+      └── DD-MM-YY.db</pre>
+                </div>
+              </div>
+              <div class="callout">
+                <div class="callout-title">Tray Mode</div>
+                <p>Built without a console window on Windows. Sits in your system tray and stays out of your way. No terminal flash on launch.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Build from Source -->
+        <div class="tab-panel" id="tab-source">
+          <div class="two-col fade-in">
+            <div>
+              <h3 style="margin-bottom: 16px;">Build From Source</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+                Clone, install Slint, build. SQLite is the official amalgamation compiled directly in — no system packages needed.
+              </p>
+
+              <div class="code-block" style="margin-bottom: 16px;">
+                <span class="code-label">Clone</span>
+                <pre><span class="code-fn">git clone</span> <span class="code-string">https://github.com/plexescor/HPR</span>
+<span class="code-fn">cd</span> HPR</pre>
+              </div>
+
+              <div class="code-block" style="margin-bottom: 16px;">
+                <span class="code-label">Install Slint (Linux)</span>
+                <pre><span class="code-comment"># System-wide (requires sudo)</span>
+<span class="code-fn">sudo</span> ./installDependencies.sh
+
+<span class="code-comment"># User-local (no sudo needed)</span>
+./installDependencies.sh</pre>
+              </div>
+
+              <div class="code-block" style="margin-bottom: 16px;">
+                <span class="code-label">Install Slint (Windows)</span>
+                <pre><span class="code-comment"># Pulls Slint 1.16.1, slint-lsp, slint-viewer</span>
+installDependencies.bat</pre>
+              </div>
+
+              <div class="code-block">
+                <span class="code-label">Build</span>
+                <pre><span class="code-fn">mkdir</span> build && <span class="code-fn">cd</span> build
+
+<span class="code-comment"># If install script ran without sudo:</span>
+<span class="code-fn">cmake</span> .. -DCMAKE_PREFIX_PATH=<span class="code-string">"$HOME/.local"</span>
+
+<span class="code-comment"># If install script ran with sudo:</span>
+<span class="code-fn">cmake</span> ..
+
+<span class="code-fn">cmake</span> --build . --parallel 8</pre>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom: 16px;">
+                <h3>Requirements</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="badge badge--green">req</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">CMake 3.21+</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="badge badge--green">req</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">GCC 13+, Clang 16+, or MSVC 2022+</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="badge badge--green">req</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">C++23 support</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="badge badge--amber">auto</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Slint 1.16.1 (install script handles)</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="badge badge--cyan">bundled</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">SQLite3 amalgamation in <code>external/</code></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="margin-bottom: 16px;">
+                <h3>Linux-Only Dependencies</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; margin-top: 8px;">
+                  <code>jq</code> for Hyprland · <code>gdbus</code> for GNOME and Cinnamon · <code>qdbus6</code> / <code>qdbus-qt6</code> for KDE (auto-detected)
+                </p>
+              </div>
+
+              <div class="callout">
+                <div class="callout-title">Build Output</div>
+                <p>CMake copies <code>aliases.csv</code>, <code>config.csv</code>, <code>ui/</code>, <code>assets/</code>, and install scripts next to the output binary automatically. A fresh build is immediately runnable from the build directory.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Post-Install -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">After Installing</span>
+        <h2 class="section-title fade-in">First run checklist.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR works out of the box. These are optional enhancements.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon card-icon--amber">1</div>
+            <h3>Check Platform</h3>
+            <p>HPR auto-detects your desktop via <code>$XDG_CURRENT_DESKTOP</code>. GNOME users need to install the extension first — HPR will tell you if it's missing.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">2</div>
+            <h3>Customize Aliases</h3>
+            <p>Edit <code>aliases.csv</code> to add your own application name mappings. Hot-reloads — no restart needed. Format: <code>raw,Display Name</code>.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">3</div>
+            <h3>Try Interpreted Mode</h3>
+            <p>Set <code>use-interpreter,true</code> in config.csv to load the UI from disk. Edit <code>app-window.slint</code> to customize HPR's entire interface.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Extending HPR -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">For Developers</span>
+        <h2 class="section-title fade-in">Adding new platforms & tracked data.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR has well-defined extension points for platform backends and new data types.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="card">
+              <h3>Adding a New Platform</h3>
+              <p style="margin-bottom: 16px;">Platform window detection is fully contained inside <code>CurrentWindowManager</code>. Four steps:</p>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre><span class="code-comment">1.</span> Declare <span class="code-fn">getCurrentWindow_YourPlatform()</span>
+   in <span class="code-string">getCurrentWindow.hpp</span>
+
+<span class="code-comment">2.</span> Implement in <span class="code-string">getCurrentWindow.cpp</span>
+   Return raw title as std::string.
+
+<span class="code-comment">3.</span> Add <span class="code-keyword">else if</span> branch in
+   <span class="code-fn">getCurrentWindow()</span>
+
+<span class="code-comment">4.</span> Add init checks in constructor
+   inside preprocessor guard
+
+<span class="code-comment">// New backends inherit all normalization</span>
+<span class="code-comment">// and noise filtering automatically.</span></pre>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <h3>Adding New Tracked Data</h3>
+              <p style="margin-bottom: 16px;">Five steps, fixed order:</p>
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span class="badge badge--amber">1</span>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Slint:</strong> Add property, struct, or UI element to <code>app-window.slint</code></span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span class="badge badge--amber">2</span>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>State:</strong> Add field to <code>AppState::AppState</code> in <code>appState.hpp</code></span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span class="badge badge--amber">3</span>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Collection:</strong> Populate in <code>getCurrentWindow_Loop()</code></span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span class="badge badge--amber">4</span>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Bridge:</strong> Thread through <code>modelManager.update()</code> using <code>syncModel</code></span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span class="badge badge--amber">5</span>
+                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Persistence:</strong> Add table in <code>initDatabase</code>, flush in <code>writeLoop</code></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contributing -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Contributing</span>
+        <h2 class="section-title fade-in">Read the codebase in one sitting.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Go in this order and the entire architecture makes sense.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 40px;">
+          <span class="code-label">Reading Order</span>
+          <pre><span class="code-string">main.cpp</span>              →  startup, config loading, thread orchestration
+<span class="code-string">appState.hpp</span>          →  the shared data model, the center of everything
+<span class="code-string">getCurrentWindow.cpp</span>  →  platform-specific window polling per backend
+<span class="code-string">databaseManager.cpp</span>   →  persistence, WAL, lock file, midnight rollover
+<span class="code-string">uiModelManager.cpp</span>    →  how C++ state becomes Slint models in both UI modes</pre>
+        </div>
+        <div class="callout fade-in">
+          <div class="callout-title">One Rule</div>
+          <p>Anything that touches shared state goes through <code>AppState::stateMutex</code>. Lock, copy, release, work on the copy. Every existing access follows this pattern.</p>
+        </div>
+        <div style="margin-top: 32px; display: flex; gap: 16px; flex-wrap: wrap;" class="fade-in">
+          <a href="https://github.com/plexescor/HPR" class="btn btn--primary" target="_blank" rel="noopener">View Source on GitHub</a>
+          <a href="https://ko-fi.com/plexescor" class="btn btn--ghost" target="_blank" rel="noopener">☕ Support Development</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

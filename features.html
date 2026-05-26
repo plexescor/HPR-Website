@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR Features — Real-time window tracking, Pattern Analysis engine, Browser tab tracking, Interpreted UI mode, Alias system, and more.">
+  <title>Features — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html" class="active">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Header -->
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Features</span>
+        <h1>Everything HPR does.</h1>
+        <p class="hero-tagline">
+          Every feature, every detail. No premium tiers. No feature gating. Everything is free and open source.
+        </p>
+      </div>
+    </section>
+
+    <!-- Core Tracking -->
+    <section class="section section-border" id="tracking">
+      <div class="container">
+        <span class="section-label fade-in">Core</span>
+        <h2 class="section-title fade-in">Real-Time Window Tracking</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR watches which window is in focus every 50 milliseconds. It builds a running log of exactly where your time went — not where you think it went.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <h3>50ms Polling</h3>
+            <p>Polls the active window every 50 milliseconds. Every switch detected, every transition logged. Uses <code>std::chrono::steady_clock</code> for monotonic, NTP-immune timing.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">◕</div>
+            <h3>Live Time Accumulation</h3>
+            <p>Total time per application updates in real time, displayed as <code>2h 14m 30s (25%)</code>. Percentage breakdown gives instant visibility into time distribution.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↔</div>
+            <h3>Switch History</h3>
+            <p>Every transition between applications is timestamped and logged. Full chronological history shows from → to with exact times.</p>
+          </div>
+        </div>
+
+        <div class="two-col fade-in" style="margin-top: 48px;">
+          <div class="screenshot-container">
+            <div class="screenshot-titlebar">
+              <span class="screenshot-dot screenshot-dot--red"></span>
+              <span class="screenshot-dot screenshot-dot--amber"></span>
+              <span class="screenshot-dot screenshot-dot--green"></span>
+            </div>
+            <img src="assets/HPRHome.png" alt="HPR Home — Live tracking view" loading="lazy">
+          </div>
+          <div>
+            <h3 style="margin-bottom: 16px;">Date Picker</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              Click the date picker and pull up any day you have ever run HPR. It loads that day's database asynchronously off a plain SQLite file sitting on your own disk.
+            </p>
+            <h3 style="margin-bottom: 16px;">Timing Integrity</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              Duration measurement uses <code>std::chrono::steady_clock</code> (monotonic). Display timestamps use <code>system_clock</code>. This separation is enforced — using system_clock for duration is a classic bug that corrupts totals when NTP fires or DST changes mid-session.
+            </p>
+            <h3 style="margin-bottom: 16px;">Window Normalization</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;">
+              Raw window titles from the OS are inconsistent and noisy. <code>validateAndUpdateWindow_Cross</code> runs a cross-platform normalization pass on every poll, filtering out system noise like <code>plasmashell</code>, <code>searchhost</code>, and KWin JS runtime artifacts.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Browser Tab Tracking -->
+    <section class="section section-border" id="browser-tabs">
+      <div class="container">
+        <span class="section-label fade-in">Browser Intelligence</span>
+        <h2 class="section-title fade-in">Browser Tab Tracking</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          No browser extensions required. HPR automatically queries the window title when a supported browser is in focus, giving you detailed per-site and per-tab breakdowns.
+        </p>
+
+        <div class="feature-grid feature-grid--2 fade-in">
+          <div class="card">
+            <div class="card-icon card-icon--amber">T</div>
+            <h3>Tab View</h3>
+            <p>Raw, unaliased tab names. Differentiate between specific pages — track time across two different YouTube videos, individual GitHub issues, separate docs.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">S</div>
+            <h3>Site View</h3>
+            <p>Applies rules from <code>tabAliases.csv</code> to group tabs by website. Collapses specific pages into parent domains — all YouTube tabs become "YouTube".</p>
+          </div>
+        </div>
+
+        <div class="callout fade-in" style="margin-top: 32px;">
+          <div class="callout-title">Supported Browsers</div>
+          <p>Chrome, Edge, Firefox, and Brave. Tab tracking works by reading the window title, which contains the active tab name. No hooks, no extensions, no browser API access.</p>
+        </div>
+
+        <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag">Chrome</span>
+          <span class="tag">Edge</span>
+          <span class="tag">Firefox</span>
+          <span class="tag">Brave</span>
+          <span class="tag">No Extensions</span>
+          <span class="tag">Tab View</span>
+          <span class="tag">Site View</span>
+          <span class="tag">tabAliases.csv</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Insights Engine -->
+    <section class="section section-border" id="insights">
+      <div class="container">
+        <span class="section-label fade-in">Analysis</span>
+        <h2 class="section-title fade-in">Pattern Analysis Engine</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          <code>PatternAnalyzer</code> runs seven analysis passes every 30 seconds, building insights from your raw tracking data.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="feature-grid" style="grid-template-columns: 1fr;">
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Most Used Application</h3>
+                <p>Direct aggregation over <code>timeLog_PerApp</code>. Shows your dominant application with exact time.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Total Tracked Time</h3>
+                <p>Sum of all application usage for the day. Your actual screen time, not an estimate.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Total App Switches</h3>
+                <p>Count of every transition between applications. A signal of how fragmented your day was.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-red);">
+                <h3>Most Switched From / To</h3>
+                <p>Top switch pairs from <code>switchHistory</code>. Reveals your most common context-switch patterns.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Longest Focus Session</h3>
+                <p><strong>Chronological Event-Matching Algorithm.</strong> Flattens switch history into a unified timeline of arrivals/departures, sorted in O(N log N). One pass pairs each arrival with its next departure. Orphaned arrivals from crashes are overwritten, not ghost-extended.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Peak Productive Hour</h3>
+                <p><strong>Sliding Window Heuristic.</strong> A 60–90 minute window slides across the complete timeline, counting switches at each position. The position with fewest switches = deepest focus. No manual session marking required.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 16px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assets/HPRINSIGHTS.png" alt="HPR Insights view showing pattern analysis results" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">Insights — All seven analysis passes</p>
+
+            <div class="callout fade-in" style="margin-top: 32px;">
+              <div class="callout-title">Noise Filtering</div>
+              <p>Both patterns filter out HPR itself, the Unknown state, and known system noise before running. Insights reflect actual work, not measurement artifacts.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alias System -->
+    <section class="section section-border" id="aliases">
+      <div class="container">
+        <span class="section-label fade-in">Normalization</span>
+        <h2 class="section-title fade-in">Alias System</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Raw window titles are inconsistent. <code>Visual Studio Code</code> on one machine, <code>code</code> on another, <code>code.exe</code> on Windows. Aliases collapse all of them into one label.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon">≡</div>
+            <h3>Application Aliases</h3>
+            <p><code>aliases.csv</code> — maps raw window names to display names. <code>code</code> catches <code>vscode</code>, <code>code-oss</code>, <code>code.exe</code>. <code>terminal</code> catches <code>kitty</code>, <code>alacritty</code>, <code>konsole</code>, <code>wezterm</code>.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">⊞</div>
+            <h3>Tab Aliases</h3>
+            <p><code>tabAliases.csv</code> — collapses specific URLs and page titles into website names. All YouTube tabs become "YouTube". All GitHub pages become "GitHub".</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↻</div>
+            <h3>Hot Reload</h3>
+            <p>Save the alias file, HPR picks it up within the next UI tick. No restart required. Cached via <code>unordered_map</code> — O(1) lookups after first resolution.</p>
+          </div>
+        </div>
+
+        <div class="two-col fade-in" style="margin-top: 40px;">
+          <div class="code-block">
+            <span class="code-label">aliases.csv</span>
+            <pre><span class="code-comment"># raw substring,Display Name</span>
+<span class="code-string">code</span>,Visual Studio Code
+<span class="code-string">kitty</span>,Terminal
+<span class="code-string">alacritty</span>,Terminal
+<span class="code-string">konsole</span>,Terminal
+<span class="code-string">wezterm</span>,Terminal
+<span class="code-string">firefox</span>,Firefox
+<span class="code-string">chromium</span>,Chrome</pre>
+          </div>
+          <div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">Late-Binding Design</div>
+              <p>The database stores raw OS strings exactly as received. Aliases are resolved at display time only. Renaming an alias retroactively updates every historical entry for that application with zero migration work.</p>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Format</span>
+              <pre><span class="code-comment"># One line per alias</span>
+<span class="code-keyword">raw substring</span>,<span class="code-string">Display Name</span>
+
+<span class="code-comment"># Lines starting with # are comments</span>
+<span class="code-comment"># Matching is substring-based</span>
+<span class="code-comment"># First match wins</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Storage -->
+    <section class="section section-border" id="storage">
+      <div class="container">
+        <span class="section-label fade-in">Storage</span>
+        <h2 class="section-title fade-in">Plain SQLite. One file per day.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Your data is a folder on your disk. Removing it means deleting that folder. No server. No account. No support ticket.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="code-block" style="margin-bottom: 24px;">
+              <span class="code-label">Data Directory</span>
+              <pre><span class="code-comment">~/.local/share/HPR/HPR_DB/          (Linux)</span>
+<span class="code-comment">%APPDATA%\HPR\HPR_DB\               (Windows)</span>
+
+    05-26/
+        <span class="code-string">01-05-26.db</span>
+        <span class="code-string">02-05-26.db</span>
+        ...
+
+<span class="code-comment">A normal day: 30 to 100 KB</span>
+<span class="code-comment">A full year: under 50 MB</span></pre>
+            </div>
+
+            <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">30–100 KB</div>
+                <div class="stat-card-label">Per Day</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">&lt;50 MB</div>
+                <div class="stat-card-label">Per Year</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Write Strategy</h3>
+              <p style="margin-bottom: 16px;"><code>app_usage</code> — <code>INSERT OR REPLACE</code> on unique app name. One row per app, always current.</p>
+              <p style="margin-bottom: 16px;"><code>switch_history</code> — <code>INSERT OR IGNORE</code> on unique timestamp. Dumps full history every flush, SQLite drops duplicates.</p>
+              <p>WAL mode with passive checkpoint after every write. Added after real WAL corruption on Btrfs + LUKS during development.</p>
+            </div>
+            <div class="card">
+              <h3>Single-Instance Lock</h3>
+              <p><strong>Windows:</strong> <code>CreateFileA</code> with <code>FILE_FLAG_DELETE_ON_CLOSE</code>. Auto-deletes on crash.</p>
+              <p style="margin-top: 8px;"><strong>Linux:</strong> <code>flock(LOCK_EX | LOCK_NB)</code>. Kernel releases on process death.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interpreted Mode Deep Dive -->
+    <section class="section section-border" id="interpreter">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">★ Standout Feature</span>
+        <h2 class="section-title fade-in">Interpreted UI Mode</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 16px;">
+          This is not a theme engine. This is not CSS variables. HPR loads the entire UI definition from disk at runtime using Slint's interpreter. You have full access to the Slint language — layouts, animations, components, property bindings.
+        </p>
+
+        <div class="highlight-box fade-in" style="margin-top: 40px;">
+          <div class="two-col">
+            <div>
+              <h3 style="color: var(--accent-amber); margin-bottom: 24px;">Compiled vs. Interpreted</h3>
+              <div class="table-wrap" style="margin-bottom: 24px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Aspect</th>
+                      <th>Compiled</th>
+                      <th>Interpreted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Class</td>
+                      <td><code>HPR</code></td>
+                      <td><code>HPRInterpreter</code></td>
+                    </tr>
+                    <tr>
+                      <td>Mechanism</td>
+                      <td>Slint generates C++ at build time</td>
+                      <td>Slint loads .slint from config dir at runtime</td>
+                    </tr>
+                    <tr>
+                      <td>Performance</td>
+                      <td>Maximum</td>
+                      <td>Negligible difference</td>
+                    </tr>
+                    <tr>
+                      <td>Customizable</td>
+                      <td>No</td>
+                      <td>Full UI control</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="callout--amber callout">
+                <div class="callout-title">⚠ Contract</div>
+                <p>Structs, properties, and callbacks are referenced by name from C++. Renaming them breaks the connection silently. Read <code>READ_ME_BEFORE_MODIFYING_UI.txt</code> before editing.</p>
+              </div>
+            </div>
+            <div>
+              <h3 style="margin-bottom: 24px;">What you can change</h3>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Colors and color schemes</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Component layouts and positioning</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Animations and transitions</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Component structure</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Typography and fonts</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Add new visual components</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Rename structs/properties/callbacks</span>
+                </div>
+              </div>
+
+              <div class="code-block" style="margin-top: 24px;">
+                <span class="code-label">config.csv</span>
+                <pre><span class="code-comment">// Enable runtime UI loading</span>
+<span class="code-keyword">use-interpreter</span>,<span class="code-string">true</span>
+
+<span class="code-comment">// Your UI files</span>
+<span class="code-fn">~/.config/HPR/ui/app-window.slint</span>
+
+<span class="code-comment">// Reference copy for diffing</span>
+<span class="code-fn">~/.config/HPR/ui-REFERENCEONLY/</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section class="section section-border" id="performance">
+      <div class="container">
+        <span class="section-label fade-in">Performance</span>
+        <h2 class="section-title fade-in">The numbers.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Cachegrind, Callgrind, and real-world measurements. HPR's own code doesn't appear in the hot path.
+        </p>
+
+        <div class="stats-row fade-in">
+          <div class="stat-card">
+            <div class="stat-card-value">~8 MB</div>
+            <div class="stat-card-label">RAM (Windows)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">~22 MB</div>
+            <div class="stat-card-label">Private (Linux)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">1–3%</div>
+            <div class="stat-card-label">CPU Usage</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">~2 MB</div>
+            <div class="stat-card-label">Binary Size</div>
+          </div>
+        </div>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Linux Memory Explained</h3>
+              <p>BTOP/htop report ~47 MB. The actual private memory (heap + stack + data) is ~22 MB. The remaining ~25 MB is shared GPU library pages from Mesa/LLVM loaded by Slint's OpenGL renderer. These pages are shared with every GPU-accelerated process on your system.</p>
+              <div class="code-block" style="margin-top: 16px;">
+                <pre><span class="code-comment"># Verify yourself:</span>
+<span class="code-fn">cat</span> /proc/$(<span class="code-fn">pgrep</span> HPR)/status | \
+  <span class="code-fn">grep</span> -E <span class="code-string">"RssAnon|RssFile|VmRSS"</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Disable GPU Overhead</h3>
+              <p>Set <code>hardware-acceleration,false</code> in config.csv. Mesa never loads. libLLVM never loads. RSS drops to ~22 MB. UI is visually identical — CPU renderer only costs slightly more during redraws at 500ms intervals.</p>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Cachegrind (15s sample)</h3>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre>L1 instruction miss rate:      <span class="code-string">0.20%</span>
+Last-level instruction miss:   <span class="code-string">0.01%</span>
+L1 data miss rate:             <span class="code-string">2.6%</span>
+Last-level data miss rate:     <span class="code-string">0.2%</span>
+Overall last-level miss rate:  <span class="code-string">~0.0%</span>
+
+<span class="code-comment">2.6% L1 data miss is entirely
+Slint's font rendering pipeline.</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Callgrind (60s sample)</h3>
+              <p>4.46 billion instructions over 60 seconds. HPR's own C++ backend did not appear in the top 15 hottest functions. Everything was Slint, FreeType, fontconfig, or parley doing text work.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section section-border" id="privacy">
+      <div class="container">
+        <span class="section-label fade-in">Privacy</span>
+        <h2 class="section-title fade-in">Zero network. Zero accounts.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Your data is a folder on your disk. Deleting it means deleting that folder. No server to request deletion from.
+        </p>
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Accounts</h3>
+            <p>No signup. No login. No email. No password. Launch the binary and it works.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Telemetry</h3>
+            <p>No analytics. No crash reports. No usage metrics. No phone-home of any kind.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Network</h3>
+            <p>HPR at runtime touches no network, no DNS, nothing. The only external call in the entire codebase is a <code>git clone</code> in the GNOME extension install script — a shell command you run once, manually.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Config -->
+    <section class="section section-border" id="config">
+      <div class="container">
+        <span class="section-label fade-in">Configuration</span>
+        <h2 class="section-title fade-in">Two options. That's the full config.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Intentionally small. It will grow alongside the feature set.
+        </p>
+        <div class="two-col fade-in">
+          <div class="code-block">
+            <span class="code-label">config.csv</span>
+            <pre><span class="code-comment"># true = load UI from config dir at runtime</span>
+<span class="code-keyword">use-interpreter</span>,<span class="code-string">false</span>
+
+<span class="code-comment"># false = CPU renderer, eliminates GPU libs</span>
+<span class="code-keyword">hardware-acceleration</span>,<span class="code-string">true</span></pre>
+          </div>
+          <div class="code-block">
+            <span class="code-label">Config Locations</span>
+            <pre><span class="code-comment">Linux:</span>
+<span class="code-fn">~/.config/HPR/config.csv</span>
+
+<span class="code-comment">Windows:</span>
+<span class="code-fn">%APPDATA%\HPR\HPR_Config\config.csv</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event System -->
+    <section class="section section-border" id="events">
+      <div class="container">
+        <span class="section-label fade-in">Architecture</span>
+        <h2 class="section-title fade-in">Event System & Thread Management</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          The UI and database layers have no direct references. They communicate through <code>EventHub</code>, a centralized in-process pub/sub bus with typed payloads.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="code-block" style="margin-bottom: 24px;">
+              <span class="code-label">EventHub API</span>
+              <pre><span class="code-comment">// Subscribe</span>
+<span class="code-fn">EventHub::connect</span>(
+  Event::<span class="code-keyword">HISTORY_LOADED_SINGULAR</span>,
+  [this](EventData data) { ... }
+);
+
+<span class="code-comment">// Publish</span>
+<span class="code-fn">EventHub::emit</span>(
+  Event::<span class="code-keyword">LOAD_DATABASE_SINGULAR</span>,
+  DatabaseDate_Singular{requestedDate}
+);
+
+<span class="code-comment">// Cleanup</span>
+<span class="code-fn">EventHub::disconnect</span>(
+  Event::<span class="code-keyword">HISTORY_LOADED_SINGULAR</span>, id
+);</pre>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Thread Lifecycle Contract</h3>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre>Constructor → allocate, do NOT start
+<span class="code-fn">run()</span>       → spawn the thread
+thread body → check <span class="code-keyword">atomic&lt;bool&gt;</span> running
+destructor  → set running=false, <span class="code-fn">join()</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Model Sync</h3>
+              <p>Surgical in-place update rather than clear + repopulate. Clearing causes layout panics during resize/maximize. The <code>syncModel</code> lambda overlaps existing rows, erases excess, and appends new ones.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="section section-border" id="roadmap">
+      <div class="container">
+        <span class="section-label fade-in">Future</span>
+        <h2 class="section-title fade-in">Roadmap</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          The foundational work is mostly done. What comes next is refinement, not new pillars.
+        </p>
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon card-icon--amber">AI</div>
+            <h3>LLM-Powered Analysis</h3>
+            <p>Pattern analysis powered by local LLM inference. All processing stays on-device.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--red">⊘</div>
+            <h3>Focus Mode</h3>
+            <p>Application blocking during focus sessions. Enforced deep work periods with configurable block lists.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">📊</div>
+            <h3>Advanced Reporting</h3>
+            <p>Extended analytics, historical trend visualization, and exportable reports.</p>
+          </div>
+        </div>
+        <div class="callout fade-in" style="margin-top: 32px;">
+          <div class="callout-title">All Free, Forever</div>
+          <p>The premium version has been merged into the free version. Every feature — current and future, including LLM analysis, Focus mode, and Advanced reporting — is available to everyone at no cost.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-border" style="text-align: center;">
+      <div class="container">
+        <h2 class="fade-in" style="margin-bottom: 16px;">Ready to know where your time goes?</h2>
+        <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
+          Three commands on Linux. One installer on Windows. Running in seconds.
+        </p>
+        <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <a href="installation.html" class="btn btn--primary">Install HPR →</a>
+          <a href="https://github.com/plexescor/HPR" class="btn btn--ghost" target="_blank" rel="noopener">View Source</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

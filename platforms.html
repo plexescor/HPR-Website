@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR Platform Support — Native support for Hyprland, GNOME, KDE Plasma, Cinnamon, and Windows 10/11. Wayland-first design.">
+  <title>Platform Support — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html" class="active">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Header -->
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Platform Support</span>
+        <h1>Native on every major desktop.</h1>
+        <p class="hero-tagline">
+          Wayland-first. Each platform has a dedicated backend with its own window query mechanism. No X11 fallback hacks.
+        </p>
+      </div>
+    </section>
+
+    <!-- Overview Table -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Overview</span>
+        <h2 class="section-title fade-in">Platform matrix.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          HPR reads <code>$XDG_CURRENT_DESKTOP</code> at startup and dispatches to the correct backend automatically.
+        </p>
+        <div class="table-wrap fade-in">
+          <table>
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Backend</th>
+                <th>Display Server</th>
+                <th>Extra Setup</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Hyprland</strong></td>
+                <td><code>hyprctl</code> IPC</td>
+                <td><span class="badge badge--green">Wayland</span></td>
+                <td><span class="badge badge--green">None</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">GNOME</strong></td>
+                <td>Custom GNOME Shell Extension</td>
+                <td><span class="badge badge--green">Wayland</span></td>
+                <td><span class="badge badge--amber">Extension</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">KDE Plasma</strong></td>
+                <td>KWin scripting via <code>qdbus6</code></td>
+                <td><span class="badge badge--green">Wayland</span> <span class="badge badge--cyan">X11</span></td>
+                <td><span class="badge badge--green">None</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Cinnamon</strong></td>
+                <td><code>org.Cinnamon.Eval</code> D-Bus</td>
+                <td><span class="badge badge--cyan">X11</span> <span class="badge badge--green">Wayland</span></td>
+                <td><span class="badge badge--green">None</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Windows 10/11</strong></td>
+                <td>Win32 API</td>
+                <td>—</td>
+                <td><span class="badge badge--green">None</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Per-Platform Deep Dives -->
+    <section class="section section-border" id="hyprland">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-cyan);">Linux</span>
+        <h2 class="section-title fade-in">Hyprland</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              The cleanest backend. Hyprland exposes a Unix socket IPC interface that returns the active window directly. HPR queries via <code>hyprctl</code> with <code>jq</code> for JSON parsing.
+            </p>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>How it works</h3>
+              <p>HPR calls <code>hyprctl activewindow -j</code> every 50ms, parses the JSON response with <code>jq</code>, and extracts the window class and title. Zero overhead, zero hacks.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">Wayland Native</span>
+              <span class="tag">hyprctl IPC</span>
+              <span class="tag">jq required</span>
+              <span class="tag">Zero Setup</span>
+            </div>
+          </div>
+          <div>
+            <div class="code-block">
+              <span class="code-label">Backend</span>
+              <pre><span class="code-comment">// Platform: Hyprland (Wayland)</span>
+<span class="code-comment">// Mechanism: Unix socket IPC</span>
+<span class="code-comment">// Dependency: jq for JSON parsing</span>
+
+<span class="code-fn">hyprctl</span> activewindow -j | <span class="code-fn">jq</span> -r <span class="code-string">'.class'</span>
+<span class="code-fn">hyprctl</span> activewindow -j | <span class="code-fn">jq</span> -r <span class="code-string">'.title'</span>
+
+<span class="code-comment">// Direct, fast, no hacks needed.</span>
+<span class="code-comment">// This is what good Wayland</span>
+<span class="code-comment">// integration looks like.</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
+
+    <!-- GNOME -->
+    <section class="section--tight" id="gnome">
+      <div class="container">
+        <h2 class="section-title fade-in">GNOME (Wayland)</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              GNOME on Wayland does not expose the active window to external processes. HPR solves this with a custom GNOME Shell extension — <a href="https://github.com/plexescor/lol-another-window-extension" style="color: var(--accent-green); text-decoration: none;" target="_blank" rel="noopener">lol-another-window-extension</a> — built specifically for HPR.
+            </p>
+            <div class="callout--amber callout" style="margin-bottom: 24px;">
+              <div class="callout-title">⚠ One-Time Setup Required</div>
+              <p>Run the bundled <code>installWindowCallsExtension.sh</code>, which clones the extension and enables it. Then log out and back in once — GNOME on Wayland cannot hot-reload shell extensions.</p>
+            </div>
+            <div class="card">
+              <h3>Auto-Detection</h3>
+              <p>On first launch, HPR checks whether its GNOME extension is active. If it isn't, HPR sets its internal platform to <code>GNOME_NO_EXTENSION</code> and tells you directly rather than silently returning garbage. It will not attempt to install the extension autonomously.</p>
+            </div>
+          </div>
+          <div>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <span class="code-label">Setup</span>
+              <pre><span class="code-comment"># One-time extension install</span>
+<span class="code-fn">chmod</span> +x <span class="code-string">installWindowCallsExtension.sh</span>
+<span class="code-fn">./installWindowCallsExtension.sh</span>
+
+<span class="code-comment"># Log out and back in (required)</span>
+<span class="code-comment"># GNOME Wayland can't hot-reload</span>
+<span class="code-comment"># shell extensions</span>
+
+<span class="code-comment"># Every launch after that is automatic</span></pre>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">Wayland Native</span>
+              <span class="tag">GNOME Shell Extension</span>
+              <span class="tag">D-Bus</span>
+              <span class="tag">One-Time Setup</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
+
+    <!-- KDE Plasma -->
+    <section class="section--tight" id="kde">
+      <div class="container">
+        <h2 class="section-title fade-in">KDE Plasma (Wayland / X11)</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              The KDE backend injects a JavaScript payload into KWin via <code>qdbus6</code> (or <code>qdbus-qt6</code> on Fedora — auto-detected at startup) on every 50ms tick and scrapes the system journal for the output.
+            </p>
+            <div class="callout--amber callout" style="margin-bottom: 24px;">
+              <div class="callout-title">⚠ Honest Engineering Note</div>
+              <p>That means shell forks and disk reads at 20 Hz. Somehow this lands at around 1% CPU. Every other approach tested did not work. This one does and has been validated across multiple KDE configurations. It is a hack. It is a working hack.</p>
+            </div>
+            <div class="card">
+              <h3>JS Noise Filter</h3>
+              <p>During the JavaScript injection, KWin's own JS runtime briefly appears as the active window. HPR's <code>validateAndUpdateWindow_Cross</code> function contains a specific <code>js::</code> filter to suppress strings like <code>js::kwin_tmp_1234</code> from polluting your time log.</p>
+            </div>
+          </div>
+          <div>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <span class="code-label">How It Works</span>
+              <pre><span class="code-comment">// Platform: KDE Plasma</span>
+<span class="code-comment">// Works on both Wayland and X11</span>
+<span class="code-comment">// Auto-detects qdbus6 vs qdbus-qt6</span>
+
+<span class="code-comment">// Every 50ms:</span>
+<span class="code-comment">1.</span> Inject JS payload via <span class="code-fn">qdbus6</span>
+<span class="code-comment">2.</span> Scrape <span class="code-fn">journalctl</span> for output
+<span class="code-comment">3.</span> Parse window class + title
+<span class="code-comment">4.</span> Filter out <span class="code-string">js::</span> noise
+
+<span class="code-comment">// ~1% CPU despite 20 Hz forks</span>
+<span class="code-comment">// Validated on multiple KDE configs</span></pre>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">Wayland + X11</span>
+              <span class="tag">KWin Scripting</span>
+              <span class="tag">qdbus6 / qdbus-qt6</span>
+              <span class="tag">Auto-Detected</span>
+              <span class="tag">Zero Setup</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
+
+    <!-- Cinnamon -->
+    <section class="section--tight" id="cinnamon">
+      <div class="container">
+        <h2 class="section-title fade-in">Cinnamon (X11 + Wayland)</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              Cinnamon runs on top of Muffin (a fork of GNOME's Mutter). Unlike other Linux backends, Cinnamon exposes <code>org.Cinnamon.Eval</code> — a D-Bus method that evaluates JavaScript directly inside the live Cinnamon process.
+            </p>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>D-Bus Eval</h3>
+              <p>HPR queries the internal <code>global.display.focus_window</code> object for the window class via <code>get_wm_class()</code> and the title via <code>get_meta_window().get_title()</code>.</p>
+            </div>
+            <div class="card">
+              <h3>Cross-Session</h3>
+              <p>Because this goes through Cinnamon's own compositor internals rather than X11 display properties, it works identically on both the X11 session (default on Linux Mint) and the experimental Wayland session without any code branching.</p>
+            </div>
+          </div>
+          <div>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <span class="code-label">D-Bus Queries</span>
+              <pre><span class="code-comment">// Window class (application name)</span>
+global.display.focus_window
+  .<span class="code-fn">get_wm_class</span>()
+
+<span class="code-comment">// Window title (active tab/document)</span>
+global.<span class="code-fn">get_window_actors</span>()
+  .<span class="code-fn">filter</span>(a => 
+    a.meta_window.<span class="code-fn">has_focus</span>()
+  )[0]
+  .<span class="code-fn">get_meta_window</span>()
+  .<span class="code-fn">get_title</span>()
+
+<span class="code-comment">// Both go through Muffin's compositor</span>
+<span class="code-comment">// Works on X11 and Wayland identically</span></pre>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">X11 + Wayland</span>
+              <span class="tag">D-Bus Eval</span>
+              <span class="tag">Muffin/Mutter</span>
+              <span class="tag">Zero Setup</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
+
+    <!-- Windows -->
+    <section class="section--tight" id="windows">
+      <div class="container">
+        <h2 class="section-title fade-in">Windows 10 / 11</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              The simplest backend. Win32 API provides direct access to the foreground window. No injection, no scraping, no extensions.
+            </p>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Tray Mode</h3>
+              <p>Built without a console window. HPR sits in your system tray and stays out of your way. No terminal flash on launch.</p>
+            </div>
+            <div class="card">
+              <h3>Performance</h3>
+              <p>Around 8 MB RSS in real use. That's HPR's own code plus the Windows runtime. The lightest footprint of any platform.</p>
+            </div>
+          </div>
+          <div>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <span class="code-label">Backend</span>
+              <pre><span class="code-comment">// Platform: Windows 10/11</span>
+<span class="code-comment">// Mechanism: Win32 API</span>
+
+<span class="code-fn">GetForegroundWindow</span>()
+<span class="code-fn">GetWindowText</span>(hwnd, buffer, size)
+
+<span class="code-comment">// Direct API. No tricks needed.</span>
+<span class="code-comment">// ~8 MB RSS in real use.</span>
+<span class="code-comment">// No console window — tray only.</span></pre>
+            </div>
+            <div class="stats-row" style="grid-template-columns: 1fr 1fr; margin: 0;">
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">~8 MB</div>
+                <div class="stat-card-label">RAM Usage</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">Win32</div>
+                <div class="stat-card-label">API</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Detection -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Internals</span>
+        <h2 class="section-title fade-in">Platform detection & architecture.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          All platform window detection is contained inside <code>CurrentWindowManager</code>. The constructor reads <code>$XDG_CURRENT_DESKTOP</code> and dispatches to the right backend.
+        </p>
+        <div class="two-col fade-in">
+          <div class="code-block">
+            <span class="code-label">Detection Flow</span>
+            <pre><span class="code-fn">getCurrentWindow</span>() {
+  <span class="code-keyword">if</span> (platform.contains(<span class="code-string">"Hyprland"</span>))
+    <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_Hyprland</span>();
+  <span class="code-keyword">else if</span> (platform.contains(<span class="code-string">"GNOME"</span>))
+    <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_GNOME</span>();
+  <span class="code-keyword">else if</span> (platform.contains(<span class="code-string">"KDE"</span>))
+    <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_KDE</span>();
+  <span class="code-keyword">else if</span> (platform.contains(<span class="code-string">"Cinnamon"</span>))
+    <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_Cinnamon</span>();
+  <span class="code-comment">// Windows handled at compile time</span>
+}</pre>
+          </div>
+          <div>
+            <div class="callout--amber callout" style="margin-bottom: 24px;">
+              <div class="callout-title">⚠ Known Limitation</div>
+              <p>HPR reads <code>$XDG_CURRENT_DESKTOP</code> and matches substrings via <code>std::string::contains</code>. Non-standard desktop session variables or nested compositor configurations may not resolve correctly.</p>
+            </div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">Cross-Platform Normalization</div>
+              <p><code>validateAndUpdateWindow_Cross</code> runs on every return from every platform getter automatically. New backends inherit all normalization and noise filtering for free.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-border" style="text-align: center;">
+      <div class="container">
+        <h2 class="fade-in" style="margin-bottom: 16px;">Your platform is supported.</h2>
+        <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
+          HPR runs natively on Hyprland, GNOME, KDE Plasma, Cinnamon, and Windows. No compatibility layers.
+        </p>
+        <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <a href="installation.html" class="btn btn--primary">Install HPR →</a>
+          <a href="comparison.html" class="btn btn--ghost">See Comparison →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

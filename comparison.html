@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR vs ActivityWatch — An honest comparison of two open-source activity trackers. Memory footprint, architecture, Wayland support, and what each does better.">
+  <title>HPR vs ActivityWatch — Comparison</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html" class="active">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Header -->
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Comparison</span>
+        <h1>HPR vs. the field.</h1>
+        <p class="hero-tagline">
+          An honest comparison. HPR needs users, so every claim here is verifiable and every gap is acknowledged.
+        </p>
+      </div>
+    </section>
+
+    <!-- Main Comparison Table -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Feature Matrix</span>
+        <h2 class="section-title fade-in">Head to head.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Four trackers, compared honestly. HPR's strengths and gaps, side by side.
+        </p>
+        <div class="table-wrap fade-in">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th style="color: var(--accent-green);">HPR</th>
+                <th>ActivityWatch</th>
+                <th>RescueTime</th>
+                <th>Toggl</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Binary Size</strong></td>
+                <td><span class="badge badge--green">~2 MB</span></td>
+                <td>200 MB+</td>
+                <td>Cloud app</td>
+                <td>Cloud app</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">RAM (Real)</strong></td>
+                <td><span class="badge badge--green">~8 MB Win / ~22 MB Linux</span></td>
+                <td>200 MB+</td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Account Required</strong></td>
+                <td><span class="badge badge--green">No</span></td>
+                <td><span class="badge badge--green">No</span></td>
+                <td><span class="badge badge--red">Yes</span></td>
+                <td><span class="badge badge--red">Yes</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Data Leaves Machine</strong></td>
+                <td><span class="badge badge--green">Never</span></td>
+                <td><span class="badge badge--green">Never</span></td>
+                <td><span class="badge badge--red">Yes</span></td>
+                <td><span class="badge badge--red">Yes</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Automatic Tracking</strong></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Native Wayland</strong></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--amber">Partial</span></td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Embedded Web Server</strong></td>
+                <td><span class="badge badge--green">No</span></td>
+                <td><span class="badge badge--amber">Yes</span></td>
+                <td>No</td>
+                <td>No</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Open Source</strong></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Launch Time</strong></td>
+                <td><span class="badge badge--green">Instant</span></td>
+                <td>Several seconds</td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Free</strong></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--green">Yes</span></td>
+                <td><span class="badge badge--amber">Limited</span></td>
+                <td><span class="badge badge--amber">Limited</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Runtime UI Editing</strong></td>
+                <td><span class="badge badge--green">Interpreted Mode</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Browser Extensions</strong></td>
+                <td><span class="badge badge--green">Not needed</span></td>
+                <td>Optional</td>
+                <td>Required</td>
+                <td>Optional</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- HPR vs ActivityWatch Deep Dive -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Deep Dive</span>
+        <h2 class="section-title fade-in">HPR vs. ActivityWatch</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          ActivityWatch is the most honest comparison. It's a mature, maintained project with years of production use. Here's where they genuinely differ.
+        </p>
+
+        <div class="comparison-header fade-in">
+          <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
+            <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
+            <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
+            <p>Interpreted UI mode — edit the entire interface at runtime without recompiling. No other tracker offers this.</p>
+          </div>
+          <div class="comparison-verdict" style="border-left: 3px solid var(--accent-amber);">
+            <h3 style="color: var(--accent-amber); margin-bottom: 16px;">Where ActivityWatch leads</h3>
+            <p style="margin-bottom: 12px;">Full web dashboard. Browser extensions for detailed URL tracking. Plugin ecosystem. Years of production stability. Active community and documentation.</p>
+            <p>If you need something mature and battle-tested today, use ActivityWatch. HPR is for those who value the architecture and can tolerate being early.</p>
+          </div>
+        </div>
+
+        <!-- Architecture Comparison -->
+        <h3 class="fade-in" style="margin-bottom: 24px;">Architecture comparison</h3>
+        <div class="two-col fade-in" style="margin-bottom: 48px;">
+          <div class="card" style="border-top: 3px solid var(--accent-green);">
+            <h3 style="color: var(--accent-green); margin-bottom: 16px;">HPR Architecture</h3>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <pre><span class="code-string">Single binary</span> (C++23)
+  └── <span class="code-fn">Slint UI</span> (native rendering)
+  └── <span class="code-fn">SQLite3</span> (amalgamation, compiled-in)
+  └── <span class="code-fn">4 threads</span>, defined cadences
+
+<span class="code-comment">No web server</span>
+<span class="code-comment">No Python</span>
+<span class="code-comment">No Electron</span>
+<span class="code-comment">No runtime dependencies</span></pre>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">~2 MB binary</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">~8 MB RAM (Windows)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Instant startup</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">50ms poll interval</span>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--accent-amber);">
+            <h3 style="color: var(--accent-amber); margin-bottom: 16px;">ActivityWatch Architecture</h3>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <pre><span class="code-string">Multiple processes</span> (Python + TS)
+  └── <span class="code-fn">aw-server</span> (REST API + web UI)
+  └── <span class="code-fn">aw-watcher-window</span>
+  └── <span class="code-fn">aw-watcher-afk</span>
+  └── <span class="code-fn">Browser extension</span> (optional)
+
+<span class="code-comment">Web server always running</span>
+<span class="code-comment">Python runtime required</span>
+<span class="code-comment">Multiple processes</span></pre>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Full web dashboard</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Plugin ecosystem</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Browser extensions</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Years of production use</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource Comparison -->
+        <h3 class="fade-in" style="margin-bottom: 24px;">Resource footprint</h3>
+        <div class="stats-row fade-in" style="margin-bottom: 16px;">
+          <div class="stat-card" style="border-top: 3px solid var(--accent-green);">
+            <div class="stat-card-value" style="font-size: 1.75rem;">~2 MB</div>
+            <div class="stat-card-label">HPR Binary</div>
+          </div>
+          <div class="stat-card" style="border-top: 3px solid var(--accent-amber);">
+            <div class="stat-card-value" style="font-size: 1.75rem;">200+ MB</div>
+            <div class="stat-card-label">AW Install</div>
+          </div>
+          <div class="stat-card" style="border-top: 3px solid var(--accent-green);">
+            <div class="stat-card-value" style="font-size: 1.75rem;">~8 MB</div>
+            <div class="stat-card-label">HPR RAM (Win)</div>
+          </div>
+          <div class="stat-card" style="border-top: 3px solid var(--accent-amber);">
+            <div class="stat-card-value" style="font-size: 1.75rem;">200+ MB</div>
+            <div class="stat-card-label">AW RAM</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wayland -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Wayland</span>
+        <h2 class="section-title fade-in">The Wayland question.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Wayland is the present and future of Linux desktops. HPR was designed for it from day one.
+        </p>
+        <div class="two-col fade-in">
+          <div class="card" style="border-left: 3px solid var(--accent-green);">
+            <h3>HPR: Native Wayland</h3>
+            <p style="margin-bottom: 16px;">Dedicated backend for each compositor. No XWayland fallback. No compatibility hacks.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">native</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Hyprland — hyprctl IPC</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">native</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">GNOME — Shell extension</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">native</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">KDE — KWin scripting</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">native</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Cinnamon — D-Bus eval</span>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent-amber);">
+            <h3>ActivityWatch: Partial</h3>
+            <p style="margin-bottom: 16px;">Wayland support varies by compositor. Some configurations require X11 fallback or additional configuration.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--amber">varies</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Support depends on compositor</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--amber">varies</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">May need XWayland</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What ActivityWatch does better -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">Honesty</span>
+        <h2 class="section-title fade-in">What HPR doesn't have yet.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR is v0.5. These are real gaps that ActivityWatch has filled over years of development.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card" style="border-left: 3px solid var(--accent-amber);">
+            <div class="card-icon card-icon--amber">✕</div>
+            <h3>No Web Dashboard</h3>
+            <p>HPR has a native UI only. No browser-based interface. No REST API for external tools to query.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent-amber);">
+            <div class="card-icon card-icon--amber">✕</div>
+            <h3>No Plugin Ecosystem</h3>
+            <p>No third-party watchers. No editor integrations. Extension is done by modifying the source directly.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent-amber);">
+            <div class="card-icon card-icon--amber">✕</div>
+            <h3>Smaller Community</h3>
+            <p>HPR is new. Fewer users, fewer bug reports, fewer real-world configurations tested. ActivityWatch has years of battle-testing.</p>
+          </div>
+        </div>
+
+        <div class="callout fade-in" style="margin-top: 32px;">
+          <div class="callout-title">The Honest Recommendation</div>
+          <p>If you need something mature and battle-tested today, use ActivityWatch. If the architecture and footprint appeal to you and you can tolerate being early, HPR is worth following. Both projects are open source and free.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- What HPR does differently -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-green);">Unique</span>
+        <h2 class="section-title fade-in">What only HPR does.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Features that don't exist in any other open-source activity tracker.
+        </p>
+
+        <div class="highlight-box fade-in">
+          <h3 style="color: var(--accent-amber); margin-bottom: 24px;">Interpreted UI Mode</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            No other tracker lets you edit the entire user interface at runtime. Not CSS themes. Not config-driven colors. 
+            Full Slint language access — layouts, animations, component structure, property bindings. Set <code>use-interpreter,true</code> 
+            and edit <code>app-window.slint</code>. No build step. No recompilation.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <h3>Traditional Themes</h3>
+              <p>CSS variables. Color tokens. Maybe font selection. Structure is fixed. Layout is fixed. You get to pick colors.</p>
+            </div>
+            <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+              <h3 style="color: var(--accent-amber);">HPR Interpreted Mode</h3>
+              <p>Full UI runtime. Change layouts. Add components. Modify animations. Restructure the interface. The Slint language, not a subset of it.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid fade-in" style="margin-top: 32px;">
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <h3>Browser Tabs Without Extensions</h3>
+            <p>HPR tracks browser tabs per-site and per-tab without any browser extensions. Chrome, Edge, Firefox, Brave — all work by reading the window title.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↻</div>
+            <h3>Hot-Reloading Aliases</h3>
+            <p>Save the alias file, HPR picks it up on the next tick. Late-binding design means renaming an alias retroactively updates all historical data with zero migration.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">⧖</div>
+            <h3>Dual-Clock Timing</h3>
+            <p><code>steady_clock</code> for duration, <code>system_clock</code> for display. Immune to NTP corrections and DST transitions. Measurement and display use different clocks by design.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-border" style="text-align: center;">
+      <div class="container">
+        <h2 class="fade-in" style="margin-bottom: 16px;">Try HPR alongside ActivityWatch.</h2>
+        <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
+          They track the same thing. Run both, compare the experience. HPR uses ~8 MB on Windows — you won't notice it.
+        </p>
+        <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <a href="installation.html" class="btn btn--primary">Install HPR →</a>
+          <a href="https://github.com/plexescor/HPR" class="btn btn--ghost" target="_blank" rel="noopener">View Source</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

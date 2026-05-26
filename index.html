@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR — Human Pattern Recorder. A compiled, offline, zero-account activity tracker. Watches your active window. Builds your history. Never phones home.">
+  <title>HPR — Human Pattern Recorder</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Hero Section -->
+    <section class="hero grid-bg">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-text">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              v0.5 — Free & Open Source
+            </div>
+            <h1>Know where<br>your time <span class="text-accent">actually</span> went.</h1>
+            <p class="hero-tagline">
+              A compiled C++23 binary that watches your active window, every 50ms, all day. 
+              One string. Written locally. No accounts. No telemetry. No network calls. Ever.
+            </p>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="hero-stat-value">~2 MB</span>
+                <span class="hero-stat-label">Binary Size</span>
+              </div>
+              <div class="hero-stat">
+                <span class="hero-stat-value">~8 MB</span>
+                <span class="hero-stat-label">RAM (Windows)</span>
+              </div>
+              <div class="hero-stat">
+                <span class="hero-stat-value">0</span>
+                <span class="hero-stat-label">Network Calls</span>
+              </div>
+              <div class="hero-stat">
+                <span class="hero-stat-value">50ms</span>
+                <span class="hero-stat-label">Poll Interval</span>
+              </div>
+            </div>
+            <div class="hero-actions">
+              <a href="installation.html" class="btn btn--primary">
+                <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V2h3v6H12L8 12zM2 14h12v1H2v-1z"/></svg>
+                Install HPR
+              </a>
+              <a href="features.html" class="btn btn--ghost">View Features →</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="screenshot-container">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assets/HPRHome.png" alt="HPR — Time per app view showing active window tracking with real-time statistics" loading="eager">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What It Does -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">What It Does</span>
+        <h2 class="section-title fade-in">Three things, live, all day.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          You open your computer. You work. Hours pass. You have no idea where they went. HPR fixes that.
+        </p>
+        <div class="feature-grid">
+          <div class="card fade-in">
+            <div class="card-icon">→</div>
+            <h3>Current Focus</h3>
+            <p>What you are in right now, updating in real time. Every window switch detected in 50ms.</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon card-icon--amber">Σ</div>
+            <h3>Time Per App</h3>
+            <p>Total time per application today, displayed as <code>2h 14m 30s</code>. Accurate to the second.</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon card-icon--cyan">↔</div>
+            <h3>Switch History</h3>
+            <p>Every transition, timestamped, in order. See exactly when you moved between applications.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interpreted Mode Highlight -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Standout Feature</span>
+        <h2 class="section-title fade-in">Edit the entire UI at runtime.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 12px;">
+          HPR's interpreted mode loads <code>.slint</code> files from disk at runtime instead of compiled-in UI. 
+          Change colors, layouts, animations, and component structure — without recompiling. This is not a theme system. 
+          It is a full UI runtime.
+        </p>
+
+        <div class="highlight-box fade-in" style="margin-top: 40px;">
+          <div class="interpreter-grid">
+            <div>
+              <h3 style="margin-bottom: 24px; color: var(--accent-amber);">How it works</h3>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">1</span>
+                <div class="interpreter-step-text">
+                  <h4>Enable interpreted mode</h4>
+                  <p>Set <code>use-interpreter,true</code> in config.csv. One line.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">2</span>
+                <div class="interpreter-step-text">
+                  <h4>Edit app-window.slint</h4>
+                  <p>Modify colors, layouts, animations, add components. Full Slint language access.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">3</span>
+                <div class="interpreter-step-text">
+                  <h4>Restart HPR</h4>
+                  <p>Your custom UI loads from disk. No build step. No compilation. Instant.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="code-block" style="margin-bottom: 20px;">
+                <span class="code-label">config.csv</span>
+                <pre><span class="code-comment">// Enable runtime UI loading</span>
+<span class="code-keyword">use-interpreter</span>,<span class="code-string">true</span>
+<span class="code-keyword">hardware-acceleration</span>,<span class="code-string">true</span></pre>
+              </div>
+              <div class="code-block">
+                <span class="code-label">UI location</span>
+                <pre><span class="code-comment">// Linux</span>
+~/.config/HPR/ui/<span class="code-string">app-window.slint</span>
+
+<span class="code-comment">// Windows</span>
+%APPDATA%\HPR\HPR_Config\ui\<span class="code-string">app-window.slint</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout--amber callout" style="margin-top: 32px;">
+            <div class="callout-title">⚠ Important</div>
+            <p>Do not rename structs, properties, or callbacks. HPR's C++ backend references these by exact name to push data into the UI. 
+            A reference copy is always available in <code>ui-REFERENCEONLY/</code> for diffing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What It Does Not Do -->
+    <section class="section section-border">
+      <div class="container">
+        <div class="two-col">
+          <div>
+            <span class="section-label fade-in">What It Does Not Do</span>
+            <h2 class="section-title fade-in">Exactly one thing. Nothing more.</h2>
+            <p class="section-desc fade-in" style="margin-bottom: 32px;">
+              HPR reads the title of the currently focused window. That's it. One string, every 50ms, written locally.
+            </p>
+            <div class="fade-in">
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No keystrokes</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No mouse movement</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No screen capture</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No clipboard access</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No file scanning</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No network communication. Ever.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="callout fade-in" style="margin-bottom: 24px;">
+              <div class="callout-title">Not an Electron app</div>
+              <p>Compiled C++23 binary. Starts in milliseconds. Under 10MB of RAM on Windows. No Python runtime. No embedded web server. No subscription.</p>
+            </div>
+            <div class="code-block fade-in">
+              <span class="code-label">Privacy</span>
+              <pre><span class="code-string">No accounts.</span>
+<span class="code-string">No telemetry.</span>
+<span class="code-string">No analytics.</span>
+<span class="code-string">No network communication. Ever.</span>
+
+<span class="code-comment">// The only external call in the entire codebase</span>
+<span class="code-comment">// is a git clone in the GNOME extension install</span>
+<span class="code-comment">// script. That's a shell command you run once,</span>
+<span class="code-comment">// manually. HPR itself touches no network.</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">In Action</span>
+        <h2 class="section-title fade-in">See HPR running.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Live window tracking, switch history, and the Insights engine — all running locally, zero accounts.
+        </p>
+        <div class="feature-grid feature-grid--2 fade-in">
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 12px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assets/HPRHome.png" alt="HPR Home — Time Per App and Switch History" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">Home — Time Per App & Switch History</p>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 12px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assets/HPRINSIGHTS.png" alt="HPR Insights — Pattern analysis showing most used app, focus sessions, peak productive hour" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">Insights — Pattern Analysis Engine</p>
+          </div>
+        </div>
+
+        <!-- Video -->
+        <div class="video-container fade-in" style="margin-top: 48px;">
+          <div class="screenshot-titlebar">
+            <span class="screenshot-dot screenshot-dot--red"></span>
+            <span class="screenshot-dot screenshot-dot--amber"></span>
+            <span class="screenshot-dot screenshot-dot--green"></span>
+          </div>
+          <video controls preload="metadata" poster="assets/HPRHome.png">
+            <source src="assets/HPRVideo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-align: center; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 12px;">Live Demo — Window Tracking & Insights</p>
+      </div>
+    </section>
+
+    <!-- Architecture Quick Look -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Under The Hood</span>
+        <h2 class="section-title fade-in">Multi-threaded C++23.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Four threads. Defined responsibilities. Defined cadences. No surprises.
+        </p>
+        <div class="arch-diagram fade-in">Main Thread          (Slint event loop)
+  ├── Window Poller      [50ms  tick  —  CurrentWindowManager]
+  ├── UI Bridge          [500ms tick  —  HPR / HPRInterpreter + UiModelManager]
+  └── Database Writer    [10s   tick + event-driven  —  DatabaseManager]
+
+Data Flow:
+  OS Window API → getCurrentWindow() → AppState::state → UiModelManager → Slint UI
+                                            ↓
+                                     DatabaseManager → SQLite3 (.db per day)</div>
+
+        <div class="stats-row fade-in">
+          <div class="stat-card">
+            <div class="stat-card-value">1-3%</div>
+            <div class="stat-card-label">CPU Usage</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">&lt;50 MB</div>
+            <div class="stat-card-label">Year of Data</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">0.0%</div>
+            <div class="stat-card-label">Cache Miss Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">Instant</div>
+            <div class="stat-card-label">Startup Time</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Built With</span>
+        <h2 class="section-title fade-in" style="margin-bottom: 40px;">The stack.</h2>
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon card-icon--amber">C++</div>
+            <h3>C++23</h3>
+            <p>Modern C++ with <code>std::chrono</code>, <code>std::mutex</code>, <code>std::variant</code>. Compiled binary, not interpreted.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">UI</div>
+            <h3>Slint 1.16.1</h3>
+            <p>Declarative UI toolkit. Compiled or interpreted mode. No Electron. No web runtime.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">DB</div>
+            <h3>SQLite3</h3>
+            <p>Official single-file amalgamation compiled into the binary. Zero external database dependencies. WAL mode with passive checkpoints.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-border" style="text-align: center;">
+      <div class="container">
+        <h2 class="fade-in" style="margin-bottom: 16px;">Open source. Free forever.</h2>
+        <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
+          The premium version has been merged into free. Every feature — current and future — available to everyone at no cost.
+        </p>
+        <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <a href="installation.html" class="btn btn--primary">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V2h3v6H12L8 12zM2 14h12v1H2v-1z"/></svg>
+            Install HPR
+          </a>
+          <a href="https://github.com/plexescor/HPR" class="btn btn--ghost" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            View Source
+          </a>
+          <a href="https://ko-fi.com/plexescor" class="btn btn--ghost" target="_blank" rel="noopener">
+            ☕ Support on Ko-fi
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
