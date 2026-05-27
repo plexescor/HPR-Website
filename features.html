@@ -103,28 +103,48 @@
     <!-- Browser Tab Tracking -->
     <section class="section section-border" id="browser-tabs">
       <div class="container">
-        <span class="section-label fade-in">Browser Intelligence</span>
-        <h2 class="section-title fade-in">Browser Tab Tracking</h2>
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Browser Tab Tracking <span style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          No browser extensions required. HPR automatically queries the window title when a supported browser is in focus, giving you detailed per-site and per-tab breakdowns.
+          Chrome, Edge, Firefox, Brave — HPR tracks which tab is active by reading the window title the OS already exposes. No browser extension. No manifest. No permissions dialog. No marketplace install. It has always been there.
         </p>
 
         <div class="feature-grid feature-grid--2 fade-in">
           <div class="card">
             <div class="card-icon card-icon--amber">T</div>
-            <h3>Tab View</h3>
-            <p>Raw, unaliased tab names. Differentiate between specific pages — track time across two different YouTube videos, individual GitHub issues, separate docs.</p>
+            <h3>Tab View <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">(Raw)</span></h3>
+            <p>Shows unaliased, unprocessed tab titles exactly as the OS reports them. Differentiate between specific pages — time across two different YouTube videos, individual GitHub issues, separate docs.</p>
           </div>
           <div class="card">
             <div class="card-icon card-icon--cyan">S</div>
-            <h3>Site View</h3>
-            <p>Applies rules from <code>tabAliases.csv</code> to group tabs by website. Collapses specific pages into parent domains — all YouTube tabs become "YouTube".</p>
+            <h3>Site View <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">(Formatted)</span></h3>
+            <p>Applies rules from <code>tabAliases.csv</code> to group tabs by website. All YouTube tabs collapse into "YouTube". All GitHub pages collapse into "GitHub". Toggle between the two views inside the app with a single click.</p>
           </div>
         </div>
 
-        <div class="callout fade-in" style="margin-top: 32px;">
-          <div class="callout-title">Supported Browsers</div>
-          <p>Chrome, Edge, Firefox, and Brave. Tab tracking works by reading the window title, which contains the active tab name. No hooks, no extensions, no browser API access.</p>
+        <div class="highlight-box fade-in" style="margin-top: 32px;">
+          <div class="two-col">
+            <div>
+              <h3 style="margin-bottom: 16px;">Tab View vs Site View</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Mode</th><th>Shows</th><th>Use when</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Tab View</strong></td><td>Raw title string from OS</td><td>You want granular per-page breakdown</td></tr>
+                    <tr><td><strong>Site View</strong></td><td>Aliased name from <code>tabAliases.csv</code></td><td>You want time grouped by website</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <div class="callout">
+                <div class="callout-title">No Extension Needed</div>
+                <p>Every supported browser puts the active tab name in its window title. HPR reads that string on every 50ms poll. The data has always been there — no browser API, no content script, no manifest.json, no user permission required.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -132,7 +152,7 @@
           <span class="tag">Edge</span>
           <span class="tag">Firefox</span>
           <span class="tag">Brave</span>
-          <span class="tag">No Extensions</span>
+          <span class="tag">No Extension</span>
           <span class="tag">Tab View</span>
           <span class="tag">Site View</span>
           <span class="tag">tabAliases.csv</span>
@@ -143,10 +163,10 @@
     <!-- VS Code Project Tracking -->
     <section class="section section-border" id="vscode">
       <div class="container">
-        <span class="section-label fade-in" style="color: #a78bfa;">&#9658; New in v0.6</span>
-        <h2 class="section-title fade-in">VS Code Project Tracking</h2>
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">VS Code Project Tracking <span style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          HPR tracks which VS Code project you are in, not just that VS Code is open. No extension required. No VS Code plugin. No marketplace. Nothing.
+          HPR tracks which VS Code project you are in, not just that VS Code is open. No VS Code extension. No plugin. No marketplace install. HPR reads the window title the OS already exposes.
         </p>
 
         <div class="two-col fade-in">
@@ -165,23 +185,35 @@
               </div>
             </div>
             <div class="card">
-              <h3>Project View</h3>
-              <p>A dedicated Project View tab in the UI shows time broken down by project name for the day. Toggle between <strong>Raw View</strong> (unprocessed title substring) and the parsed view which applies <code>projectAliases.csv</code> on top.</p>
+              <h3>Project View — Raw &amp; Formatted</h3>
+              <p style="margin-bottom: 12px;">A dedicated Project View tab shows time broken down by project. Toggle between two modes inside the app:</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Mode</th><th>Shows</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Raw View</strong></td><td>Unprocessed full window title substring as received from the OS</td></tr>
+                    <tr><td><strong>Formatted View</strong></td><td>Parsed project name with <code>projectAliases.csv</code> applied on top</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
           <div>
             <div class="card" style="margin-bottom: 16px;">
-              <h3>Works Everywhere</h3>
-              <p>Works on every supported platform — Hyprland, GNOME, KDE, Cinnamon, and Windows — because each backend already has a window title getter and VS Code puts the project name in the title on all of them.</p>
+              <h3>Works on Every Platform</h3>
+              <p>Hyprland, GNOME, KDE, Cinnamon, and Windows. Every backend already has a window title getter and VS Code puts the project name in the title on all of them. No platform-specific setup.</p>
             </div>
-            <div class="callout">
+            <div class="callout" style="margin-bottom: 24px;">
               <div class="callout-title">No Extension Needed</div>
-              <p>Zero browser extensions. Zero VS Code plugins. Zero marketplace installs. HPR reads the single string the OS already exposes as the window title. The project name has been there the whole time.</p>
+              <p>Zero VS Code plugins. Zero marketplace installs. Zero configuration inside VS Code. HPR reads the single string the OS already exposes as the window title. The project name has been there the whole time.</p>
             </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <span class="tag">VS Code</span>
               <span class="tag">No Extension</span>
-              <span class="tag">Project View</span>
+              <span class="tag">Raw View</span>
+              <span class="tag">Formatted View</span>
               <span class="tag">projectAliases.csv</span>
               <span class="tag">All Platforms</span>
             </div>
