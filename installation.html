@@ -87,6 +87,10 @@
                 <div class="callout-title">AUR</div>
                 <p>The AUR package handles everything — building, dependencies, and placing config files. The simplest path for Arch users.</p>
               </div>
+              <div class="callout">
+                <div class="callout-title">System-Wide Desktop Entry</div>
+                <p>When installed via the AUR, the system-wide desktop entry at <code>/usr/share/applications/hpr.desktop</code> is managed by the package. HPR detects this automatically and skips the per-user entry entirely.</p>
+              </div>
               <div class="card">
                 <h3>After Install</h3>
                 <p>Launch HPR from your application menu or terminal. Config files are placed automatically. Start tracking immediately.</p>
@@ -117,6 +121,11 @@
               <div class="callout" style="margin-bottom: 24px;">
                 <div class="callout-title">Safe Overwrite</div>
                 <p>The setup script provides safe-overwrite prompts. If you've already customized your config or UI files, it asks before replacing them.</p>
+              </div>
+              <div class="callout" style="margin-bottom: 24px;">
+                <div class="callout-title">Desktop Entry — Automatic</div>
+                <p>On first launch HPR automatically creates a desktop entry at <code>~/.local/share/applications/hpr.desktop</code>. This registers HPR with your desktop environment so it appears in your application launcher and the taskbar/dock correctly associates the window with its icon. No manual <code>.desktop</code> setup required.</p>
+                <p style="margin-top: 8px; font-size: 0.85rem; color: var(--text-tertiary);">The entry is only written when missing or stale. On subsequent launches HPR checks whether the <code>Exec=</code> and <code>Icon=</code> fields already point to the current binary. If they match, the file is left completely untouched.</p>
               </div>
             </div>
             <div>
@@ -306,7 +315,12 @@ installDependencies.bat</pre>
           <div class="card">
             <div class="card-icon card-icon--amber">1</div>
             <h3>Check Platform</h3>
-            <p>HPR auto-detects your desktop via <code>$XDG_CURRENT_DESKTOP</code>. GNOME users need to install the extension first — HPR will tell you if it's missing.</p>
+            <p>HPR auto-detects your desktop via <code>$XDG_CURRENT_DESKTOP</code>. GNOME users need to install the extension first. If it's missing, HPR doesn't crash silently — it sets its own "active window" display to the exact command you need to run, printing it directly in the UI header bar so the fix is impossible to miss:</p>
+            <div class="code-block" style="margin-top: 12px; margin-bottom: 0;">
+              <pre><span class="code-comment"># What HPR shows in the top bar if extension is missing:</span>
+<span class="code-string">RUN THE "installWindowCallsExtension.sh" SCRIPT
+NEXT TO THE HPR BINARY AND THEN RESTART PC</span></pre>
+            </div>
           </div>
           <div class="card">
             <div class="card-icon card-icon--cyan">2</div>
@@ -418,7 +432,7 @@ installDependencies.bat</pre>
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
         <ul class="footer-links">
           <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>

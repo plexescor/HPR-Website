@@ -140,6 +140,56 @@
       </div>
     </section>
 
+    <!-- VS Code Project Tracking -->
+    <section class="section section-border" id="vscode">
+      <div class="container">
+        <span class="section-label fade-in" style="color: #a78bfa;">&#9658; New in v0.6</span>
+        <h2 class="section-title fade-in">VS Code Project Tracking</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR tracks which VS Code project you are in, not just that VS Code is open. No extension required. No VS Code plugin. No marketplace. Nothing.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>How it works</h3>
+              <p style="margin-bottom: 12px;">VS Code puts the active project name in its window title as <code>filename - project - Visual Studio Code</code>. HPR reads that title on every poll tick and parses it:</p>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre><span class="code-comment"># VS Code title format:</span>
+<span class="code-string">filename - project - Visual Studio Code</span>
+
+<span class="code-comment"># HPR strips trailing suffix, then</span>
+<span class="code-comment"># splits on last " - " separator</span>
+<span class="code-comment"># (spaces around dash, safe split point)</span>
+<span class="code-fn">result</span> = project_name</pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Project View</h3>
+              <p>A dedicated Project View tab in the UI shows time broken down by project name for the day. Toggle between <strong>Raw View</strong> (unprocessed title substring) and the parsed view which applies <code>projectAliases.csv</code> on top.</p>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Works Everywhere</h3>
+              <p>Works on every supported platform — Hyprland, GNOME, KDE, Cinnamon, and Windows — because each backend already has a window title getter and VS Code puts the project name in the title on all of them.</p>
+            </div>
+            <div class="callout">
+              <div class="callout-title">No Extension Needed</div>
+              <p>Zero browser extensions. Zero VS Code plugins. Zero marketplace installs. HPR reads the single string the OS already exposes as the window title. The project name has been there the whole time.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px;">
+              <span class="tag">VS Code</span>
+              <span class="tag">No Extension</span>
+              <span class="tag">Project View</span>
+              <span class="tag">projectAliases.csv</span>
+              <span class="tag">All Platforms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Insights Engine -->
     <section class="section section-border" id="insights">
       <div class="container">
@@ -299,10 +349,14 @@
               <p style="margin-bottom: 16px;"><code>switch_history</code> — <code>INSERT OR IGNORE</code> on unique timestamp. Dumps full history every flush, SQLite drops duplicates.</p>
               <p>WAL mode with passive checkpoint after every write. Added after real WAL corruption on Btrfs + LUKS during development.</p>
             </div>
-            <div class="card">
+            <div class="card" style="margin-bottom: 16px;">
               <h3>Single-Instance Lock</h3>
               <p><strong>Windows:</strong> <code>CreateFileA</code> with <code>FILE_FLAG_DELETE_ON_CLOSE</code>. Auto-deletes on crash.</p>
               <p style="margin-top: 8px;"><strong>Linux:</strong> <code>flock(LOCK_EX | LOCK_NB)</code>. Kernel releases on process death.</p>
+            </div>
+            <div class="callout">
+              <div class="callout-title">Seamless Midnight Rotation</div>
+              <p>At exactly midnight, HPR automatically commits a final WAL checkpoint, clears all tracked data from RAM, and creates a fresh <code>DD-MM-YY.db</code> for the new day — with no restart required. You never lose data between days and never need to think about it.</p>
             </div>
           </div>
         </div>
@@ -506,6 +560,59 @@ Slint's font rendering pipeline.</span></pre>
       </div>
     </section>
 
+    <!-- System Tray -->
+    <section class="section section-border" id="tray">
+      <div class="container">
+        <span class="section-label fade-in">System Tray</span>
+        <h2 class="section-title fade-in">Lives in your tray. Stays out of your way.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          HPR keeps running when you close the window. The only way to actually quit it is through the tray icon.
+        </p>
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Windows</h3>
+              <div class="table-wrap" style="margin-top: 12px;">
+                <table>
+                  <thead>
+                    <tr><th>Action</th><th>Result</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Left click</td><td>Does nothing</td></tr>
+                    <tr><td>Right click</td><td>Context menu → <strong>Show HPR</strong> / <strong>Quit</strong></td></tr>
+                    <tr><td>Close window</td><td>Hides to tray (does not quit)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Linux (Waybar · KDE · Cinnamon)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Registered as <code>org.kde.StatusNotifierItem</code> on the session D-Bus. Same protocol used by Discord, Steam, and every modern app.</p>
+              <div class="table-wrap" style="margin-top: 12px;">
+                <table>
+                  <thead>
+                    <tr><th>Action</th><th>Result</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Left / Right click</td><td>Open HPR</td></tr>
+                    <tr><td>Middle click</td><td>Quit HPR</td></tr>
+                    <tr><td>Hover</td><td>Shows tooltip with hint text</td></tr>
+                    <tr><td>Close window</td><td>Hides to tray (does not quit)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="callout">
+              <div class="callout-title">No Libraries</div>
+              <p>Pure D-Bus over <code>libdbus-1</code>. No GTK. No Qt. Works with Waybar on Hyprland, KDE's system tray, and Cinnamon's panel out of the box with zero configuration.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Config -->
     <section class="section section-border" id="config">
       <div class="container">
@@ -636,7 +743,7 @@ destructor  → set running=false, <span class="code-fn">join()</span></pre>
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.5 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
         <ul class="footer-links">
           <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
