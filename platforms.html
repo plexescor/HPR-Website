@@ -109,16 +109,16 @@
         <div class="two-col fade-in">
           <div>
             <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
-              The cleanest backend. Hyprland exposes a Unix socket IPC interface that returns the active window directly. HPR queries via <code>hyprctl</code> with <code>jq</code> for JSON parsing.
+              The cleanest backend. Hyprland exposes a Unix socket IPC interface that returns the active window directly. HPR queries via <code>hyprctl</code> and parses the JSON output natively in C++ — no <code>jq</code> required.
             </p>
             <div class="card" style="margin-bottom: 16px;">
               <h3>How it works</h3>
-              <p>HPR calls <code>hyprctl activewindow -j</code> every 50ms, parses the JSON response with <code>jq</code>, and extracts the window class and title. Zero overhead, zero hacks.</p>
+              <p>HPR calls <code>hyprctl activewindow -j</code> every 50ms and parses the JSON response natively in C++ to extract the window class and title. Zero overhead, zero hacks, zero extra dependencies.</p>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <span class="tag">Wayland Native</span>
               <span class="tag">hyprctl IPC</span>
-              <span class="tag">jq required</span>
+              <span class="tag">No Extra Deps</span>
               <span class="tag">Zero Setup</span>
             </div>
           </div>
@@ -127,10 +127,11 @@
               <span class="code-label">Backend</span>
               <pre><span class="code-comment">// Platform: Hyprland (Wayland)</span>
 <span class="code-comment">// Mechanism: Unix socket IPC</span>
-<span class="code-comment">// Dependency: jq for JSON parsing</span>
+<span class="code-comment">// Parsing: native C++ std::string (no jq)</span>
 
-<span class="code-fn">hyprctl</span> activewindow -j | <span class="code-fn">jq</span> -r <span class="code-string">'.class'</span>
-<span class="code-fn">hyprctl</span> activewindow -j | <span class="code-fn">jq</span> -r <span class="code-string">'.title'</span>
+<span class="code-fn">hyprctl</span> activewindow -j
+<span class="code-comment">// extracts "class" and "title" keys</span>
+<span class="code-comment">// via std::string::find() — no shell pipe</span>
 
 <span class="code-comment">// Direct, fast, no hacks needed.</span>
 <span class="code-comment">// This is what good Wayland</span>
