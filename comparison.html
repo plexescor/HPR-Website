@@ -144,15 +144,15 @@
                 <td><span class="badge badge--red">No</span></td>
               </tr>
               <tr>
-                <td><strong style="color: var(--text-primary);">Browser Extensions</strong></td>
-                <td><span class="badge badge--green">Not needed</span></td>
-                <td>Optional</td>
-                <td>Required</td>
-                <td>Optional</td>
+                <td><strong style="color: var(--text-primary);">Browser Tab Tracking</strong></td>
+                <td><span class="badge badge--green">Built-in, no extension<br><small style="font-weight:400;">Tab View (raw) + Site View (formatted)</small></span></td>
+                <td>Optional extension</td>
+                <td>Required extension</td>
+                <td>Optional extension</td>
               </tr>
               <tr>
                 <td><strong style="color: var(--text-primary);">VS Code Project Tracking</strong></td>
-                <td><span class="badge badge--green">Built-in, no extension</span></td>
+                <td><span class="badge badge--green">Built-in, no extension<br><small style="font-weight:400;">Raw View + Formatted View toggle</small></span></td>
                 <td>Via plugin</td>
                 <td><span class="badge badge--red">No</span></td>
                 <td><span class="badge badge--red">No</span></td>
@@ -176,7 +176,8 @@
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
             <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
             <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
-            <p>Interpreted UI mode — edit the entire interface at runtime without recompiling. No other tracker offers this.</p>
+            <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime without recompiling. No other tracker offers this.</p>
+            <p>Browser tab tracking and VS Code project tracking with <strong>no extensions whatsoever</strong> &mdash; not optional, not recommended, literally not needed. HPR reads the window title the OS already exposes. Both support toggleable raw and formatted name views built into the app.</p>
           </div>
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-amber);">
             <h3 style="color: var(--accent-amber); margin-bottom: 16px;">Where ActivityWatch leads</h3>
@@ -391,8 +392,8 @@
         <div class="feature-grid fade-in" style="margin-top: 32px;">
           <div class="card">
             <div class="card-icon">⚡</div>
-            <h3>Browser Tabs Without Extensions</h3>
-            <p>HPR tracks browser tabs per-site and per-tab without any browser extensions. Chrome, Edge, Firefox, Brave — all work by reading the window title.</p>
+            <h3>Browser Tab Tracking — No Extension</h3>
+            <p>Chrome, Edge, Firefox, Brave — tracked per-site and per-tab with zero browser extensions. Toggle between <strong>Tab View</strong> (raw OS title) and <strong>Site View</strong> (grouped by domain via <code>tabAliases.csv</code>) inside the app. No hooks. No manifest. No permissions dialog.</p>
           </div>
           <div class="card">
             <div class="card-icon card-icon--cyan">↻</div>
@@ -406,8 +407,8 @@
           </div>
           <div class="card">
             <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">VS</div>
-            <h3>VS Code Project Tracking</h3>
-            <p>Tracks which VS Code project you're working in, not just that VS Code is open. No extension. No plugin. No marketplace. Just the window title, parsed on every tick.</p>
+            <h3>VS Code Project Tracking — No Extension</h3>
+            <p>Tracks which VS Code project you're in, not just that VS Code is open. No VS Code plugin. No marketplace. Toggle between <strong>Raw View</strong> (full OS window title substring) and <strong>Formatted View</strong> (parsed project name with <code>projectAliases.csv</code>). Works on every supported platform.</p>
           </div>
         </div>
       </div>
