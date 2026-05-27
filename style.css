@@ -833,6 +833,25 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+}
+
+.footer-middle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer-middle a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-middle a:hover {
+  color: var(--text-primary);
 }
 
 .footer-left {

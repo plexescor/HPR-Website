@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HPR vs ActivityWatch: Why I Built a Free Open-Source Alternative</title>
+  <meta name="description" content="The Story Behind HPR">
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Blog</span>
+        <h1>HPR vs ActivityWatch: Why I Built a Free Open-Source Alternative</h1>
+        <p class="hero-tagline">
+          By Plexescor
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-border">
+      <div class="container" style="max-width: 800px; margin: 0 auto; text-align: left;">
+        
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">The Story Behind HPR</h2>
+        <p style="margin-bottom: 16px;">I started building HPR because I was frustrated with ActivityWatch. As someone who wanted to understand how I spent my time on the computer, I had been an ActivityWatch user for a while. But over time, the problems kept piling up:</p>
+        
+        <ul style="margin-bottom: 24px; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>It was too bloated.</strong> ActivityWatch comes with a 200MB+ binary and uses hundreds of megabytes of RAM. For something that runs in the background all day, that felt wrong.</li>
+          <li style="margin-bottom: 8px;"><strong>It required a web server and Python runtime.</strong> Having a constant web server running in the background just to track my focus didn't sit right with me.</li>
+          <li style="margin-bottom: 8px;"><strong>Wayland support was incomplete.</strong> As a Linux user, I was tired of hacks and fallbacks. Wayland support varied by compositor and sometimes required XWayland.</li>
+          <li style="margin-bottom: 8px;"><strong>Extensions for everything.</strong> Want to track browser tabs? Install an extension. Want to track VS Code projects? Install a plugin. It felt tedious.</li>
+        </ul>
+
+        <p style="margin-bottom: 32px;">So I built HPR — a free, open-source, compiled C++23 privacy-first time tracker that keeps your data local and has a tiny footprint.</p>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">Feature Comparison</h2>
+        <p style="margin-bottom: 16px;">Here’s how HPR compares to ActivityWatch in 2026:</p>
+
+        <div class="table-wrap" style="margin-bottom: 32px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>HPR</th>
+                <th>ActivityWatch</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Price</strong></td>
+                <td>Free and open-source</td>
+                <td>Free and open-source</td>
+              </tr>
+              <tr>
+                <td><strong>Data storage</strong></td>
+                <td>Local (your device, SQLite)</td>
+                <td>Local (your device, JSON/SQLite)</td>
+              </tr>
+              <tr>
+                <td><strong>Binary Size</strong></td>
+                <td>~2 MB</td>
+                <td>200 MB+</td>
+              </tr>
+              <tr>
+                <td><strong>RAM (Real)</strong></td>
+                <td>~8 MB (Windows) / ~22 MB (Linux)</td>
+                <td>200 MB+</td>
+              </tr>
+              <tr>
+                <td><strong>Open source</strong></td>
+                <td>Yes</td>
+                <td>Yes</td>
+              </tr>
+              <tr>
+                <td><strong>Launch Time</strong></td>
+                <td>Instant</td>
+                <td>Several seconds</td>
+              </tr>
+              <tr>
+                <td><strong>Browser tracking</strong></td>
+                <td>Built-in (No extension)</td>
+                <td>Requires Extension</td>
+              </tr>
+              <tr>
+                <td><strong>VS Code tracking</strong></td>
+                <td>Built-in (No extension)</td>
+                <td>Requires Plugin</td>
+              </tr>
+              <tr>
+                <td><strong>Runtime UI Editing</strong></td>
+                <td>Interpreted Mode</td>
+                <td>No</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">Where HPR Wins</h2>
+        
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">Tiny Footprint and Native Speed</h3>
+        <p style="margin-bottom: 16px;">This is the fundamental difference. HPR is a compiled C++23 binary. It starts instantly and uses ~8MB of RAM on Windows. No Python runtime. No embedded web server. It sits in your system tray and stays out of your way.</p>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">No Extensions Needed</h3>
+        <p style="margin-bottom: 16px;">ActivityWatch requires you to install extensions to track browser tabs or VS Code projects. HPR reads the window title the OS already exposes. Every supported browser and VS Code puts their info in the window title. HPR simply reads it every 50ms. No manifest, no permissions, no marketplace.</p>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">Native Wayland</h3>
+        <p style="margin-bottom: 16px;">HPR was built for Wayland from day one. It has native support for Hyprland, GNOME, KDE Plasma 6+, and Cinnamon with zero XWayland fallbacks or hacks.</p>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">Interpreted UI Mode</h3>
+        <p style="margin-bottom: 16px;">HPR lets you edit the entire UI at runtime without recompiling. It loads `.slint` files directly from your disk, allowing you to change layouts, animations, and components on the fly. No other tracker offers this.</p>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">Where ActivityWatch Still Has an Edge</h2>
+        <p style="margin-bottom: 16px;">To be fair, ActivityWatch does some things well:</p>
+        <ul style="margin-bottom: 32px; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>Full web dashboard</strong> — ActivityWatch has a browser-based interface and REST API. HPR only has a native UI.</li>
+          <li style="margin-bottom: 8px;"><strong>Plugin ecosystem</strong> — ActivityWatch has third-party watchers and editor integrations.</li>
+          <li style="margin-bottom: 8px;"><strong>Community and Stability</strong> — ActivityWatch has years of battle-testing and a large user base.</li>
+        </ul>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">Migrating from ActivityWatch</h2>
+        <p style="margin-bottom: 16px;">Switching to HPR is straightforward:</p>
+        <ol style="margin-bottom: 32px; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>Download HPR</strong> from our installation page.</li>
+          <li style="margin-bottom: 8px;"><strong>Install and run</strong> — it starts tracking immediately.</li>
+          <li style="margin-bottom: 8px;"><strong>That's it.</strong> No browser extensions or IDE plugins needed.</li>
+        </ol>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">What Fake Users Say 🥀🥀🥀</h2>
+        <blockquote style="border-left: 4px solid var(--accent-green); padding-left: 16px; margin-bottom: 24px; color: var(--text-secondary); font-style: italic;">
+          "ActivityWatch's installer is 89MB. I have a photo of my late grandmother that is 2MB. ActivityWatch is 44 grandmothers. HPR is 7 grandmothers. I know which one my grandpa would have approved of." <br><br>&mdash; real person, grieving, productive 🥀
+        </blockquote>
+        <blockquote style="border-left: 4px solid var(--accent-green); padding-left: 16px; margin-bottom: 24px; color: var(--text-secondary); font-style: italic;">
+          "ActivityWatch told me to 'tell more people about ActivityWatch' on the first screen. I have never felt more used. HPR just showed me my data. I think HPR loves me." <br><br>&mdash; definitely human, in therapy
+        </blockquote>
+        <blockquote style="border-left: 4px solid var(--accent-green); padding-left: 16px; margin-bottom: 24px; color: var(--text-secondary); font-style: italic;">
+          "I asked ActivityWatch why it needs 4 processes to watch one window. It opened a browser tab to explain. The browser tab took 1.4 seconds to load. I have since converted to HPR and also Buddhism." <br><br>&mdash; real user, enlightened 🥀
+        </blockquote>
+        <blockquote style="border-left: 4px solid var(--accent-green); padding-left: 16px; margin-bottom: 32px; color: var(--text-secondary); font-style: italic;">
+          "ActivityWatch's categorization system has regex rules, nested categories, a Category Builder, forum presets, and documentation. I have a computer science degree. I still put 'Uncategorized' as my most used category for 3 months. HPR has a CSV file. I edited it in notepad. I wept." <br><br>&mdash; verified genius, humbled 🥀
+        </blockquote>
+
+        <h2 style="margin-top: 32px; margin-bottom: 16px;">Try HPR</h2>
+        <p style="margin-bottom: 16px;">HPR is free, open-source, and takes seconds to set up. Install it today and see for yourself.</p>
+        <p style="margin-bottom: 32px;">If you’re coming from ActivityWatch, you’ll find that HPR tracks everything you need while keeping a minimal footprint and native speeds.</p>
+        
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
