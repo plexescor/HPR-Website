@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Stack Trace — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #0f0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .ui-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+    }
+    
+    .state-view {
+      background: var(--bg-card);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-md);
+      padding: 48px;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .state-view h1 {
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+    }
+    
+    .state-view p {
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .os-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .terminal-box {
+      background: #000;
+      border: 1px solid var(--border-primary);
+      padding: 16px;
+      height: 200px;
+      overflow-y: hidden;
+      text-align: left;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      color: #0f0;
+      border-radius: var(--radius-sm);
+    }
+
+    .terminal {
+      display: none;
+      padding: 24px;
+      font-size: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-line { margin-bottom: 2px; }
+    .log-rust { color: #f0a030; }
+    .log-python { color: #56c8d8; }
+    .log-web { color: #e74c3c; }
+    .log-system { color: #fff; }
+    .log-warn { color: #f0a030; }
+    .log-success { color: #3ddc84; }
+
+    #fatal-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+    }
+
+    #fatal-screen h1 {
+      color: #ff0000;
+      font-size: 6vw;
+      font-family: 'Arial Black', Impact, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin: 0;
+      text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+      animation: pulse 1s infinite alternate;
+    }
+    
+    #fatal-screen p {
+      color: #fff;
+      font-size: 2vw;
+      margin-top: 40px;
+      font-family: sans-serif;
+    }
+
+    #fatal-screen a {
+      display: inline-block;
+      margin-top: 40px;
+      color: #000;
+      background: #3ddc84;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+      padding: 16px 32px;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    #fatal-screen a:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      from { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+      to { text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000, 0 0 90px #ff0000; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UI Wizard -->
+  <div id="ui-container" class="ui-container">
+    
+    <!-- State 1 -->
+    <div id="state-1" class="state-view">
+      <h1>ActivityWatch Setup</h1>
+      <p>Welcome to the 89MB installation wizard. We're going to put a web server on your machine.</p>
+      <button id="btn-install" class="btn btn--primary">Install ActivityWatch</button>
+    </div>
+    
+    <!-- State 2 -->
+    <div id="state-2" class="state-view" style="display:none;">
+      <h1>Select Platform</h1>
+      <p>Where are we deploying this Python runtime?</p>
+      <div class="os-grid">
+        <button class="btn btn--ghost os-btn" data-os="windows">Windows</button>
+        <button class="btn btn--ghost os-btn" data-os="gnome">GNOME</button>
+        <button class="btn btn--ghost os-btn" data-os="cinnamon">Cinnamon</button>
+        <button class="btn btn--ghost os-btn" data-os="hyprland">Hyprland</button>
+        <button class="btn btn--ghost os-btn" data-os="kde" style="grid-column: span 2;">KDE Plasma</button>
+      </div>
+    </div>
+    
+    <!-- State 3 -->
+    <div id="state-3" class="state-view" style="display:none;">
+      <h1>Installing...</h1>
+      <div class="terminal-box" id="install-logs"></div>
+      <div style="margin-top: 24px;">
+        <button id="btn-open" class="btn btn--primary" style="display:none; width: 100%; justify-content: center;">ActivityWatch installed. Open it.</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Terminal (State 4) -->
+  <div class="terminal" id="terminal"></div>
+
+  <!-- Fatal Screen -->
+  <div id="fatal-screen">
+    <h1 id="fatal-title">FATAL: The tracker has tracked too much.</h1>
+    <p id="fatal-desc">System stability compromised. 4.2GB RAM leaked.</p>
+    <a href="installation.html">Please Install HPR</a>
+  </div>
+
+  <script>
+    const state1 = document.getElementById('state-1');
+    const state2 = document.getElementById('state-2');
+    const state3 = document.getElementById('state-3');
+    const uiContainer = document.getElementById('ui-container');
+    const terminal = document.getElementById('terminal');
+    const fatalScreen = document.getElementById('fatal-screen');
+    const installLogs = document.getElementById('install-logs');
+    
+    let chosenOS = '';
+    
+    document.getElementById('btn-install').addEventListener('click', () => {
+      state1.style.display = 'none';
+      state2.style.display = 'block';
+    });
+    
+    document.querySelectorAll('.os-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        chosenOS = e.target.getAttribute('data-os');
+        state2.style.display = 'none';
+        state3.style.display = 'block';
+        startInstallationSim();
+      });
+    });
+    
+    function startInstallationSim() {
+      let msgs = [];
+      if(chosenOS === 'windows') {
+        msgs = [
+          { c: 'log-system', t: 'Downloading aw-windows-v0.12.exe (145MB)...' },
+          { c: 'log-system', t: 'Modifying Registry Keys...' },
+          { c: 'log-warn', t: 'WARN: Adding Windows Defender exclusions for telemetry...' },
+          { c: 'log-system', t: 'Extracting 5,432 Python cache files...' },
+          { c: 'log-warn', t: 'WARN: Startup impact: HIGH. System boot time +14s.' },
+          { c: 'log-success', t: 'SUCCESS! Please restart your computer (just kidding).' }
+        ];
+      } else if (chosenOS === 'gnome') {
+        msgs = [
+          { c: 'log-system', t: '$ sudo apt install activitywatch-bin' },
+          { c: 'log-system', t: 'Pulling dependencies: python3-tk, libglib2.0-dev, libwayland-egl1...' },
+          { c: 'log-warn', t: 'WARN: Installing 412 python packages to /usr/local/lib/python3.11/site-packages' },
+          { c: 'log-system', t: 'Extracting tarball (102MB)...' },
+          { c: 'log-success', t: 'SUCCESS! GNOME tracker activated.' }
+        ];
+      } else if (chosenOS === 'hyprland') {
+        msgs = [
+          { c: 'log-system', t: '$ yay -S activitywatch-git' },
+          { c: 'log-system', t: 'Cloning into \'activitywatch-git\'...' },
+          { c: 'log-system', t: 'Building rust server... (this might take a while)' },
+          { c: 'log-warn', t: 'WARN: pacman complains about python package conflicts. Forcing installation anyway...' },
+          { c: 'log-system', t: 'Creating systemd user service...' },
+          { c: 'log-success', t: 'SUCCESS! Welcome to the ricer tracking experience.' }
+        ];
+      } else if (chosenOS === 'kde') {
+        msgs = [
+          { c: 'log-system', t: '$ zypper in activitywatch' },
+          { c: 'log-system', t: 'Resolving dependencies...' },
+          { c: 'log-warn', t: 'WARN: Requires qt5-webengine. Downloading 300MB of Qt bloat...' },
+          { c: 'log-system', t: 'Extracting aw-qt...' },
+          { c: 'log-system', t: 'Linking to Plasma systray...' },
+          { c: 'log-success', t: 'SUCCESS! KDE telemetry initialized.' }
+        ];
+      } else if (chosenOS === 'cinnamon') {
+        msgs = [
+          { c: 'log-system', t: '$ flatpak install net.activitywatch.ActivityWatch' },
+          { c: 'log-warn', t: 'WARN: Downloading runtime org.freedesktop.Platform/x86_64/22.08 (800MB)...' },
+          { c: 'log-warn', t: 'WARN: Flatpak sandbox might break window tracking...' },
+          { c: 'log-system', t: 'Fixing dbus permissions...' },
+          { c: 'log-success', t: 'SUCCESS! Cinnamon bloatware installed.' }
+        ];
+      }
+      
+      let i = 0;
+      function nextLog() {
+        if(i < msgs.length) {
+          const el = document.createElement('div');
+          el.className = 'log-line ' + msgs[i].c;
+          el.innerText = msgs[i].t;
+          installLogs.appendChild(el);
+          installLogs.scrollTop = installLogs.scrollHeight;
+          i++;
+          setTimeout(nextLog, 400 + Math.random() * 800);
+        } else {
+          document.getElementById('btn-open').style.display = 'flex';
+        }
+      }
+      nextLog();
+    }
+    
+    document.getElementById('btn-open').addEventListener('click', () => {
+      uiContainer.style.display = 'none';
+      terminal.style.display = 'block';
+      startChaos();
+    });
+    
+    // CHAOS LOGIC
+    function startChaos() {
+      let logs = [];
+      let failureMode = '';
+      
+      if(chosenOS === 'windows') {
+        failureMode = 'oom';
+      } else if (chosenOS === 'gnome') {
+        failureMode = 'wayland';
+      } else if (chosenOS === 'hyprland') {
+        failureMode = 'python';
+      } else if (chosenOS === 'cinnamon') {
+        failureMode = 'rust';
+      } else if (chosenOS === 'kde') {
+        failureMode = 'kde';
+      }
+      
+      // Common boot
+      logs.push(
+        { c: 'log-system', t: 'Initializing activitywatch-v0.12.2...' },
+        { c: 'log-system', t: 'Starting aw-server-rust...' },
+        { c: 'log-rust', t: '[aw-server-rust] INFO: Listening on 127.0.0.1:5600' },
+        { c: 'log-system', t: 'Starting aw-watcher-window...' },
+        { c: 'log-system', t: 'Starting aw-watcher-afk...' },
+        { c: 'log-python', t: '[aw-watcher-window] INFO: Started watcher for active window' }
+      );
+      
+      if(failureMode === 'oom') {
+        logs.push(
+          { c: 'log-rust', t: '[aw-server-rust] DEBUG: Received request GET /api/0/info' },
+          { c: 'log-rust', t: '[aw-server-rust] WARN: Memory usage exceeding bounds...' },
+          { c: 'log-python', t: '[aw-watcher-window] MemoryError: failed to allocate 500MB for window title buffer' },
+          { c: 'log-system', t: '[SYSTEM] FATAL: Out of Memory. Virtual Memory Exhausted.' },
+          { c: 'log-system', t: 'Killed process aw-server.exe' }
+        );
+      } else if (failureMode === 'wayland') {
+        logs.push(
+          { c: 'log-python', t: '[aw-watcher-window] WARN: Falling back to X11 xprop... failed to get _NET_ACTIVE_WINDOW. Is this Wayland?' },
+          { c: 'log-python', t: '[aw-watcher-window] ERROR: Wayland denied access. XWayland is crying.' },
+          { c: 'log-python', t: '[aw-watcher-window] ERROR: Fatal exception in window loop: Cannot read Wayland surfaces.' },
+          { c: 'log-system', t: '[SYSTEM] aw-watcher-window crashed.' }
+        );
+      } else if (failureMode === 'python') {
+        logs.push(
+          { c: 'log-python', t: '[aw-watcher-afk] error: externally-managed-environment' },
+          { c: 'log-python', t: '[aw-watcher-afk] This environment is globally managed... pip cannot install aw-client.' },
+          { c: 'log-python', t: 'Traceback (most recent call last):' },
+          { c: 'log-python', t: '  File "/usr/lib/python3.11/site-packages/aw_core/models.py", line 42, in __init__' },
+          { c: 'log-python', t: '    self.event = self.get_event()' },
+          { c: 'log-python', t: 'AttributeError: \'NoneType\' object has no attribute \'get_event\'' },
+          { c: 'log-python', t: 'ModuleNotFoundError: No module named \'aw_core.sanity\'' }
+        );
+      } else if (failureMode === 'rust') {
+        logs.push(
+          { c: 'log-rust', t: '[aw-server-rust] WARN: Database locked. Retrying... (attempt 1/10)' },
+          { c: 'log-rust', t: '[aw-server-rust] WARN: Database locked. Retrying... (attempt 5/10)' },
+          { c: 'log-rust', t: '[aw-server-rust] ERROR: BorrowMutError - already borrowed: BorrowMutError' },
+          { c: 'log-rust', t: 'thread \'tokio-runtime-worker\' panicked at \'called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: "Too many open files" }\', src/aw-server/main.rs:1337:42' },
+          { c: 'log-rust', t: 'note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace' },
+          { c: 'log-web', t: '[WEB] Proxy Error: 502 Bad Gateway. Reason: Connection refused to aw-server (127.0.0.1:5600) via localhost:1234.' }
+        );
+      } else if (failureMode === 'kde') {
+        logs.push(
+          { c: 'log-python', t: '[aw-qt] INFO: Starting qt-gui...' },
+          { c: 'log-python', t: '[aw-qt] ERROR: QXcbConnection: Could not connect to display' },
+          { c: 'log-python', t: '[aw-qt] FATAL: You did not install the QT version of ActivityWatch.' },
+          { c: 'log-python', t: '[aw-qt] FATAL: Opening in KDE rejected.' },
+          { c: 'log-system', t: '[SYSTEM] aw-qt crashed. Install activitywatch-qt first.' }
+        );
+      }
+      
+      let logIndex = 0;
+      let speed = 200;
+      
+      function printNext() {
+        if(logIndex < logs.length) {
+          const el = document.createElement('div');
+          el.className = 'log-line ' + logs[logIndex].c;
+          el.innerText = logs[logIndex].t;
+          terminal.appendChild(el);
+          window.scrollTo(0, document.body.scrollHeight);
+          
+          logIndex++;
+          speed = Math.max(10, speed * 0.9);
+          setTimeout(printNext, speed);
+        } else {
+          spamAndDie(failureMode);
+        }
+      }
+      
+      setTimeout(printNext, 500);
+    }
+    
+    let spamCount = 0;
+    function spamAndDie(failureMode) {
+      let spamMsgs = [];
+      if(failureMode === 'oom') {
+        spamMsgs = ['[SYSTEM] Allocating memory...', 'Virtual Memory Exhausted', 'OOM Killer triggered'];
+      } else if(failureMode === 'wayland') {
+        spamMsgs = ['[aw-watcher-window] xprop missing', 'Wayland compositor blocked access', 'Cannot track windows'];
+      } else if(failureMode === 'python') {
+        spamMsgs = ['pip install failed', 'aw-client missing', 'RecursionError: maximum recursion depth exceeded'];
+      } else if(failureMode === 'kde') {
+        spamMsgs = ['[aw-qt] missing dependencies', 'KDE Plasma rejected aw-qt', 'Install QT version first'];
+      } else {
+        spamMsgs = ['[aw-server-rust] Restarting...', 'Database locked', 'thread panic'];
+      }
+      
+      const el = document.createElement('div');
+      el.className = 'log-web';
+      el.innerText = spamMsgs[Math.floor(Math.random() * spamMsgs.length)];
+      terminal.appendChild(el);
+      window.scrollTo(0, document.body.scrollHeight);
+      
+      spamCount++;
+      if (spamCount < 60) {
+        setTimeout(() => spamAndDie(failureMode), 15);
+      } else {
+        setTimeout(() => showFatal(failureMode), 400);
+      }
+    }
+    
+    function showFatal(failureMode) {
+      document.getElementById('fatal-screen').style.display = 'flex';
+      
+      const title = document.getElementById('fatal-title');
+      const desc = document.getElementById('fatal-desc');
+      
+      if(failureMode === 'wayland') {
+        title.innerText = "FATAL: DOESN'T WORK ON WAYLAND.";
+        desc.innerText = "XWayland fallback failed. Your tracking software is crying.";
+      } else if(failureMode === 'python') {
+        title.innerText = "FATAL: DEPENDENCY HELL.";
+        desc.innerText = "Global python environment broke. Your OS hates you.";
+      } else if(failureMode === 'kde') {
+        title.innerText = "FATAL: WRONG TOOLKIT.";
+        desc.innerText = "Opening in KDE rejected. Why didn't you install the QT version?";
+      } else if (failureMode === 'rust') {
+        title.innerText = "FATAL: THE TRACKER CRASHED ITSELF.";
+        desc.innerText = "Database locked. Too many open files. Cannot serialize grandmother.";
+      } else {
+        title.innerText = "FATAL: THE TRACKER HAS TRACKED TOO MUCH.";
+        desc.innerText = "System stability compromised. Massive RAM leak detected.";
+      }
+
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(50, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 2);
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 2);
+      } catch(e) {}
+    }
+  </script>
+</body>
+</html>

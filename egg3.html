@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The RAM Eater — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      /* Removed overflow: hidden to allow scrolling large canvases */
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+    }
+    canvas {
+      background: var(--bg-card);
+      border: 1px solid var(--border-primary);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      border-radius: var(--radius-sm);
+    }
+    .bsod {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0000aa;
+      color: #aaaaaa;
+      font-family: 'Consolas', 'Courier New', monospace;
+      padding: 40px;
+      z-index: 9999;
+    }
+    .bsod h1 {
+      color: #fff;
+      font-size: 24px;
+      background: #aaaaaa;
+      color: #0000aa;
+      display: inline-block;
+      padding: 2px 8px;
+      margin-bottom: 32px;
+    }
+    .bsod p {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .settings {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+    .settings input {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      padding: 4px 8px;
+      width: 60px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+    }
+    .msg-box {
+      height: 24px;
+      color: var(--accent-amber);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="no-access.html" class="nav-github">
+        &larr; Back
+      </a>
+    </div>
+  </nav>
+
+  <main class="page-content" style="padding-top: 80px;">
+    <div class="container game-container">
+      
+      <div class="settings">
+        <label>Grid Size:</label>
+        <input type="number" id="gridW" value="50" min="10" max="500">
+        <span>x</span>
+        <input type="number" id="gridH" value="50" min="10" max="500">
+        <button id="applyBtn" class="btn btn--small btn--ghost">Restart</button>
+      </div>
+
+      <div class="game-header">
+        <div style="color: var(--accent-green);">HPR: <span id="hprMB">10</span> MB</div>
+        <div style="color: var(--accent-cyan);">Target RAM</div>
+        <div style="color: #e74c3c;">ActivityWatch: <span id="awMB">100</span> MB</div>
+      </div>
+
+      <canvas id="gameCanvas"></canvas>
+      <div id="msgBox" class="msg-box"></div>
+      
+      <p style="margin-top: 16px; font-size: 14px; color: var(--text-secondary); max-width: 800px; text-align: center;">
+        Controls: WASD or Arrow Keys. You are HPR (10MB). Grab RAM before ActivityWatch (100MB) does. ActivityWatch grows forever. Watch out for 400MB.
+      </p>
+
+    </div>
+  </main>
+
+  <div id="bsod" class="bsod">
+    <h1>System Halted</h1>
+    <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
+    <p>The current application will be terminated.</p>
+    <p>* Out of Memory. Your tracking software (aw-server.exe) consumed 400MB and crashed the system.</p>
+    <p>* Press any key to continue regretting your software choices.</p>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let gridW = 200;
+    let gridH = 200;
+    let cellSize = 3; // 600x600 px default
+    
+    let player, aw, ram;
+    let isGameOver = false;
+    let lastPlayerTime = 0;
+    let lastAwTime = 0;
+    let reqId;
+    
+    // Speeds in ms per tile
+    const PLAYER_SPEED = 60;
+    const AW_SPEED = 45; // AW is slightly faster
+
+    function initGame() {
+      gridW = parseInt(document.getElementById('gridW').value) || 50;
+      gridH = parseInt(document.getElementById('gridH').value) || 50;
+      
+      cellSize = Math.floor(800 / Math.max(gridW, gridH));
+      
+      if (cellSize < 1) cellSize = 1;
+      
+      canvas.width = gridW * cellSize;
+      canvas.height = gridH * cellSize;
+      
+      player = {
+        body: [],
+        dir: {x: 1, y: 0},
+        nextDir: {x: 1, y: 0},
+        color: '#3ddc84', // var(--accent-green)
+        mb: 10
+      };
+      
+      aw = {
+        body: [],
+        dir: {x: -1, y: 0},
+        color: '#e74c3c', // red
+        mb: 100
+      };
+      
+      for(let i=0; i<Math.ceil(player.mb/10); i++) player.body.push({x: 5, y: Math.floor(gridH/2)});
+      for(let i=0; i<Math.ceil(aw.mb/10); i++) aw.body.push({x: gridW - 5, y: Math.floor(gridH/2)});
+      
+      spawnRam();
+      
+      isGameOver = false;
+      document.getElementById('bsod').style.display = 'none';
+      document.getElementById('msgBox').innerText = "";
+      
+      lastPlayerTime = performance.now();
+      lastAwTime = performance.now();
+      
+      if(reqId) cancelAnimationFrame(reqId);
+      reqId = requestAnimationFrame(gameLoop);
+    }
+    
+    function spawnRam() {
+      ram = {
+        x: Math.floor(Math.random() * gridW),
+        y: Math.floor(Math.random() * gridH)
+      };
+    }
+    
+    window.addEventListener('keydown', e => {
+      // Prevent scrolling
+      if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault();
+      }
+      if(isGameOver) {
+        if(document.getElementById('bsod').style.display === 'block') {
+          initGame();
+        }
+        return;
+      }
+      
+      if(['ArrowUp', 'w', 'W'].includes(e.key) && player.dir.y === 0) player.nextDir = {x: 0, y: -1};
+      if(['ArrowDown', 's', 'S'].includes(e.key) && player.dir.y === 0) player.nextDir = {x: 0, y: 1};
+      if(['ArrowLeft', 'a', 'A'].includes(e.key) && player.dir.x === 0) player.nextDir = {x: -1, y: 0};
+      if(['ArrowRight', 'd', 'D'].includes(e.key) && player.dir.x === 0) player.nextDir = {x: 1, y: 0};
+    }, {passive: false});
+
+    document.getElementById('applyBtn').addEventListener('click', () => {
+      initGame();
+      this.blur();
+    });
+
+    function getAwNextDir() {
+      let head = aw.body[0];
+      
+      let possibleDirs = [
+        {x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}
+      ];
+      // Prevent reversing
+      possibleDirs = possibleDirs.filter(d => !(d.x === -aw.dir.x && d.y === -aw.dir.y));
+      
+      // We want to minimize distance to RAM
+      possibleDirs.sort((a,b) => {
+        let nxA = head.x + a.x;
+        let nyA = head.y + a.y;
+        
+        // Handle wrap around in distance calc
+        let dxA = Math.min(Math.abs(nxA - ram.x), gridW - Math.abs(nxA - ram.x));
+        let dyA = Math.min(Math.abs(nyA - ram.y), gridH - Math.abs(nyA - ram.y));
+        let distA = dxA + dyA;
+        
+        let nxB = head.x + b.x;
+        let nyB = head.y + b.y;
+        let dxB = Math.min(Math.abs(nxB - ram.x), gridW - Math.abs(nxB - ram.x));
+        let dyB = Math.min(Math.abs(nyB - ram.y), gridH - Math.abs(nyB - ram.y));
+        let distB = dxB + dyB;
+        
+        return distA - distB;
+      });
+      
+      return possibleDirs[0];
+    }
+
+    function moveSnake(snake, isAw) {
+      if(!isAw) {
+        snake.dir = {...snake.nextDir};
+      } else {
+        snake.dir = getAwNextDir();
+      }
+
+      let head = {
+        x: snake.body[0].x + snake.dir.x,
+        y: snake.body[0].y + snake.dir.y
+      };
+      
+      // Wrap around
+      if(head.x < 0) head.x = gridW - 1;
+      if(head.x >= gridW) head.x = 0;
+      if(head.y < 0) head.y = gridH - 1;
+      if(head.y >= gridH) head.y = 0;
+      
+      snake.body.unshift(head);
+      
+      // Check RAM collision
+      if(head.x === ram.x && head.y === ram.y) {
+        snake.mb++;
+        spawnRam();
+        
+        if(!isAw && snake.mb >= 30) {
+          document.getElementById('msgBox').innerText = "HPR touched 30MB! It was designed to be memory efficient. Resetting back to 10MB.";
+          setTimeout(() => { if(!isGameOver) document.getElementById('msgBox').innerText = ""; }, 4000);
+          snake.mb = 10;
+          snake.body = snake.body.slice(0, 1);
+        }
+        
+        if(isAw && snake.mb >= 400) {
+          triggerBSOD();
+        }
+      } else {
+        while(snake.body.length > Math.ceil(snake.mb / 10)) {
+          snake.body.pop();
+        }
+      }
+    }
+
+    function triggerBSOD() {
+      isGameOver = true;
+      document.getElementById('bsod').style.display = 'block';
+    }
+
+    function gameLoop(time) {
+      if(isGameOver) return;
+      
+      let pDelta = time - lastPlayerTime;
+      if(pDelta > PLAYER_SPEED) {
+        moveSnake(player, false);
+        lastPlayerTime = time;
+      }
+      
+      let aDelta = time - lastAwTime;
+      if(aDelta > AW_SPEED) {
+        moveSnake(aw, true);
+        lastAwTime = time;
+      }
+      
+      // Draw
+      ctx.fillStyle = '#141416'; // var(--bg-card)
+      ctx.fillRect(0,0, canvas.width, canvas.height);
+      
+      // RAM
+      ctx.fillStyle = '#56c8d8'; // cyan
+      ctx.fillRect(ram.x * cellSize, ram.y * cellSize, cellSize, cellSize);
+      
+      // Player
+      ctx.fillStyle = player.color;
+      for(let p of player.body) {
+        ctx.fillRect(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
+      }
+      
+      // AW
+      ctx.fillStyle = aw.color;
+      for(let p of aw.body) {
+        ctx.fillRect(p.x * cellSize, p.y * cellSize, cellSize, cellSize);
+      }
+      
+      // UI Update
+      document.getElementById('hprMB').innerText = player.mb;
+      document.getElementById('awMB').innerText = aw.mb;
+      
+      reqId = requestAnimationFrame(gameLoop);
+    }
+    
+    // Start
+    initGame();
+
+  </script>
+</body>
+</html>
