@@ -234,6 +234,16 @@
               <code>jq</code> is not available on your system you can use Lua's string manipulation functions instead,
               but <code>jq</code> is available on virtually every Linux system that runs a modern Wayland compositor.
             </p>
+            <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
+              <div class="callout-title">Dangerous Commands Blocked</div>
+              <p>
+                To prevent accidental or malicious destruction from extensions, HPR actively filters and blocks dangerous commands. If you plan/planned to use dangerous commands, FUCK OFF 🖕🖕.
+              </p>
+              <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);">
+                <strong>Some examples of blocked commands:</strong><br>
+                <code>rm</code>, <code>rmdir</code>, <code>chmod</code>, <code>sudo</code>, <code>su</code>, <code>mkfs</code>, <code>fdisk</code>, <code>shutdown</code>, <code>reboot</code>, <code>curl</code>, <code>wget</code>, <code>python</code>, <code>bash</code>, <code>del</code>, <code>reg</code>, <code>apt</code>, <code>pip</code>, <code>systemctl</code>, and common shell injection patterns like <code>| sh</code> or <code>$(rm)</code>.
+              </p>
+            </div>
             <div class="code-block" style="margin: 0;">
               <pre><span class="code-keyword">function</span>()
     <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
