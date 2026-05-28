@@ -93,11 +93,11 @@
         <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 2 — Define the <code>init()</code> function</h2>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           Backend registration must happen inside the <code>init()</code> function, not at the top level of your script
-          and not inside <code>onTick()</code>. HPR calls <code>init()</code> exactly once at startup before the tick
+          and not inside <code>onTick(delta)</code>. HPR calls <code>init()</code> exactly once at startup before the tick
           loop begins. This guarantees your backend is registered before HPR starts its first window detection cycle.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          If you put <code>registerBackend_E</code> inside <code>onTick()</code>, HPR would attempt to register the same
+          If you put <code>registerBackend_E</code> inside <code>onTick(delta)</code>, HPR would attempt to register the same
           backend once every second, causing duplicate registrations and undefined behavior. Always use
           <code>init()</code> for one-time setup.
         </p>
@@ -369,6 +369,9 @@ HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -
     <div class="container">
       <div class="footer-inner">
         <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
         <ul class="footer-links">
           <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>

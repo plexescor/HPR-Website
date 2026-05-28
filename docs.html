@@ -67,6 +67,7 @@
             </p>
             <div class="hero-actions" style="justify-content: center;">
               <a href="#guides" class="btn btn--primary">↓ Read the Docs</a>
+              <a href="api.html" class="btn btn--ghost">Extension API →</a>
             </div>
           </div>
         </div>
@@ -122,7 +123,7 @@
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">⚡</div>
             <h3>Live memory access, no HTTP overhead</h3>
-            <p>When your extension calls <code>HPR.getCurrentWindow()</code>, it reads directly from HPR's in-memory state
+            <p>When your extension calls <code>HPR.getCurrentWindow_E()</code>, it reads directly from HPR's in-memory state
               through a mutex-protected C++ lambda. There is no serialization, no network stack, no JSON parsing. The
               call is nanoseconds. Compare this to ActivityWatch where every data read is a full HTTP round-trip to a
               localhost server.</p>
@@ -181,96 +182,33 @@
         <h2 class="section-title fade-in">Extension Lifecycle Hooks</h2>
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
           HPR calls specific Lua functions in your script at specific points during its lifecycle. You don't have to
-          define all of them — HPR checks whether each function exists before calling it, so you only implement what you
-          need.
-        </p>
-
+          define all of them — HPR checks whether each function exists before calling it, so you only implement 
         <div class="feature-grid feature-grid--2" style="margin-bottom: 48px;">
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>init()</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Called exactly once when HPR starts and loads your extension, before the tick loop begins. This is where
-              you should do any one-time setup — registering a backend, establishing connections, printing confirmation
-              messages. If your extension doesn't need setup, you don't need to define this function at all.
+              you should do any one-time setup — registering a backend, establishing connections, or printing messages.
+              Optionally, you can return an integer from <code>init()</code> to set a custom tick rate (in milliseconds) for your extension thread (defaults to 1000ms).
             </p>
           </div>
           <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>onTick()</code></h3>
+            <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>onTick(delta)</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Called once every second on your extension's background thread. This is where you put recurring logic —
-              reading the active window, accumulating custom metrics, pushing data to HPR's UI, or firing notifications
-              based on conditions. If your extension only registers a backend and does nothing else, you don't need to
-              define this either.
+              Called periodically on your extension's isolated background thread (at the rate defined in <code>init()</code>). 
+              It receives a single parameter <code>delta</code> (a float representing actual elapsed milliseconds since the last tick).
+              This is where you put recurring logic — reading active windows, logging info, or firing notifications.
             </p>
           </div>
         </div>
 
         <p class="section-desc fade-in" style="margin-bottom: 16px;">A minimal extension that just prints the active app
-          every second looks like this:</p>
+          every tick looks like this:</p>
         <div class="code-block fade-in">
           <span class="code-label">hello.lua</span>
-          <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>()
-    <span class="code-fn">print</span>(HPR.getCurrentWindow())
+          <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-fn">print</span>(HPR.getCurrentWindow_E())
 <span class="code-keyword">end</span></pre>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-border">
-      <div class="container">
-        <span class="section-label fade-in">API Reference</span>
-        <h2 class="section-title fade-in">The <code>HPR</code> Global Object</h2>
-        <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          Every extension has access to the <code>HPR</code> global table. These are the functions currently available.
-          More will be added in future releases as the extension API expands.
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px;">
-
-          <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;"><code>HPR.getCurrentWindow_E()</code></h3>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">Returns:
-              <code>string</code>
-            </p>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Returns the raw output of HPR's active backend's <code>getCurrentWindow</code> call. This is the
-              unprocessed window class string before any aliasing or filtering is applied. Useful inside custom backend
-              implementations to verify your backend is returning the right data.
-            </p>
-          </div>
-
-          <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;"><code>HPR.runSystemCommand_E(command)</code>
-            </h3>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">Parameters:
-              <code>command: string</code> — Returns: <code>string</code>
-            </p>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Executes a shell command and returns its stdout output as a string. This is the primary tool for building
-              custom backends — you use it to call your compositor's IPC commands like <code>hyprctl</code>,
-              <code>swaymsg</code>, <code>niri msg</code>, or <code>qdbus</code>, then parse the output to extract
-              window information. The function blocks until the command completes, so keep commands fast. Returns an
-              empty string if the command fails or produces no output.
-            </p>
-            <div class="code-block" style="margin: 0;">
-              <pre><span class="code-keyword">local</span> result = HPR.runSystemCommand_E(<span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>)
-<span class="code-fn">print</span>(result) <span class="code-comment">-- prints something like "firefox"</span></pre>
-            </div>
-          </div>
-
-          <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;"><code>HPR.registerBackend_E(...)</code></h3>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">6 positional arguments —
-              see the <a href="custom-backend.html" style="color: var(--accent-green);">Custom Backend Tutorial</a> for
-              full details</p>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Registers a completely new window-tracking backend with HPR's backend registry at runtime. This is the
-              most powerful function in the extension API — it lets you add support for any compositor or desktop
-              environment without modifying or recompiling HPR itself. Called from <code>init()</code>, not from
-              <code>onTick()</code>. See the dedicated tutorial for a complete walkthrough.
-            </p>
-          </div>
-
         </div>
       </div>
     </section>
@@ -278,17 +216,26 @@
     <section id="guides" class="section section-border anchor">
       <div class="container">
         <span class="section-label fade-in">Guides</span>
-        <h2 class="section-title fade-in">Tutorials</h2>
+        <h2 class="section-title fade-in">Tutorials & Reference</h2>
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
-          Step-by-step guides for writing specific types of extensions.
+          Comprehensive guides and references for writing custom HPR extensions.
         </p>
-        <div class="card fade-in" style="max-width: 600px; padding: 32px;">
-          <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-            Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or desktop
-            environment. Covers all 6 required functions with a real working example using Hyprland.
-          </p>
-          <a href="custom-backend.html" class="btn btn--primary">Read the tutorial →</a>
+        <div class="feature-grid feature-grid--2">
+          <div class="card fade-in" style="padding: 32px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+              Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or desktop
+              environment. Covers all 6 required functions with a real working example using Hyprland.
+            </p>
+            <a href="custom-backend.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
+          </div>
+          <div class="card fade-in" style="padding: 32px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 12px;">Raw Extension API Reference</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+              Detailed reference for the global <code>HPR</code> table functions, including alias lookup, reverse-alias lookup, and lifecycle tick configuration.
+            </p>
+            <a href="api.html" class="btn btn--ghost" style="margin-top: auto;">View API Reference →</a>
+          </div>
         </div>
       </div>
     </section>
@@ -298,6 +245,9 @@
     <div class="container">
       <div class="footer-inner">
         <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
         <ul class="footer-links">
           <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>

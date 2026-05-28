@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR Raw Extension API Reference. Discover every C++ function exposed to the Lua scripting engine.">
+  <title>HPR — Extension API Reference</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+      --accent-amber: #e05252;
+      --accent-amber-dim: rgba(224, 82, 82, 0.10);
+      --accent-cyan: #56c8d8;
+      --accent-cyan-dim: rgba(86, 200, 216, 0.10);
+    }
+
+    .hero-badge-dot {
+      background: #ff8c00;
+    }
+    
+    .api-card {
+      border-left: 3px solid var(--accent-green);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    
+    .api-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .api-card--utility {
+      border-left-color: var(--accent-cyan);
+    }
+    
+    .api-card--alias {
+      border-left-color: var(--accent-amber);
+    }
+    
+    .api-signature {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="section">
+      <div class="container">
+        <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
+
+        <span class="section-label fade-in">API Reference</span>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Raw Extension API Reference</h1>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR embeds a powerful C++ Lua engine. This document describes the raw lifecycle hooks and all functions exposed to the Lua namespace through the global <code>HPR</code> table.
+        </p>
+
+        <!-- --- SECTION: LIFECYCLE --- -->
+        <h2 style="margin-bottom: 24px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">Lifecycle Hooks</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          Your Lua extensions are driven by two main entry points executed on a dedicated background thread spawned specifically for your script.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 64px;">
+          
+          <div class="card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">init() Hook</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Called exactly once by HPR when the extension is loaded at startup. This is the place to perform one-time initialization, such as registering a window-tracking backend.
+            </p>
+            <div class="callout" style="margin-bottom: 20px;">
+              <div class="callout-title">Optional sleepTime Return</div>
+              <p>
+                You can now return an integer value (in milliseconds) from <code>init()</code>. This sets the tick interval (sleep duration) for your extension thread. If no value is returned or if the hook is omitted, the tick rate defaults to <code>1000</code> ms (1 second).
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Initializing extension..."</span>)
+    <span class="code-keyword">return</span> <span class="code-keyword">500</span> <span class="code-comment">-- configure this extension thread to tick every 500 milliseconds</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">onTick(delta) Hook</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Called periodically on your extension's isolated background thread based on the tick interval configured in <code>init()</code>.
+            </p>
+            <div class="callout" style="margin-bottom: 20px;">
+              <div class="callout-title">The delta Parameter</div>
+              <p>
+                HPR passes a single argument <code>delta</code> (a float) representing the actual elapsed time in <strong>milliseconds</strong> since the last tick occurred. This allows for extremely precise timing, rate calculation, or event tracking within your script.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-fn">print</span>(<span class="code-string">"Time since last tick: "</span> .. delta .. <span class="code-string">" ms"</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- --- SECTION: FUNCTIONS --- -->
+        <h2 style="margin-bottom: 32px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">The HPR Global Table</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 64px;">
+
+          <!-- Window Information retrieval -->
+          <h3 style="font-size: 1.3rem; margin-top: 16px; color: var(--accent-cyan);">Window State Information</h3>
+          
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getCurrentWindow_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code> (the raw window class name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Reads directly from HPR's active tracking backend state using a thread-safe C++ lambda. It returns the raw window class name of the currently focused window (before applying aliases or filters). Useful for checking active status or inspecting the currently running window.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> windowClass = HPR.getCurrentWindow_E()
+<span class="code-fn">print</span>(<span class="code-string">"Raw active window class: "</span> .. windowClass) <span class="code-comment">-- e.g. "firefox" or "kitty"</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getCurrentTitle_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code> (the raw window title)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Reads and returns the raw window title string of the currently focused window. This is critical for extensions tracking browser websites, active files in editors, or terminal commands.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> title = HPR.getCurrentTitle_E()
+<span class="code-fn">print</span>(<span class="code-string">"Raw active window title: "</span> .. title) <span class="code-comment">-- e.g. "Google — Mozilla Firefox"</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.runSystemCommand_E(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (stdout)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Executes a shell command synchronously and returns the standard output (stdout) as a string. Any trailing whitespace is preserved. The function blocks until completion; keep commands fast.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> output = HPR.runSystemCommand_E(<span class="code-string">"uptime"</span>)
+<span class="code-fn">print</span>(output)</pre>
+            </div>
+          </div>
+
+          <!-- Alias and Reverse-Alias functions -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-amber);">Alias Management</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR provides high-performance lookup in Lua matching its internal configurations for mapping raw window names to user-friendly pretty-names.
+          </p>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getAlias(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> (raw name) &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Returns the user's defined alias pretty-name for a given application class (e.g. mapping <code>kitty</code> to <code>Terminal</code>).
+            </p>
+          </div>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getAlias_Tab(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Returns the user's configured alias for browser tab patterns (website pretty-names).
+            </p>
+          </div>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getAlias_Project(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Returns the user's configured pretty alias for active development projects.
+            </p>
+          </div>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getReverseAlias(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Looks up the reverse cache of application aliases to resolve a pretty name (e.g. <code>Terminal</code>) back to its original raw identifier (e.g. <code>kitty</code>).
+            </p>
+          </div>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getReverseAlias_Tab(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw tab)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Resolves a pretty tab website alias back to the original raw web title representation.
+            </p>
+          </div>
+
+          <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getReverseAlias_Project(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw project name)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Resolves a pretty project name back to the original raw project workspace directory or file path keyword.
+            </p>
+          </div>
+
+          <!-- Backend registration -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Backend Registration</h3>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.registerBackend_E(...)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle)</code>
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Registers a completely new custom tracking backend dynamically. HPR's backend manager calls the registered functions during startup to inspect compositors and get current window classes/titles. For a detailed guide on using this, please consult the <a href="custom-backend.html" style="color: var(--accent-green);">Custom Backend Tutorial</a>.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.registerBackend_E(
+        <span class="code-string">"MyCompositor"</span>,
+        <span class="code-keyword">function</span>(env) <span class="code-keyword">return</span> env:find(<span class="code-string">"MyCompositor"</span>) ~= <span class="code-keyword">nil</span> <span class="code-keyword">end</span>,
+        <span class="code-keyword">function</span>() <span class="code-fn">print</span>(<span class="code-string">"Loaded!"</span>) <span class="code-keyword">end</span>,
+        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-keyword">true</span> <span class="code-keyword">end</span>,
+        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"browser"</span> <span class="code-keyword">end</span>,
+        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"Home Page"</span> <span class="code-keyword">end</span>
+    )
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>
