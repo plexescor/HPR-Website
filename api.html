@@ -259,6 +259,153 @@
             </div>
           </div>
 
+          <!-- Database Operations -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a78bfa;">Database Operations</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR gives every extension direct access to its SQLite database. All extensions share the same database file, so choose unique table names to avoid conflicts.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
+            <div class="api-signature">HPR.dbExecute_E(sql, params?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Executes a write SQL statement (CREATE, INSERT, UPDATE, DELETE) against HPR's SQLite database. The optional second argument is a Lua table of strings that are bound to <code>?</code> placeholders in the SQL query, preventing SQL injection. Always use parameterized queries when inserting user-derived data.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Create a table</span>
+HPR.dbExecute_E(<span class="code-string">[[
+    create table if not exists my_data (
+        key text unique,
+        value text
+    );
+]]</span>)
+
+<span class="code-comment">-- Insert with parameterized values</span>
+HPR.dbExecute_E(
+    <span class="code-string">"insert or replace into my_data (key, value) values (?, ?);"</span>,
+    { <span class="code-string">"active_app"</span>, <span class="code-string">"firefox"</span> }
+)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
+            <div class="api-signature">HPR.dbQuery_E(sql, params?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> <code>table</code> (array of row tables)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Executes a read SQL statement (SELECT) and returns the results as a Lua table. Each element in the returned table is a row, represented as a Lua table with column names as keys. The optional second argument works the same as <code>dbExecute_E</code> for parameterized queries.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"select key, value from my_data;"</span>)
+
+<span class="code-keyword">for</span> i, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
+    <span class="code-fn">print</span>(row.key .. <span class="code-string">" = "</span> .. row.value)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- UI Integration -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #f472b6;">UI Integration</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            Extensions can push data directly into HPR's Slint UI and register callbacks for UI events. Values are converted from Lua types to Slint types automatically — strings, numbers, booleans, arrays of structs are all supported. For a step-by-step guide on building a UI-connected extension, see the <a href="custom-app-extension.html" style="color: var(--accent-green);">Custom App Extension Tutorial</a>.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #f472b6;">
+            <div class="api-signature">HPR.setUiProperty_E(name, value)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>name: string</code>, <code>value: any</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Sets a named property on the root Slint UI component. The property name must exactly match an <code>in property</code> defined in <code>app-window.slint</code>. HPR converts the Lua value to a C++ intermediate on the extension thread, then dispatches the Slint update to the main UI thread. Supported types: <code>string</code>, <code>number</code>, <code>boolean</code>, <code>table</code> (array → Slint model, key-value → Slint struct). If the UI is not yet loaded, the call is silently ignored.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Set a simple string property</span>
+HPR.setUiProperty_E(<span class="code-string">"windowName_S"</span>, <span class="code-string">"firefox"</span>)
+
+<span class="code-comment">-- Set an array of structs (each struct maps to a Slint struct)</span>
+HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
+    { name = <span class="code-string">"Song A"</span>, artist = <span class="code-string">"Artist 1"</span>, duration = <span class="code-string">"01:23:45"</span>, duration_i = 5025000 },
+    { name = <span class="code-string">"Song B"</span>, artist = <span class="code-string">"Artist 2"</span>, duration = <span class="code-string">"00:45:30"</span>, duration_i = 2730000 },
+})</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #f472b6;">
+            <div class="api-signature">HPR.registerUiCallback(name, luaFunction)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Registers a Lua function as a handler for a Slint callback. When the named callback is triggered from the Slint UI (e.g. a button click), HPR invokes your Lua function. The callback name must exactly match a <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently ignored.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.registerUiCallback(<span class="code-string">"myButtonClicked"</span>, <span class="code-keyword">function</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Button was clicked in the UI!"</span>)
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <!-- Time/Date Utilities -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Time &amp; Date Utilities</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR exposes its internal time formatting and parsing functions to Lua. All time values are in milliseconds unless noted otherwise.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.formatTime_HHMMSS_E(ms)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (milliseconds) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Converts a duration in milliseconds to a human-readable <code>"HH:MM:SS"</code> formatted string. Commonly used for displaying tracked time in the UI.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> formatted = HPR.formatTime_HHMMSS_E(5025000)
+<span class="code-fn">print</span>(formatted) <span class="code-comment">-- "01:23:45"</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.convertToDate_DDMMYY_E(ms)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Converts a Unix timestamp in milliseconds to a date string in <code>"DD-MM-YY"</code> format.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.convertToDate_MMYY_E(ms)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Converts a Unix timestamp in milliseconds to a date string in <code>"MM-YY"</code> format (month and year only).
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.convertToTime_HHMMSS_12_E(ms)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Converts a Unix timestamp in milliseconds to a 12-hour time string in <code>"HH:MM:SS AM/PM"</code> format.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.parseDate_DDMMYY_E(dateStr)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Parses a <code>"DD-MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds. The inverse of <code>convertToDate_DDMMYY_E</code>.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.parseDate_MMYY_E(dateStr)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Parses a <code>"MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds. The inverse of <code>convertToDate_MMYY_E</code>.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+            <div class="api-signature">HPR.extractMMYY_from_DDMMYY_E(dateStr)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>string</code> (<code>"MM-YY"</code>)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              Extracts the month-year portion from a full <code>"DD-MM-YY"</code> date string, returning just <code>"MM-YY"</code>. Useful for grouping daily records by month.
+            </p>
+          </div>
+
         </div>
 
       </div>
