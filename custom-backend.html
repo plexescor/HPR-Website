@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how to add a custom backend to HPR using Lua extensions.">
+  <title>HPR — Custom Backend Tutorial</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="section">
+      <div class="container">
+        <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
+
+        <span class="section-label fade-in">Tutorial</span>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Building a Custom Window
+          Backend</h1>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          HPR natively supports GNOME, KDE, Cinnamon, Hyprland, and Windows. But the Linux compositor landscape is vast
+          — Sway, Niri, River, Wayfire, and many others exist and are actively used. Rather than waiting for official
+          support, you can add tracking for any compositor yourself by writing a short Lua extension and dropping it in
+          your extensions folder.
+        </p>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          This tutorial will walk you through every part of <code>HPR.registerBackend_E()</code> in detail. By the end
+          you will understand exactly what each argument does, why it exists, and how to write one for your own system.
+          The full finished example at the bottom is fewer than 30 lines.
+        </p>
+
+        <div class="callout fade-in" style="margin-bottom: 48px;">
+          <div class="callout-title">About the Example</div>
+          <p>
+            All examples in this tutorial use <b>Hyprland</b> as the demonstration compositor because it has a clean,
+            well-documented IPC tool called <code>hyprctl</code> that makes the code easy to read. <b>Hyprland is
+              already natively supported by HPR</b> — we are only using it here as a teaching example. The same pattern
+            applies directly to Sway (<code>swaymsg</code>), Niri (<code>niri msg</code>), River
+            (<code>riverctl</code>), or anything else that exposes an IPC command.
+          </p>
+        </div>
+
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 1 — Create your extension file</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Create a new file anywhere inside your HPR extensions folder. The name doesn't matter as long as it ends in
+          <code>.lua</code>. You can also create a subfolder to keep things organized.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 16px;">
+          <span class="code-label">Linux</span>
+          <pre>~/.config/HPR/extensions/sway-backend/sway.lua</pre>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">Windows</span>
+          <pre>%APPDATA%\HPR\HPR_Config\extensions\my-backend\main.lua</pre>
+        </div>
+
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 2 — Define the <code>init()</code> function</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Backend registration must happen inside the <code>init()</code> function, not at the top level of your script
+          and not inside <code>onTick()</code>. HPR calls <code>init()</code> exactly once at startup before the tick
+          loop begins. This guarantees your backend is registered before HPR starts its first window detection cycle.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          If you put <code>registerBackend_E</code> inside <code>onTick()</code>, HPR would attempt to register the same
+          backend once every second, causing duplicate registrations and undefined behavior. Always use
+          <code>init()</code> for one-time setup.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">skeleton</span>
+          <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.registerBackend_E(
+        <span class="code-comment">-- 6 arguments go here</span>
+    )
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 6 arguments of <code>registerBackend_E</code>
+        </h2>
+        <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
+          The function takes 6 positional arguments in a fixed order. Here is each one explained in detail.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 1 — <code>name</code> (string)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A unique string identifier for your backend. This is used by HPR internally for logging — you will see it
+              printed in the terminal as <code>[HPR] Selected backend: YourName</code>. It also needs to match what your
+              compositor puts in the <code>$XDG_CURRENT_DESKTOP</code> environment variable, because that is what HPR
+              passes into the <code>matchesEnvironment</code> function described next.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              To find out what your compositor sets, open a terminal and run:
+            </p>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <pre>echo $XDG_CURRENT_DESKTOP</pre>
+            </div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              On Hyprland this prints <code>Hyprland</code>. On Sway it typically prints <code>sway</code>. Use that
+              exact string as your backend name.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-string">"Hyprland"</span><span class="code-comment">,  -- argument 1</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 2 — <code>matchesEnvironment</code>
+              (function)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A function that receives a single string argument <code>env</code> containing the current value of
+              <code>$XDG_CURRENT_DESKTOP</code>. HPR calls this function for every registered backend during startup to
+              decide which one to activate. Return <code>true</code> if <code>env</code> indicates your compositor is
+              running. Return <code>false</code> otherwise.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Lua's <code>string:find</code> returns the start index of the match on success and <code>nil</code> on
+              failure. Comparing it to <code>~= nil</code> converts that into a plain boolean. This is the standard Lua
+              idiom for string contains checks.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>(env)
+    <span class="code-keyword">return</span> env:find(<span class="code-string">"Hyprland"</span>) ~= <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span><span class="code-comment">,  -- argument 2</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 3 — <code>initialize</code> (function)
+            </h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A function that HPR calls once after selecting your backend as the active one. This is your opportunity to
+              do any per-backend setup — checking that required tools are installed, establishing a persistent
+              connection if your compositor supports it, or just printing a confirmation message so you know your
+              backend loaded correctly.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              For most compositors that are queried via one-shot CLI commands like <code>hyprctl</code> or
+              <code>swaymsg</code>, there is nothing to initialize. You can leave the body empty or just print a
+              message.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Hyprland backend loaded"</span>)
+<span class="code-keyword">end</span><span class="code-comment">,  -- argument 3</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 4 — <code>isUsable</code> (function)
+            </h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A function that returns <code>true</code> if your backend can currently provide valid window data, or
+              <code>false</code> if not. HPR calls this to verify that your backend is actually functional before
+              committing to it. It is also called periodically to detect if the backend has stopped working.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A common pattern is to run your compositor's IPC command and check whether the output contains the field
+              you need. For Hyprland, a valid <code>hyprctl -j activewindow</code> response always contains the key
+              <code>"class"</code>. If there is no active window at all, the output will be empty or
+              <code>Invalid</code>, so the check naturally returns false in those cases too.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>()
+    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(<span class="code-string">"hyprctl -j activewindow"</span>)
+    <span class="code-keyword">return</span> <span class="code-fn">string.find</span>(result, <span class="code-string">"class"</span>) ~= <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span><span class="code-comment">,  -- argument 4</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 5 — <code>getCurrentWindow</code>
+              (function)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              This is the core tracking function. It must return a string representing the <b>application class</b> of
+              the currently focused window — things like <code>"firefox"</code>, <code>"code"</code>,
+              <code>"kitty"</code>, or <code>"steam"</code>. HPR uses this value to accumulate time, match aliases, and
+              display statistics.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              The class is different from the window title. The class is a stable identifier for the application itself.
+              The title changes constantly (it usually shows the open document or webpage). For HPR's per-app tracking,
+              you want the class.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Using <code>jq</code> to parse the JSON output of <code>hyprctl</code> is the cleanest approach. If
+              <code>jq</code> is not available on your system you can use Lua's string manipulation functions instead,
+              but <code>jq</code> is available on virtually every Linux system that runs a modern Wayland compositor.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>()
+    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+        <span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>
+    )
+    <span class="code-keyword">return</span> result
+<span class="code-keyword">end</span><span class="code-comment">,  -- argument 5</span></pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 6 — <code>getCurrentTitle</code>
+              (function)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Similar to <code>getCurrentWindow</code> but returns the <b>window title</b> — the full text shown in the
+              title bar, like <code>"GitHub — Mozilla Firefox"</code> or
+              <code>"main.cpp - HPR - Visual Studio Code"</code>. HPR uses this for browser tab tracking, VS Code
+              project detection, and its pattern analysis engine.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Without a working title, HPR can still track which app you are using but loses the ability to distinguish
+              between different websites in the same browser or different projects in the same editor. It is worth
+              implementing correctly.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>()
+    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+        <span class="code-string">"hyprctl -j activewindow | jq -r '.title'"</span>
+    )
+    <span class="code-keyword">return</span> result
+<span class="code-keyword">end</span>  <span class="code-comment">-- argument 6</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          Putting all six arguments together, here is the complete working Hyprland backend extension. This is the exact
+          pattern to follow for any other compositor — just replace the <code>hyprctl</code> commands with whatever IPC
+          tool your compositor provides.
+        </p>
+
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">hyprland.lua</span>
+          <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.registerBackend_E(
+
+        <span class="code-string">"Hyprland"</span>,
+
+        <span class="code-keyword">function</span>(env)
+            <span class="code-keyword">return</span> env:find(<span class="code-string">"Hyprland"</span>) ~= <span class="code-keyword">nil</span>
+        <span class="code-keyword">end</span>,
+
+        <span class="code-keyword">function</span>()
+            <span class="code-fn">print</span>(<span class="code-string">"Hyprland backend loaded"</span>)
+        <span class="code-keyword">end</span>,
+
+        <span class="code-keyword">function</span>()
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(<span class="code-string">"hyprctl -j activewindow"</span>)
+            <span class="code-keyword">return</span> <span class="code-fn">string.find</span>(result, <span class="code-string">"class"</span>) ~= <span class="code-keyword">nil</span>
+        <span class="code-keyword">end</span>,
+
+        <span class="code-keyword">function</span>()
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+                <span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>
+            )
+            <span class="code-keyword">return</span> result
+        <span class="code-keyword">end</span>,
+
+        <span class="code-keyword">function</span>()
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+                <span class="code-string">"hyprctl -j activewindow | jq -r '.title'"</span>
+            )
+            <span class="code-keyword">return</span> result
+        <span class="code-keyword">end</span>
+
+    )
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Adapting for Other Compositors</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          The pattern is identical for every compositor. The only things that change are the name string, the
+          environment check string, and the system commands. Here is a quick reference for common compositors:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px;">
+          <div class="card fade-in" style="padding: 24px;">
+            <h3 style="margin-bottom: 12px;">Sway</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7;">Environment variable is
+              typically <code>sway</code>. Uses <code>swaymsg</code> for IPC with JSON output.</p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-comment">-- name</span>
+<span class="code-string">"sway"</span>
+
+<span class="code-comment">-- matchesEnvironment</span>
+env:find(<span class="code-string">"sway"</span>) ~= <span class="code-keyword">nil</span>
+
+<span class="code-comment">-- getCurrentWindow</span>
+HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .app_id // empty'"</span>)
+
+<span class="code-comment">-- getCurrentTitle</span>
+HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .name // empty'"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="padding: 24px;">
+            <h3 style="margin-bottom: 12px;">Niri</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7;">Environment variable is
+              typically <code>niri</code>. Uses <code>niri msg</code> for IPC.</p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-comment">-- name</span>
+<span class="code-string">"niri"</span>
+
+<span class="code-comment">-- matchesEnvironment</span>
+env:find(<span class="code-string">"niri"</span>) ~= <span class="code-keyword">nil</span>
+
+<span class="code-comment">-- getCurrentWindow</span>
+HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.app_id // empty'"</span>)
+
+<span class="code-comment">-- getCurrentTitle</span>
+HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.title // empty'"</span>)</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout fade-in">
+          <div class="callout-title">Submit your backend</div>
+          <p>
+            If you write a working backend for a compositor not listed here, consider submitting it to the <a
+              href="https://github.com/plexescor/HPR" target="_blank" rel="noopener"
+              style="color: var(--accent-green);">HPR GitHub</a>. Community-contributed backends will be listed on this
+            site so other users on the same compositor can find them.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>
