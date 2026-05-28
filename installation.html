@@ -223,7 +223,7 @@
             <div>
               <h3 style="margin-bottom: 16px;">Build From Source</h3>
               <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
-                Clone, install Slint, build. SQLite is the official amalgamation compiled directly in — no system packages needed.
+                Clone, install Slint, build. HPR bundles and uses slightly patched versions of <code>sol2</code>, <code>lua</code>, and <code>sqlite3</code> to ensure clean, warning-free builds on modern compilers.
               </p>
 
               <div class="code-block" style="margin-bottom: 16px;">
@@ -282,7 +282,7 @@ installDependencies.bat</pre>
                   </div>
                   <div style="display: flex; align-items: center; gap: 12px;">
                     <span class="badge badge--cyan">bundled</span>
-                    <span style="font-size: 0.85rem; color: var(--text-secondary);">SQLite3 amalgamation in <code>external/</code></span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Patched <code>sol2</code>, <code>lua</code>, & <code>sqlite3</code> in <code>external/</code></span>
                   </div>
                 </div>
               </div>
@@ -295,6 +295,11 @@ installDependencies.bat</pre>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; margin-top: 8px;">
                   <strong>Build-time only:</strong> <code>libdbus-1</code> (needed to compile the tray; not required at runtime). <code>installDependencies.sh</code> downloads and installs it automatically.
                 </p>
+              </div>
+
+              <div class="callout" style="margin-bottom: 16px;">
+                <div class="callout-title">Patched Dependencies</div>
+                <p>HPR uses slightly patched versions of <code>sol2</code>, <code>lua</code>, and <code>sqlite3</code> to mitigate compile errors and warnings. Swapping these for unpatched or system-installed libraries may cause compile errors, strict C++23 <code>const</code>-correctness warnings, or linker warnings (e.g., regarding <code>tmpnam</code>). Using the bundled versions ensures a warning-free build.</p>
               </div>
 
               <div class="callout">
