@@ -294,7 +294,7 @@ installDependencies.bat</pre>
                   <strong>Runtime:</strong> <code>gdbus</code> for GNOME and Cinnamon &middot; <code>qdbus6</code> / <code>qdbus-qt6</code> for KDE Plasma 6+ (auto-detected) &middot; <code>hyprctl</code> for Hyprland
                 </p>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; margin-top: 8px;">
-                  <strong>Build-time only:</strong> <code>libdbus-1</code> (needed to compile the tray; not required at runtime). <code>installDependencies.sh</code> downloads and installs it automatically.
+                  <strong>Build-time and Extensions:</strong> <code>libdbus-1</code> (needed to compile the tray) and <code>libcurl</code> development library (e.g. <code>libcurl4-openssl-dev</code> on Debian/Ubuntu, <code>libcurl-devel</code> on Fedora/RHEL) for extension networking support.
                 </p>
               </div>
 
