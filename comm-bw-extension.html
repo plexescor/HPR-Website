@@ -217,6 +217,9 @@
 }
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.authorName    = <span class="code-string">"Plexescor"</span>
+    HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</span>
+
     <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"SELECT name, duration FROM app_usage;"</span>)
     <span class="code-keyword">local</span> restored_time = 0
     
@@ -374,6 +377,9 @@
 <span class="code-keyword">local</span> testListenerId = 0
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.authorName    = <span class="code-string">"Plexescor"</span>
+    HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</span>
+
     burnoutListenerId = HPR.connect_E(<span class="code-string">"BURNOUT_WARNING"</span>, <span class="code-keyword">function</span>(data)
         <span class="code-keyword">local</span> duration_mins = math.floor(data.duration_seconds / 60)
         

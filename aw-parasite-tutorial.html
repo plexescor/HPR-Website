@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how to build a parasitic browser tracking extension for HPR using local HTTP calls and JSON parsing.">
+  <title>HPR — AW Parasite Extension Tutorial</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+      --accent-amber: #e05252;
+      --accent-amber-dim: rgba(224, 82, 82, 0.10);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="section">
+      <div class="container">
+        <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
+
+        <span class="section-label fade-in">Tutorial</span>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">AW Parasite Extension Tutorial</h1>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          This tutorial teaches you how to write extensions that pull data from other local applications. By the end of this guide, you will know how to use HPR's native HTTP and JSON libraries to fetch external information, store it in SQLite, and render it in a custom Slint dashboard.
+        </p>
+
+        <!-- CRITICAL API ONLY BANNER -->
+        <div class="card fade-in" style="border-left: 4px solid var(--accent-amber); background: var(--accent-amber-dim); padding: 28px; margin-bottom: 40px;">
+          <h3 style="color: var(--accent-amber); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            IMPORTANT: API Focus Notice
+          </h3>
+          <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
+            <strong>This tutorial is strictly for learning the HPR Extension API. You do not need to understand ActivityWatch's architecture, server models, or data buckets.</strong> ActivityWatch serves purely as a sample external data source. Throughout this guide, whenever ActivityWatch-specific code appears, **you do not need to learn or understand it &mdash; simply copy and paste the code as-is** to get the data stream working, and focus your attention entirely on how HPR handles the data!
+          </p>
+        </div>
+
+        <div class="callout fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">The Parasite Concept</div>
+          <p>
+            Writing browser extensions is complex. Instead of building one, we leverage the pre-existing ActivityWatch browser plugin. The plugin tracks your active browser tab and sends it to a local server on port 5600. Our HPR script queries that local endpoint, updates a database, and displays the active URL in our HPR interface.
+          </p>
+        </div>
+
+        <div class="callout callout--amber fade-in" style="margin-bottom: 48px;">
+          <div class="callout-title">HPR Convenience Features</div>
+          <p>
+            HPR provides compiled JSON transmuters directly in its Lua environment for your convenience. This ensures you do not need to manually parse complex JSON strings or bundle slow, bloating external Lua parser packages. The functions <code>HPR.parseJSON_E()</code> and <code>HPR.toJSON_E()</code> handle the conversion instantly.
+          </p>
+        </div>
+
+        <!-- ─── STEP 1 — Create your extension file ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 1 — Create your extension file</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Create a new <code>.lua</code> file inside HPR's extensions directory. HPR will automatically scan and load this script on startup.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 16px;">
+          <span class="code-label">Linux</span>
+          <pre>~/.config/HPR/extensions/main.lua</pre>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">Windows</span>
+          <pre>%APPDATA%\HPR\HPR_Config\extensions\main.lua</pre>
+        </div>
+
+        <!-- ─── STEP 2 — Declare configuration and script state ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 2 — Declare configuration and script state</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          We declare local variables at the top of the file to manage our server address and keep track of active webpage timers.
+        </p>
+        <div class="callout callout--danger fade-in" style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0;">
+            <strong>Notice:</strong> The port address, bucket variables, and stale threshold defined below are specific to the ActivityWatch tracker. <strong>You do not need to learn or understand how these variables function. Simply copy and paste this config block directly into your file!</strong>
+          </p>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">config</span>
+          <pre><span class="code-keyword">local</span> AW_HOST = <span class="code-string">"127.0.0.1:5600"</span>
+<span class="code-keyword">local</span> AW_BUCKET = <span class="code-keyword">nil</span>
+<span class="code-keyword">local</span> STALE_THRESHOLD_MS = 25000
+
+<span class="code-keyword">local</span> time_since_last_flush = 0
+<span class="code-keyword">local</span> time_since_last_event = 0</pre>
+        </div>
+
+        <!-- ─── STEP 3 — Scan and locate the browser bucket ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 3 — Scan and locate the browser bucket</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          ActivityWatch registers tracking sources inside hostname-specific directories called buckets. We query the local bucket directory using HPR's <code>httpGet_E</code> utility and identify the browser watcher key.
+        </p>
+        <div class="callout callout--danger fade-in" style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0;">
+            <strong>Notice:</strong> <strong>You do not need to understand or learn how ActivityWatch directories or dynamic bucket registries function. Simply copy and paste the discoverBucket function as-is to make the data source connection work!</strong>
+          </p>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">discovery</span>
+          <pre><span class="code-keyword">local</span> <span class="code-keyword">function</span> <span class="code-fn">discoverBucket</span>()
+    <span class="code-keyword">local</span> body, status = HPR.httpGet_E(AW_HOST, <span class="code-string">"/api/0/buckets/"</span>, <span class="code-keyword">false</span>)
+    <span class="code-keyword">if</span> status ~= 200 <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[aw_parasite] cannot reach local host server"</span>)
+        <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">local</span> buckets = HPR.parseJSON_E(body)
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> buckets <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
+
+    <span class="code-keyword">for</span> id, _ <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(buckets) <span class="code-keyword">do</span>
+        <span class="code-keyword">if</span> string.find(id, <span class="code-string">"aw-watcher-web"</span>, 1, <span class="code-keyword">true</span>) <span class="code-keyword">then</span>
+            <span class="code-keyword">return</span> id
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <!-- ─── STEP 4 — Extract active page data ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 4 — Extract active page data</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Now we pull the single most recent webpage tracking event from our bucket. Since Lua arrays start at index 1, we read <code>events[1]</code> and extract the webpage URL and title.
+        </p>
+        <div class="callout callout--danger fade-in" style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0;">
+            <strong>Notice:</strong> <strong>You do not need to understand or learn ActivityWatch's JSON array layouts, events structures, or data parameters. This code is purely to extract a webpage name. Simply copy and paste the fetchLatestUrl function directly!</strong>
+          </p>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">extraction</span>
+          <pre><span class="code-keyword">local</span> <span class="code-keyword">function</span> <span class="code-fn">fetchLatestUrl</span>()
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> AW_BUCKET <span class="code-keyword">then</span>
+        AW_BUCKET = discoverBucket()
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> AW_BUCKET <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">local</span> body, status = HPR.httpGet_E(AW_HOST, <span class="code-string">"/api/0/buckets/"</span> .. AW_BUCKET .. <span class="code-string">"/events?limit=1"</span>, <span class="code-keyword">false</span>)
+    <span class="code-keyword">if</span> status ~= 200 <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
+
+    <span class="code-keyword">local</span> events = HPR.parseJSON_E(body)
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> events <span class="code-keyword">or</span> #events == 0 <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
+
+    <span class="code-keyword">local</span> latest = events[1]
+    <span class="code-keyword">local</span> url    = latest.data <span class="code-keyword">and</span> latest.data.url
+    <span class="code-keyword">local</span> title  = latest.data <span class="code-keyword">and</span> latest.data.title
+
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> url <span class="code-keyword">or</span> url == <span class="code-string">""</span> <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> url, title <span class="code-keyword">or</span> url
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <!-- ─── STEP 5 — Create and query tables in SQLite ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 5 — Create and query tables in SQLite</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          To persist browser records across reloads, we initialize a custom SQLite table on startup.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          This is HPR-specific code which is important to understand. HPR provides simple SQL utilities: <code>HPR.dbExecute_E()</code> for writing to the database, and <code>HPR.dbQuery_E()</code> for reading rows back. Inside <code>init()</code>, we ensure our table exists and preload any existing tracking durations back into our memory cache.
+        </p>
+
+        <!-- Database Link Callout -->
+        <div class="callout fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">HPR Database Guide</div>
+          <p>
+            If you have not read or understood how HPR integrates and manages SQLite databases, check out the <a href="custom-app-extension.html" style="color: var(--accent-green);">Active Media Monitoring &amp; Spotify Tracker Tutorial</a> for a complete, in-depth guide on SQL transactions!
+          </p>
+        </div>
+
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">persistence</span>
+          <pre><span class="code-keyword">local</span> url_history = {}
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-comment">-- Define the extension metadata identity in HPR</span>
+    HPR.authorName    = <span class="code-string">"Plexescor"</span>
+    HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</span>
+
+    <span class="code-comment">-- Ensure the database table exists</span>
+    HPR.dbExecute_E([[
+        create table if not exists aw_parasite_url_usage (
+            url         text unique,
+            title       text,
+            duration_ms int
+        );
+    ]])
+
+    <span class="code-comment">-- Preload today's records back into memory</span>
+    <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
+    <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
+        url_history[row.url] = {
+            title       = row.title,
+            duration_ms = tonumber(row.duration_ms) <span class="code-keyword">or</span> 0
+        }
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Hook Step 6 events here...</span>
+
+    <span class="code-keyword">return</span> 1000
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <!-- ─── STEP 6 — Connect to HPR timeline events ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 6 — Connect to HPR timeline events</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          HPR uses the Event Hub to coordinate calendar changes. This is HPR-specific code which is important to understand.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          We call <code>HPR.connect_E()</code> to bind Lua callbacks to system events. We reset our memory cache at midnight, and load historical database files when a user switches dates. We use <code>pcall</code> to safely execute database queries and catch potential exceptions without stopping the extension.
+        </p>
+
+        <!-- Event Hub Link Callout -->
+        <div class="callout fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">HPR Event Hub Guide</div>
+          <p>
+            If you have not read or understood how HPR's Event Hub and event connections work, check out the <a href="comm-bw-extension.html" style="color: var(--accent-green);">Event Hub &amp; Burnout Detector Tutorial</a> for a detailed guide on building event-driven extensions!
+          </p>
+        </div>
+
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">events</span>
+          <pre>    midnightId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>()
+        url_history = {}
+    <span class="code-keyword">end</span>)
+
+    pastDbId = HPR.connect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, <span class="code-keyword">function</span>()
+        <span class="code-keyword">local</span> ok, histRows = <span class="code-fn">pcall</span>(HPR.dbQueryHistorical_E, 
+            <span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
+        
+        <span class="code-keyword">if</span> ok <span class="code-keyword">and</span> histRows <span class="code-keyword">and</span> #histRows &gt; 0 <span class="code-keyword">then</span>
+            past_url_history = {}
+            <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(histRows) <span class="code-keyword">do</span>
+                past_url_history[row.url] = {
+                    title       = row.title,
+                    duration_ms = tonumber(row.duration_ms) <span class="code-keyword">or</span> 0
+                }
+            <span class="code-keyword">end</span>
+            is_showing_historical = <span class="code-keyword">true</span>
+        <span class="code-keyword">else</span>
+            past_url_history = {}
+            is_showing_historical = <span class="code-keyword">false</span>
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>)
+
+    liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <span class="code-keyword">function</span>()
+        is_showing_historical = <span class="code-keyword">false</span>
+    <span class="code-keyword">end</span>)</pre>
+        </div>
+
+        <!-- ─── STEP 7 — Sort and push active durations to HPR ──────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 7 — Sort and push active durations to HPR</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Inside our tick loop <code>onTick(delta)</code>, HPR passes us the elapsed milliseconds. We poll the browser, accumulate active times, sort the list by playtime, and update HPR's UI.
+        </p>
+        <div class="callout callout--danger fade-in" style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0;">
+            <strong>Notice:</strong> The fetchLatestUrl routine and stale check variables used below are ActivityWatch-specific. <strong>You do not need to understand how the URL is extracted or resolved &mdash; simply copy and paste this block to update the time calculations and push values to HPR!</strong>
+          </p>
+        </div>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">tick</span>
+          <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-keyword">local</span> url, title = fetchLatestUrl()
+    
+    <span class="code-keyword">if</span> url <span class="code-keyword">then</span>
+        time_since_last_event = 0
+        <span class="code-keyword">if</span> time_since_last_event &lt; STALE_THRESHOLD_MS <span class="code-keyword">then</span>
+            <span class="code-keyword">if</span> <span class="code-keyword">not</span> url_history[url] <span class="code-keyword">then</span>
+                url_history[url] = { title = title, duration_ms = 0 }
+            <span class="code-keyword">end</span>
+            url_history[url].duration_ms = url_history[url].duration_ms + delta
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">else</span>
+        time_since_last_event = time_since_last_event + delta
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">local</span> source = is_showing_historical <span class="code-keyword">and</span> past_url_history <span class="code-keyword">or</span> url_history
+    <span class="code-keyword">local</span> formatted = {}
+    <span class="code-keyword">local</span> total_ms = 0
+
+    <span class="code-keyword">for</span> u, data <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(source) <span class="code-keyword">do</span>
+        total_ms = total_ms + data.duration_ms
+        table.insert(formatted, {
+            url        = extractDomain(u),
+            title      = data.title,
+            duration   = HPR.formatTime_HHMMSS_E(math.floor(data.duration_ms)),
+            duration_i = math.floor(data.duration_ms)
+        })
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Sort descending</span>
+    table.sort(formatted, <span class="code-keyword">function</span>(a, b) <span class="code-keyword">return</span> a.duration_i &gt; b.duration_i <span class="code-keyword">end</span>)
+
+    <span class="code-comment">-- Push values directly to UI properties</span>
+    HPR.setUiProperty_E(<span class="code-string">"awUrls_S"</span>, formatted)
+    HPR.setUiProperty_E(<span class="code-string">"trackedTime_Aw_S"</span>, math.floor(total_ms))
+
+    time_since_last_flush = time_since_last_flush + delta
+    <span class="code-keyword">if</span> time_since_last_flush &gt;= 10000 <span class="code-keyword">then</span>
+        <span class="code-fn">pcall</span>(flushToDatabase)
+        time_since_last_flush = 0
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>
+
+        <h2 style="margin-bottom: 24px; font-size: 2rem;">Part 3 — Wiring the Slint Dashboard</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
+          To display browser metrics inside HPR's visual panel, we modify HPR's config UI files to declare structs and render webpage rows.
+        </p>
+
+        <!-- TYPES.SLINT -->
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">1. Define the struct schema (<code>ui/types.slint</code>)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Open <code>types.slint</code> and add our struct definition at the end of the file:
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 32px;">
+          <pre><span class="code-keyword">export struct</span> AwUrl {
+    url: <span class="code-keyword">string</span>,
+    title: <span class="code-keyword">string</span>,
+    duration: <span class="code-keyword">string</span>,
+    duration_i: <span class="code-keyword">int</span>,
+}</pre>
+        </div>
+
+        <!-- AW-PARASITE-VIEW.SLINT -->
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">2. Create the layout component (<code>ui/aw-parasite-view.slint</code>)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Create a new file called <code>aw-parasite-view.slint</code> in HPR's UI directory to draw the visual layout:
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 32px;">
+          <pre><span class="code-keyword">import</span> { Card } <span class="code-keyword">from</span> <span class="code-string">"./card.slint"</span>;
+<span class="code-keyword">import</span> { SectionHeader } <span class="code-keyword">from</span> <span class="code-string">"./section-header.slint"</span>;
+<span class="code-keyword">import</span> { AwUrl } <span class="code-keyword">from</span> <span class="code-string">"./types.slint"</span>;
+
+<span class="code-keyword">component</span> AwUrlRow inherits Rectangle {
+    <span class="code-keyword">in property</span> &lt;<span class="code-keyword">string</span>&gt; url;
+    <span class="code-keyword">in property</span> &lt;<span class="code-keyword">float</span>&gt;  ratio;
+    <span class="code-keyword">in property</span> &lt;<span class="code-keyword">string</span>&gt; duration;
+    <span class="code-keyword">in property</span> &lt;color&gt;  bar-color;
+
+    background: ta.has-hover ? #ffffff0e : transparent;
+
+    HorizontalLayout {
+        padding-left: 16px;
+        spacing: 12px;
+
+        Text {
+            text: url;
+            color: ta.has-hover ? #e2e8f0 : #94a3b8;
+            font-size: 12px;
+            vertical-alignment: center;
+        }
+
+        Rectangle {
+            height: 4px;
+            background: #ffffff08;
+            Rectangle {
+                x: 0;
+                width: parent.width * ratio;
+                background: bar-color;
+            }
+        }
+    }
+    ta := TouchArea {}
+}
+
+<span class="code-keyword">export component</span> AwParasiteView {
+    <span class="code-keyword">in property</span> &lt;[AwUrl]&gt; awUrls_S;
+    <span class="code-keyword">in property</span> &lt;<span class="code-keyword">int</span>&gt;     trackedTime_Aw_S;
+
+    VerticalLayout {
+        padding: 12px;
+        spacing: 10px;
+
+        SectionHeader { label: <span class="code-string">"BROWSER ACTIVITY"</span>; }
+        Card {
+            Flickable {
+                viewport-height: awContent.preferred-height;
+                awContent := VerticalLayout {
+                    <span class="code-keyword">for</span> entry[i] <span class="code-keyword">in</span> awUrls_S: AwUrlRow {
+                        url: entry.url;
+                        ratio: trackedTime_Aw_S &gt; 0 ? (entry.duration_i * 1.0) / (trackedTime_Aw_S * 1.0) : 0.0;
+                        duration: entry.duration + <span class="code-string">" ("</span> + Math.round(self.ratio * 100) + <span class="code-string">"%)"</span>;
+                        bar-color: Colors.hsv(mod(entry.url.character-count * 61, 360), 0.70, 0.88);
+                    }
+                }
+            }
+        }
+    }
+}</pre>
+        </div>
+
+        <!-- APP-WINDOW.SLINT -->
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">3. Register the layout in HPR (<code>ui/app-window.slint</code>)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Open <code>app-window.slint</code> and wire the view in:
+        </p>
+
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 8px;">a) Import our visual component at the top of the file:</p>
+        <div class="code-block fade-in" style="margin-bottom: 24px;">
+          <pre><span class="code-keyword">import</span> { AwParasiteView } <span class="code-keyword">from</span> <span class="code-string">"./aw-parasite-view.slint"</span>;
+<span class="code-keyword">import</span> { AwUrl } <span class="code-keyword">from</span> <span class="code-string">"./types.slint"</span>;</pre>
+        </div>
+
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 8px;">b) Declare the incoming properties in the <code>MainWindow</code> block:</p>
+        <div class="code-block fade-in" style="margin-bottom: 24px;">
+          <pre><span class="code-keyword">in property</span> &lt;[AwUrl]&gt; awUrls_S;
+<span class="code-keyword">in property</span> &lt;<span class="code-keyword">int</span>&gt;     trackedTime_Aw_S;</pre>
+        </div>
+
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 8px;">c) Insert the conditional view alongside HPR's original layout sections:</p>
+        <div class="code-block fade-in" style="margin-bottom: 24px;">
+          <pre><span class="code-keyword">if</span> active-view == <span class="code-string">"AW_BROWSER"</span> : AwParasiteView {
+    vertical-stretch: 1;
+    awUrls_S: root.awUrls_S;
+    trackedTime_Aw_S: root.trackedTime_Aw_S;
+}</pre>
+        </div>
+
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 8px;">d) Add a navigation button inside the sidebar drawer:</p>
+        <div class="code-block fade-in" style="margin-bottom: 24px;">
+          <pre>SidebarButton {
+    icon: @image-url(<span class="code-string">"./images/archlinux.svg"</span>);
+    tip: <span class="code-string">"View Browser Activity"</span>;
+    clicked =&gt; { root.active-view = <span class="code-string">"AW_BROWSER"</span>; }
+}</pre>
+        </div>
+
+        <div class="callout fade-in">
+          <div class="callout-title">Summary</div>
+          <p>
+            You have successfully set up a parasitic URL tracking extension that fetches and serializes data on standard HPR event hooks, making your tracking environment highly extensible and feature-rich.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>

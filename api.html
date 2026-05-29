@@ -152,6 +152,34 @@
         
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 64px;">
 
+          <!-- Extension Identity -->
+          <h3 style="font-size: 1.3rem; margin-top: 16px; color: var(--accent-green);">Extension Identity</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR uses global state fields to register extension identities. Defining these properties enables HPR to track your extension details and display them directly in HPR's Loaded Extensions manager.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.authorName</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong> <code>string</code> (property)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Configures the author or developer name of the loaded extension. This must be defined inside your extension's <code>init()</code> function alongside the extension name to register your module's identity.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.authorName = <span class="code-string">"Plexescor"</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.extensionName</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong> <code>string</code> (property)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Configures the custom display name of the loaded extension. Must be set inside your extension's <code>init()</code> function alongside the author name to register your module's identity.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.extensionName = <span class="code-string">"My Custom HPR Extension"</span></pre>
+            </div>
+          </div>
+
           <!-- Window Information retrieval -->
           <h3 style="font-size: 1.3rem; margin-top: 16px; color: var(--accent-cyan);">Window State Information</h3>
           
@@ -330,6 +358,57 @@
               <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
     HPR.disconnect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, subId)
 <span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- Network & JSON Utilities -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #56c8d8;">Network &amp; JSON Utilities</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR provides high-performance utility helpers to query REST APIs and serialize or parse JSON payloads without needing slow external scripting dependencies.
+          </p>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.httpGet_E(host, path, secure?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>, <code>secure: boolean (optional, default true)</code> &mdash; <strong>Returns:</strong> <code>(string, int)</code> (body, status)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. Since each extension is run inside its own background operating system thread, GET requests block only the calling extension's thread, keeping HPR completely responsive.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> body, status = HPR.httpGet_E(<span class="code-string">"127.0.0.1:5600"</span>, <span class="code-string">"/api/0/buckets/"</span>, <span class="code-keyword">false</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.httpPost_E(host, path, body, secure?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>, <code>body: string</code>, <code>secure: boolean (optional, default true)</code> &mdash; <strong>Returns:</strong> <code>(string, int)</code> (responseBody, status)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Performs a synchronous HTTP or HTTPS POST request. Very useful for pushing tracked events out to local controllers or dispatching Discord webhooks.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> res, status = HPR.httpPost_E(<span class="code-string">"api.webhook.com"</span>, <span class="code-string">"/send"</span>, jsonString)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.parseJSON_E(jsonStr, fieldPath?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>jsonStr: string</code>, <code>fieldPath: string (optional)</code> &mdash; <strong>Returns:</strong> <code>table or any</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A fast convenience transmuter that instantly translates a raw JSON string into a Lua table, sparing you from bundling slow manual string parsers. An optional dot-separated key path can be passed to pluck nested elements directly.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> data = HPR.parseJSON_E(rawJson)
+<span class="code-keyword">local</span> nestedValue = HPR.parseJSON_E(rawJson, <span class="code-string">"data.url"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.toJSON_E(luaTable)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>luaTable: table</code> &mdash; <strong>Returns:</strong> <code>string</code> (JSON representation)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A convenience utility that serializes a standard Lua table into a minified JSON string representation, ready for outgoing POST requests.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> jsonStr = HPR.toJSON_E({ name = <span class="code-string">"firefox"</span>, active = <span class="code-keyword">true</span> })</pre>
             </div>
           </div>
 

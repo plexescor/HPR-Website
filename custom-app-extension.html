@@ -889,6 +889,9 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
 <span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.authorName    = <span class="code-string">"Plexescor"</span>
+    HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</span>
+
     <span class="code-comment">-- Initialize database table</span>
     HPR.dbExecute_E([[
         create table if not exists spotify_songs (
