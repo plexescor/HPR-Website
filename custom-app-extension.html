@@ -70,7 +70,7 @@
           </p>
         </div>
 
-        <div class="callout callout--amber fade-in" style="margin-bottom: 48px;">
+        <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
           <div class="callout-title">About this example</div>
           <p>
             The Spotify tracker built in this tutorial is a <b>teaching example</b> designed to familiarize you with the
@@ -80,6 +80,13 @@
             <a href="https://developer.spotify.com/documentation/web-api/" target="_blank" rel="noopener"
               style="color: var(--accent-amber);">Spotify Web API</a> — but that is outside the scope of this tutorial.
             The goal here is to learn the API, not to build a perfect Spotify tracker.
+          </p>
+        </div>
+
+        <div class="callout callout--amber fade-in" style="margin-bottom: 48px;">
+          <div class="callout-title">Current Limitations</div>
+          <p>
+            Please note that the implementation provided in this tutorial currently does not support midnight rollover, meaning that listening sessions spanning across days might not be tracked perfectly in terms of date boundaries. Furthermore, it doesn't support loading historical data from the Spotify API into HPR's database. This limitation exists because the current extension system doesn't yet have the ability to interact directly with HPR's internal Event Hub. However, full support for these features will be added in a future update once the extension system is upgraded to allow seamless interaction with the Event Hub.
           </p>
         </div>
 
