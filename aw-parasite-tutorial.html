@@ -90,7 +90,7 @@
             
             <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Function Parameters:</h4>
             <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
-              <li><code>host</code> (string): The host address and port number. For example, local services use <code>"127.0.0.1:5600"</code> or <code>"localhost:8080"</code>.</li>
+              <li><code>host</code> (string): The host address and port number. For example, local services use <code>"127.0.0.1:5600"</code>. <strong>Caution:</strong> Always prefer using literal IPv4 addresses like <code>"127.0.0.1"</code> rather than <code>"localhost"</code>. On modern operating systems, passing <code>"localhost"</code> triggers the system's standard name resolution (<code>getaddrinfo</code>), which prioritizes the IPv6 loopback address <code>[::1]</code> over the IPv4 address <code>127.0.0.1</code>. If a local server (like the ActivityWatch server or a local API script) binds strictly and exclusively to the IPv4 address <code>127.0.0.1</code>, any request targeting <code>localhost</code> will fail because the OS tries to connect via <code>[::1]</code> first, leading to immediate connection refusals or timeouts.</li>
               <li><code>path</code> (string): The resource path or API endpoint. For example, <code>"/api/0/buckets/"</code>.</li>
               <li><code>secure</code> (boolean): Set to <code>true</code> to use secure HTTPS encryption; set to <code>false</code> for plain HTTP requests.</li>
             </ul>

@@ -373,6 +373,11 @@
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. Since each extension is run inside its own background operating system thread, GET requests block only the calling extension's thread, keeping HPR completely responsive.
             </p>
+            <div class="callout callout--danger fade-in" style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> On modern operating systems, passing <code>"localhost"</code> triggers the system's standard name resolution (<code>getaddrinfo</code>), which prioritizes the IPv6 loopback address <code>[::1]</code> over the IPv4 address <code>127.0.0.1</code>. If a local server (like the ActivityWatch server or a local API script) binds strictly and exclusively to the IPv4 address <code>127.0.0.1</code>, any request targeting <code>localhost</code> will fail because the OS tries to connect via <code>[::1]</code> first, leading to immediate connection refusals or timeouts. <strong>Always use literal IPv4 addresses like <code>"127.0.0.1"</code> instead of <code>"localhost"</code> for local communication.</strong>
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> body, status = HPR.httpGet_E(<span class="code-string">"127.0.0.1:5600"</span>, <span class="code-string">"/api/0/buckets/"</span>, <span class="code-keyword">false</span>)</pre>
             </div>
@@ -384,6 +389,11 @@
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Performs a synchronous HTTP or HTTPS POST request. Very useful for pushing tracked events out to local controllers or dispatching Discord webhooks.
             </p>
+            <div class="callout callout--danger fade-in" style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> Just like GET requests, local POST targets should use the literal IPv4 <code>"127.0.0.1"</code> instead of <code>"localhost"</code>. Passing <code>"localhost"</code> triggers the operating system's standard name resolution (<code>getaddrinfo</code>), which prioritizes the IPv6 loopback address <code>[::1]</code> over the IPv4 address <code>127.0.0.1</code> on modern systems. If a local server binds strictly and exclusively to the IPv4 address <code>127.0.0.1</code>, any request targeting <code>localhost</code> fails because the OS tries to connect via <code>[::1]</code> first, leading to connection refusals or timeouts.
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> res, status = HPR.httpPost_E(<span class="code-string">"api.webhook.com"</span>, <span class="code-string">"/send"</span>, jsonString)</pre>
             </div>
