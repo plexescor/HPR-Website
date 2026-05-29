@@ -71,16 +71,114 @@
         <div class="callout fade-in" style="margin-bottom: 24px;">
           <div class="callout-title">The Parasite Concept</div>
           <p>
-            Writing browser extensions is complex. Instead of building one, we leverage the pre-existing ActivityWatch browser plugin. The plugin tracks your active browser tab and sends it to a local server on port 5600. Our HPR script queries that local endpoint, updates a database, and displays the active URL in our HPR interface.
+            Writing browser extensions is complex. Instead, we leverage the pre-existing ActivityWatch browser plugin. The plugin tracks your active browser tab and sends it to a local server on port 5600. Our HPR script queries that local endpoint, updates a database, and displays the active URL in our HPR interface.
           </p>
         </div>
 
-        <div class="callout callout--amber fade-in" style="margin-bottom: 48px;">
-          <div class="callout-title">HPR Convenience Features</div>
-          <p>
-            HPR provides compiled JSON transmuters directly in its Lua environment for your convenience. This ensures you do not need to manually parse complex JSON strings or bundle slow, bloating external Lua parser packages. The functions <code>HPR.parseJSON_E()</code> and <code>HPR.toJSON_E()</code> handle the conversion instantly.
-          </p>
+        <h2 style="margin-bottom: 24px; font-size: 2rem;">Part 1 — Setting Up the API Helpers</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          To interface with external applications, your extension needs to fetch network resources and decode standard serialized data. HPR provides high-performance, native C++ utilities directly inside the global <code>HPR</code> table. Let's examine these core functions in deep detail before we begin writing the script:
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
+          <!-- HTTP GET Card -->
+          <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.httpGet_E(host, path, secure)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. This function allows your script to communicate directly with local services, devices, or remote web services.
+            </p>
+            
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Function Parameters:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
+              <li><code>host</code> (string): The host address and port number. For example, local services use <code>"127.0.0.1:5600"</code> or <code>"localhost:8080"</code>.</li>
+              <li><code>path</code> (string): The resource path or API endpoint. For example, <code>"/api/0/buckets/"</code>.</li>
+              <li><code>secure</code> (boolean): Set to <code>true</code> to use secure HTTPS encryption; set to <code>false</code> for plain HTTP requests.</li>
+            </ul>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Return Values:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
+              <li><code>body</code> (string): The raw response text string returned from the server.</li>
+              <li><code>status</code> (integer): The HTTP status code of the response (e.g. <code>200</code> for success, <code>404</code> for not found, or <code>500</code> for server errors).</li>
+            </ul>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Usage in this Tutorial:</h4>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              We will use this function twice: first, in <strong>Step 3</strong> to pull the list of registered tracking buckets from ActivityWatch at startup, and second, in <strong>Step 4</strong> within the tick timer to fetch the single most recent webpage tracking event.
+            </p>
+          </div>
+
+          <!-- PARSE JSON Card -->
+          <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.parseJSON_E(jsonStr, [fieldPath])</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A fast, high-performance JSON deserialization utility compiled directly in native C++. It avoids the high CPU overhead and garbage collection latency associated with running pure-Lua parsing libraries.
+            </p>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Function Parameters:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
+              <li><code>jsonStr</code> (string): The raw, serialized JSON text string to parse.</li>
+              <li><code>fieldPath</code> (string, optional): A dot-separated string path (e.g. <code>"data.url"</code> or <code>"events[1].title"</code>). If provided, HPR will pluck only that specific value out of the payload without allocating a full Lua table for the remaining JSON, providing significant performance optimization.</li>
+            </ul>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Return Values:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
+              <li><code>table</code> or <code>any</code>: A structured Lua table containing the decoded JSON hierarchy, or the specific plucked value if a <code>fieldPath</code> was specified. If the JSON is invalid, it returns <code>nil</code>.</li>
+            </ul>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Usage in this Tutorial:</h4>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+              We will use this function to process the text returned by <code>HPR.httpGet_E</code>. In <strong>Step 3</strong>, we translate the raw bucket list JSON into a searchable table to identify our browser bucket. In <strong>Step 4</strong>, we parse the active page event JSON array, enabling us to read properties like <code>url</code> and <code>title</code> from the first event element.
+            </p>
+          </div>
+
+          <!-- TO JSON Card -->
+          <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.toJSON_E(luaTable)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              A C++ native serialization function that transforms a structured Lua table into a minified, standardized JSON string. Highly useful for preparing request bodies before sending them out.
+            </p>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Function Parameters:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px;">
+              <li><code>luaTable</code> (table): The Lua array or dictionary structure you wish to serialize.</li>
+            </ul>
+
+            <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Return Values:</h4>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 0;">
+              <li><code>jsonStr</code> (string): A standard, minified JSON text representation of the input table.</li>
+            </ul>
+          </div>
+
+          <!-- Cooperative Example Callout -->
+          <div class="card fade-in" style="padding: 28px; background: var(--accent-green-dim); border: 1px solid rgba(255, 140, 0, 0.2);">
+            <h3 style="color: var(--accent-green); margin-bottom: 12px; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+              Interactive Flow Example
+            </h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Below is a practical test snippet demonstrating how these functions collaborate. It fetches an endpoint and parses a single nested property directly:
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- 1. Fetch raw JSON payload synchronously</span>
+<span class="code-keyword">local</span> body, status = HPR.httpGet_E(<span class="code-string">"127.0.0.1:5600"</span>, <span class="code-string">"/api/0/buckets"</span>, <span class="code-keyword">false</span>)
+
+<span class="code-keyword">if</span> status == 200 <span class="code-keyword">then</span>
+    <span class="code-comment">-- 2. Decode the raw response text directly into a Lua table</span>
+    <span class="code-keyword">local</span> data = HPR.parseJSON_E(body)
+    
+    <span class="code-comment">-- 3. Alternatively, extract a single specific value instantly</span>
+    <span class="code-keyword">local</span> webBucketName = HPR.parseJSON_E(body, <span class="code-string">"aw-watcher-web-chrome.id"</span>)
+    <span class="code-fn">print</span>(<span class="code-string">"Found bucket: "</span> .. tostring(webBucketName))
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
         </div>
+
+        <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>
+
+        <h2 style="margin-bottom: 24px; font-size: 2rem;">Part 2 — Writing the Extension</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
+          Let's create the extension file <code>main.lua</code> inside HPR's extensions folder and build out the tracking step-by-step.
+        </p>
 
         <!-- ─── STEP 1 — Create your extension file ──────────────────────────────────── -->
         <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 1 — Create your extension file</h2>
@@ -126,6 +224,9 @@
             <strong>Notice:</strong> <strong>You do not need to understand or learn how ActivityWatch directories or dynamic bucket registries function. Simply copy and paste the discoverBucket function as-is to make the data source connection work!</strong>
           </p>
         </div>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          <strong>How the API Helpers are used here:</strong> In the function below, we call <code>HPR.httpGet_E</code> to fetch the list of buckets from our local address. We then immediately pass that response body to <code>HPR.parseJSON_E</code> to convert the raw JSON text into a Lua table of bucket keys so we can search them.
+        </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">discovery</span>
           <pre><span class="code-keyword">local</span> <span class="code-keyword">function</span> <span class="code-fn">discoverBucket</span>()
@@ -157,6 +258,9 @@
             <strong>Notice:</strong> <strong>You do not need to understand or learn ActivityWatch's JSON array layouts, events structures, or data parameters. This code is purely to extract a webpage name. Simply copy and paste the fetchLatestUrl function directly!</strong>
           </p>
         </div>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          <strong>How the API Helpers are used here:</strong> We use <code>HPR.httpGet_E</code> to fetch the latest event from the resolved bucket path. We then invoke <code>HPR.parseJSON_E</code> to parse the returned JSON string into a structured Lua table, enabling us to read the active webpage's URL and title.
+        </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">extraction</span>
           <pre><span class="code-keyword">local</span> <span class="code-keyword">function</span> <span class="code-fn">fetchLatestUrl</span>()
