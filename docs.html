@@ -219,6 +219,119 @@
       </div>
     </section>
 
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">Warning</span>
+        <h2 class="section-title fade-in">Native Extensions (.dll / .so)</h2>
+        
+        <!-- Safety Alert Card -->
+        <div class="card fade-in" style="border-left: 4px solid var(--accent-amber); background: var(--accent-amber-dim); padding: 28px; margin-bottom: 40px;">
+          <h3 style="color: var(--accent-amber); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            ⚠️ Critical Security & Sandbox Warning
+          </h3>
+          <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
+            Unlike standard Lua extensions which execute safely inside a restricted, sandboxed virtual machine, native extensions run as raw compiled code directly on your host operating system. 
+            <br><br>
+            <strong style="color: var(--text-primary);">What this means:</strong> Native extensions completely bypass ALL Lua sandboxing, dangerous command filtering, system hook protections, and VM isolation. They have absolute read/write access to your system memory, files, and network. **Only enable this feature and load native binaries if you fully trust their origin and have reviewed their source code.**
+          </p>
+        </div>
+
+        <!-- How to Enable -->
+        <div class="fade-in" style="margin-bottom: 40px;">
+          <h3 style="color: var(--text-primary); margin-bottom: 12px;">Enabling Native Extension Support</h3>
+          <p class="section-desc" style="margin-bottom: 16px;">
+            By default, HPR blocks native extensions. If a binary is detected but the feature is disabled, HPR will log a warning to the console on startup and skip loading it:
+          </p>
+          <div class="code-block" style="margin-bottom: 24px;">
+            <pre style="color: #e05252; margin: 0;">[HPR] Native extension found but allow-dynamic-library-extensions is false. Skipping: /path/to/extension.so</pre>
+          </div>
+          <p class="section-desc" style="margin-bottom: 16px;">
+            To enable native extension loading, modify your <code>config.csv</code> (located in the HPR configuration directory) and add or modify the following line:
+          </p>
+          <div class="code-block" style="margin-bottom: 24px;">
+            <span class="code-label">config.csv</span>
+            <pre style="margin: 0;">allow-dynamic-library-extensions, true</pre>
+          </div>
+        </div>
+
+        <!-- The Native API Interface -->
+        <div class="fade-in" style="margin-bottom: 40px;">
+          <h3 style="color: var(--text-primary); margin-bottom: 12px;">The Exported C Interface</h3>
+          <p class="section-desc" style="margin-bottom: 24px;">
+            Because there is no official pre-built documentation or static library for the C++ extension API, native extensions must be written to export traditional <code>extern "C"</code> symbols that HPR resolves dynamically at runtime.
+          </p>
+
+          <p class="section-desc" style="margin-bottom: 16px;">
+            To build a native extension, your code must export the following three main lifecycle functions:
+          </p>
+
+          <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 32px; gap: 20px;">
+            <div class="card" style="padding: 24px; margin: 0;">
+              <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" int init()</code></h4>
+              <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
+                Called exactly once on startup when the library is loaded. 
+                Must return an integer representing the desired **tick interval/sleep time** in milliseconds. 
+                If omitted or not exported, HPR defaults the thread sleep interval to <code>1000ms</code>.
+              </p>
+            </div>
+            <div class="card" style="padding: 24px; margin: 0;">
+              <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" void onTick(float delta)</code></h4>
+              <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
+                Called repeatedly inside a dedicated background thread. 
+                Receives a single float <code>delta</code> representing the actual elapsed time in milliseconds since the previous tick loop.
+              </p>
+            </div>
+            <div class="card" style="padding: 24px; margin: 0;">
+              <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" void onExit()</code></h4>
+              <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
+                Called exactly once when HPR shuts down or stops the extension. Use this hook to free allocated memory, release system resources, flush file streams, or gracefully close network connections to avoid memory leaks.
+              </p>
+            </div>
+          </div>
+
+          <p class="section-desc" style="margin-bottom: 16px;">
+            Below is a minimal, fully-conforming C++ template for a native extension. You can build this into a shared object (<code>.so</code> / <code>.dylib</code>) or dynamic-link library (<code>.dll</code>):
+          </p>
+
+          <div class="code-block" style="margin-bottom: 24px;">
+            <span class="code-label">extension.cpp</span>
+            <pre style="margin: 0;"><span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span>
+
+<span class="code-keyword">extern</span> <span class="code-string">"C"</span> {
+    <span class="code-comment">// Called once on initialization. Sets the tick interval to 500ms.</span>
+    <span class="code-keyword">int</span> <span class="code-fn">init</span>() {
+        std::cout &lt;&lt; <span class="code-string">"[Native] Extension loaded!"</span> &lt;&lt; std::endl;
+        <span class="code-keyword">return</span> <span class="code-keyword">500</span>; 
+    }
+
+    <span class="code-comment">// Called every 500ms. Receives actual delta time in milliseconds.</span>
+    <span class="code-keyword">void</span> <span class="code-fn">onTick</span>(<span class="code-keyword">float</span> delta) {
+        std::cout &lt;&lt; <span class="code-string">"[Native] Tick delta: "</span> &lt;&lt; delta &lt;&lt; <span class="code-string">"ms"</span> &lt;&lt; std::endl;
+    }
+
+    <span class="code-comment">// Called on shutdown. Clean up resources here.</span>
+    <span class="code-keyword">void</span> <span class="code-fn">onExit</span>() {
+        std::cout &lt;&lt; <span class="code-string">"[Native] Shutting down..."</span> &lt;&lt; std::endl;
+    }
+}</pre>
+          </div>
+        </div>
+
+        <!-- Threading & Source Code Reference -->
+        <div class="fade-in" style="margin-bottom: 16px;">
+          <h3 style="color: var(--text-primary); margin-bottom: 12px;">Linking & Source Code Reference</h3>
+          <p class="section-desc">
+            Since HPR does not distribute a pre-compiled SDK or stable public headers for native development, there is no formal linkage protocol. 
+            <br><br>
+            To write and link a stable native extension, <strong>developers must read the general HPR Source Code</strong> (not just the extension manager files) to explore how internal structures, database handlers, and APIs are managed, and link against the application's targets.
+            <br><br>
+            To understand the basic dynamic loader lifecycle and thread execution details, see the <a href="https://github.com/plexescor/HPR/blob/main/src/extension/extensionManager.cpp" target="_blank" style="color: var(--accent-green); text-decoration: underline;">src/extension/extensionManager.cpp</a> implementation directly.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
     <section id="guides" class="section section-border anchor">
       <div class="container">
         <span class="section-label fade-in">Guides</span>
