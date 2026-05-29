@@ -83,12 +83,7 @@
           </p>
         </div>
 
-        <div class="callout callout--amber fade-in" style="margin-bottom: 48px;">
-          <div class="callout-title">Current Limitations</div>
-          <p>
-            Please note that the implementation provided in this tutorial currently does not support midnight rollover, meaning that listening sessions spanning across days might not be tracked perfectly in terms of date boundaries. Furthermore, it doesn't support loading historical data from the Spotify API into HPR's database. This limitation exists because the current extension system doesn't yet have the ability to interact directly with HPR's internal Event Hub. However, full support for these features will be added in a future update once the extension system is upgraded to allow seamless interaction with the Event Hub.
-          </p>
-        </div>
+
 
         <!-- ─── STEP 1: Create the file ──────────────────────────────────── -->
         <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 1 — Create your extension file</h2>
@@ -701,6 +696,160 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
           </div>
         </div>
 
+        <!-- ─── STEP 9: Rollovers & History ────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 9 — Handle midnight rollovers and historical database views</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          A crucial aspect of long-running tracker extensions is aligning perfectly with HPR's calendar lifecycle events. 
+          When the clock strikes midnight or when the user loads a historical day, your extension needs to react appropriately to maintain data consistency.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          This is made possible by HPR's built-in <b>Event Hub</b>.
+        </p>
+
+        <!-- Beginner Analogy Callout -->
+        <div class="callout fade-in" style="margin-bottom: 32px; border-left: 4px solid var(--accent-green);">
+          <div class="callout-title" style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 12px;">💡 Understanding the Event Hub: The "Radio Station" Analogy</div>
+          <p style="line-height: 1.7; margin-bottom: 12px;">
+            Think of HPR's Event Hub like a <b>central radio station</b>. Different components in HPR broadcast messages on specific frequencies (or "channels"), and anyone who is listening can react:
+          </p>
+          <ul style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <li><b>Channels (Event Names):</b> Channels are named strings like <code>"MIDNIGHT_ROLLOVER"</code> or <code>"LOAD_LIVE_DATA"</code>.</li>
+            <li><b>Broadcasting (Emit):</b> When the C++ database manager detects midnight, it turns on the microphone and shouts: <i>"It is midnight!"</i> on the <code>"MIDNIGHT_ROLLOVER"</code> channel. This is called <b>emitting</b> a signal.</li>
+            <li><b>Listening (Connect):</b> In your extension, you tune your radio receiver to that channel. You tell HPR: <i>"Whenever you hear a broadcast on the 'MIDNIGHT_ROLLOVER' channel, run this specific callback function!"</i> This is called <b>connecting</b> a listener.</li>
+            <li><b>Turning Off (Disconnect):</b> When you turn off your radio, you stop receiving broadcasts. In your code, you must disconnect when your extension is stopping so that you don't waste system memory.</li>
+          </ul>
+          <p style="line-height: 1.7;">
+            The Event Hub is what lets C++ and Lua speak to each other seamlessly in real time!
+          </p>
+        </div>
+
+        <h3 style="color: var(--text-primary); font-size: 1.3rem; margin-bottom: 12px;">The Event Hub Functions</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          To interface with the Event Hub, HPR provides three simple Lua functions:
+        </p>
+        <ul style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
+          <li>
+            <code style="color: var(--text-primary); font-weight: 600;">HPR.connect_E("eventName", callback_function)</code><br>
+            Tunes into an event. When that event is fired, HPR will run your <code>callback_function</code>. 
+            <b>Returns:</b> A unique subscription ID (a positive integer). You must store this ID so you can disconnect later!
+          </li>
+          <li>
+            <code style="color: var(--text-primary); font-weight: 600;">HPR.emit_E("eventName", data_table?)</code><br>
+            Broadcasts an event to all active listeners along with an optional table containing event data.
+          </li>
+          <li>
+            <code style="color: var(--text-primary); font-weight: 600;">HPR.disconnect_E("eventName", subscription_id)</code><br>
+            Stops listening to the event. You pass the same <code>subscription_id</code> returned by <code>connect_E</code>. <b>Always do this inside your <code>onExit()</code> function to prevent memory leaks!</b>
+          </li>
+        </ul>
+
+        <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">⚠️ CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+          <p style="line-height: 1.7; font-size: 0.85rem;">
+            Whenever you tune into an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie reference</strong>. 
+          </p>
+          <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
+            Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to major **application memory leaks, UI lag, and potential crashes**. 
+            <strong>Rule of thumb:</strong> Every single subscription created with <code>HPR.connect_E</code> must have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
+          </p>
+        </div>
+
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          To learn how to emit custom signals and establish two-way communication between multiple extensions, you can refer to the next tutorial: 
+          <a href="comm-bw-extension.html" style="color: var(--accent-green); font-weight: 600;">Communication between extensions</a>.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          For this tutorial, let's explore how to leverage the Event Hub to handle daily rollovers and calendar view switches:
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
+          <!-- Midnight Rollover -->
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 8px;">1. Midnight Rollovers</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              When the day shifts, HPR automatically creates a new daily SQLite file and fires the <code>"MIDNIGHT_ROLLOVER"</code> signal. 
+              By connecting to this signal, you can reset today's active in-memory counters (<code>spotify_history = {}</code>) so your daily trackers always start fresh.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Inside init():</span>
+midnightId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>(data)
+    <span class="code-fn">print</span>(<span class="code-string">"Midnight detected! Clearing live daily table."</span>)
+    spotify_history = {}
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <!-- Loading Historical DB -->
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 8px;">2. Historical Views</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              When the user clicks a previous calendar day in the UI, HPR loads that day's statistics and fires the <code>"LOAD_DATABASE_SINGULAR"</code> signal. 
+              To display your custom tracking data for that day, HPR provides a specialized historical querying function: <code>HPR.dbQueryHistorical_E(sql, params?)</code>.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              This automatically queries the database file of the loaded historical day directly, without any manual file-path manipulation or raw SQL attachments!
+              We save the queried results into a separate <code>past_spotify_history</code> table and toggle a state variable <code>is_showing_historical = true</code>.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Inside init():</span>
+pastDbId = HPR.connect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, <span class="code-keyword">function</span>(data)
+    <span class="code-keyword">local</span> success, histRows = <span class="code-fn">pcall</span>(HPR.dbQueryHistorical_E, <span class="code-string">"SELECT song_name, artist_name, play_duration_ms FROM spotify_songs;"</span>)
+    
+    <span class="code-keyword">if</span> success <span class="code-keyword">and</span> histRows <span class="code-keyword">and</span> #histRows > 0 <span class="code-keyword">then</span>
+        past_spotify_history = {}
+        <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(histRows) <span class="code-keyword">do</span>
+            past_spotify_history[row.song_name] = {
+                artist = row.artist_name,
+                play_time = <span class="code-fn">tonumber</span>(row.play_duration_ms) <span class="code-keyword">or</span> 0
+            }
+        <span class="code-keyword">end</span>
+        is_showing_historical = <span class="code-keyword">true</span>
+    <span class="code-keyword">else</span>
+        <span class="code-comment">-- If no past records exist or it's empty, fall back to today's active live data</span>
+        past_spotify_history = {}
+        is_showing_historical = <span class="code-keyword">false</span>
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <!-- Returning to Live View -->
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 8px;">3. Returning to Live View</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              When the user exits historical mode and returns back to the active daily dashboard, HPR fires the <code>"LOAD_LIVE_DATA"</code> signal. 
+              We listen to this and immediately set <code>is_showing_historical = false</code> so our UI updates with today's real-time statistics.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Inside init():</span>
+liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <span class="code-keyword">function</span>(data)
+    is_showing_historical = <span class="code-keyword">false</span>
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── STEP 10: onExit Hook ────────────────────────────────────────── -->
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 10 — Clean up resources on exit using <code>onExit()</code></h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          The final piece of the HPR lifecycle is the <code>onExit()</code> hook. This function is automatically invoked exactly once by the C++ engine when the HPR application is shutting down or when your extension is being stopped.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Use this hook to write any unsaved tracking data to the SQLite database (ensuring zero data loss on exit) and cleanly disconnect all active Event Hub listeners to keep the operating system's memory clean and leak-free.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">cleanup</span>
+          <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-comment">-- Force a final database save to persist today's listening time</span>
+    <span class="code-fn">flushToDatabase</span>()
+    
+    <span class="code-comment">-- Clean up event subscriptions to prevent memory leaks</span>
+    HPR.disconnect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, midnightId)
+    HPR.disconnect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, pastDbId)
+    HPR.disconnect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, liveDbId)
+<span class="code-keyword">end</span></pre>
+        </div>
+
         <!-- ─── Final: Complete Extension ──────────────────────────────────── -->
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
@@ -710,35 +859,46 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">main.lua</span>
-          <pre><span class="code-comment">-- In-memory cache to store song details and accumulated play times</span>
-<span class="code-keyword">local</span> spotify_history = {}
+          <pre><span class="code-keyword">local</span> spotify_history = {}          <span class="code-comment">-- Live daily data</span>
+<span class="code-keyword">local</span> past_spotify_history = {}     <span class="code-comment">-- Loaded historical data</span>
+<span class="code-keyword">local</span> is_showing_historical = <span class="code-keyword">false</span> <span class="code-comment">-- View state toggler</span>
 <span class="code-keyword">local</span> time_since_last_flush = 0
 
-<span class="code-comment">-- Extracts song and artist name from Spotify window title (e.g. "Artist - Song Name")</span>
-<span class="code-keyword">local function</span> <span class="code-fn">parseSpotifyTitle</span>(windowTitle)
-    <span class="code-keyword">local</span> hyphen_start, hyphen_end = <span class="code-fn">string.find</span>(windowTitle, <span class="code-string">" %- "</span>)
-    <span class="code-keyword">if not</span> hyphen_start <span class="code-keyword">then</span>
-        <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-comment">-- Title doesn't match standard song format</span>
-    <span class="code-keyword">end</span>
+<span class="code-keyword">local</span> midnightId = 0
+<span class="code-keyword">local</span> pastDbId = 0
+<span class="code-keyword">local</span> liveDbId = 0
 
-    <span class="code-comment">-- Trim spaces and return the parsed names</span>
-    <span class="code-keyword">local</span> artistName = <span class="code-fn">string.sub</span>(windowTitle, 1, hyphen_start - 1):match(<span class="code-string">"^%s*(.-)%s*$"</span>)
-    <span class="code-keyword">local</span> songName   = <span class="code-fn">string.sub</span>(windowTitle, hyphen_end + 1):match(<span class="code-string">"^%s*(.-)%s*$"</span>)
+<span class="code-comment">-- Parse: "Artist - Song" -> songName, artistName</span>
+<span class="code-keyword">local function</span> <span class="code-fn">parseSpotifyTitle</span>(windowTitle)
+    <span class="code-keyword">local</span> hyphen_start, hyphen_end = <span class="code-fn">string.find</span>(windowTitle, " %- ")
+    <span class="code-keyword">if not</span> hyphen_start <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">local</span> artistName = <span class="code-fn">string.sub</span>(windowTitle, 1, hyphen_start - 1):match("^%s*(.-)%s*$")
+    <span class="code-keyword">local</span> songName   = <span class="code-fn">string.sub</span>(windowTitle, hyphen_end + 1):match("^%s*(.-)%s*$")
     <span class="code-keyword">return</span> songName, artistName
 <span class="code-keyword">end</span>
 
-<span class="code-comment">-- Initialize database and load past history into memory</span>
+<span class="code-keyword">function</span> <span class="code-fn">flushToDatabase</span>()
+    <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(spotify_history) <span class="code-keyword">do</span>
+        HPR.dbExecute_E(
+            <span class="code-string">"insert or replace into spotify_songs (song_name, artist_name, play_duration_ms) values (?, ?, ?);"</span>,
+            { songName, songData.artist, <span class="code-fn">tostring</span>(<span class="code-fn">math.floor</span>(songData.play_time)) }
+        )
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>
+
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    <span class="code-comment">-- Create the songs tracking table if it doesn't exist</span>
-    HPR.dbExecute_E(<span class="code-string">[[
+    <span class="code-comment">-- Initialize database table</span>
+    HPR.dbExecute_E([[
         create table if not exists spotify_songs (
             song_name text unique,
             artist_name text,
             play_duration_ms int
         );
-    ]]</span>)
+    ]])
 
-    <span class="code-comment">-- Load historical play times from SQLite into the in-memory cache</span>
+    <span class="code-comment">-- Load today's live songs on startup</span>
     <span class="code-keyword">local</span> dbRows = HPR.dbQuery_E(<span class="code-string">"select song_name, artist_name, play_duration_ms from spotify_songs;"</span>)
     <span class="code-keyword">for</span> rowIndex, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(dbRows) <span class="code-keyword">do</span>
         spotify_history[row.song_name] = {
@@ -747,38 +907,64 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
         }
     <span class="code-keyword">end</span>
 
-    <span class="code-fn">print</span>(<span class="code-string">"[Spotify Extension] Initialized successfully."</span>)
-    <span class="code-keyword">return</span> 150 <span class="code-comment">-- Tick rate in milliseconds (150ms checks)</span>
+    <span class="code-comment">-- Clock strikes midnight</span>
+    midnightId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>(data)
+        spotify_history = {}
+    <span class="code-keyword">end</span>)
+
+    <span class="code-comment">-- Historical db loaded</span>
+    pastDbId = HPR.connect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-keyword">local</span> success, histRows = <span class="code-fn">pcall</span>(HPR.dbQueryHistorical_E, <span class="code-string">"SELECT song_name, artist_name, play_duration_ms FROM spotify_songs;"</span>)
+
+        <span class="code-keyword">if</span> success <span class="code-keyword">and</span> histRows <span class="code-keyword">and</span> #histRows > 0 <span class="code-keyword">then</span>
+            past_spotify_history = {}
+            <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(histRows) <span class="code-keyword">do</span>
+                past_spotify_history[row.song_name] = {
+                    artist    = row.artist_name,
+                    play_time = <span class="code-fn">tonumber</span>(row.play_duration_ms) <span class="code-keyword">or</span> 0
+                }
+            <span class="code-keyword">end</span>
+            is_showing_historical = <span class="code-keyword">true</span>
+        <span class="code-keyword">else</span>
+            <span class="code-comment">-- Fall back if empty</span>
+            past_spotify_history = {}
+            is_showing_historical = <span class="code-keyword">false</span>
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>)
+
+    <span class="code-comment">-- Back to live view</span>
+    liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <span class="code-keyword">function</span>(data)
+        is_showing_historical = <span class="code-keyword">false</span>
+    <span class="code-keyword">end</span>)
+
+    <span class="code-fn">print</span>(<span class="code-string">"[Spotify Extension] Loaded successfully."</span>)
+    <span class="code-keyword">return</span> 150 <span class="code-comment">-- Tick rate</span>
 <span class="code-keyword">end</span>
 
-<span class="code-comment">-- Tick loop: runs periodically to track the active song and refresh the UI</span>
 <span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-comment">-- Always track active live songs in background</span>
     <span class="code-keyword">local</span> activeWindow = HPR.getCurrentWindow_E()
     <span class="code-keyword">local</span> activeTitle  = HPR.getCurrentTitle_E()
-
-    <span class="code-comment">-- 1. Track the active Spotify song</span>
     <span class="code-keyword">local</span> isWindowValid   = activeWindow <span class="code-keyword">and</span> activeTitle
-    <span class="code-keyword">local</span> isSpotifyActive = isWindowValid <span class="code-keyword">and</span>
-        <span class="code-fn">string.find</span>(<span class="code-fn">string.lower</span>(activeWindow), <span class="code-string">"spotify"</span>)
-
+    
+    <span class="code-keyword">local</span> isSpotifyActive = isWindowValid <span class="code-keyword">and</span> <span class="code-fn">string.find</span>(<span class="code-fn">string.lower</span>(activeWindow), <span class="code-string">"spotify"</span>)
     <span class="code-keyword">if</span> isSpotifyActive <span class="code-keyword">then</span>
         <span class="code-keyword">local</span> songName, artistName = <span class="code-fn">parseSpotifyTitle</span>(activeTitle)
-
         <span class="code-keyword">if</span> songName <span class="code-keyword">and</span> artistName <span class="code-keyword">then</span>
-            <span class="code-comment">-- Create a new record in memory if this song has not been played yet</span>
             <span class="code-keyword">if not</span> spotify_history[songName] <span class="code-keyword">then</span>
                 spotify_history[songName] = { artist = artistName, play_time = 0 }
             <span class="code-keyword">end</span>
-            <span class="code-comment">-- Add the tick duration (time elapsed since last tick) to the song's play time</span>
             spotify_history[songName].play_time = spotify_history[songName].play_time + delta
         <span class="code-keyword">end</span>
     <span class="code-keyword">end</span>
 
-    <span class="code-comment">-- 2. Format and sort track logs for the Slint UI</span>
+    <span class="code-comment">-- Select active data source</span>
+    <span class="code-keyword">local</span> active_source = is_showing_historical <span class="code-keyword">and</span> past_spotify_history <span class="code-keyword">or</span> spotify_history
+
+    <span class="code-comment">-- Format and send list to Slint UI</span>
     <span class="code-keyword">local</span> formattedSongs = {}
     <span class="code-keyword">local</span> totalPlayTime = 0
-
-    <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(spotify_history) <span class="code-keyword">do</span>
+    <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(active_source) <span class="code-keyword">do</span>
         totalPlayTime = totalPlayTime + songData.play_time
         <span class="code-fn">table.insert</span>(formattedSongs, {
             name       = songName,
@@ -787,28 +973,22 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
             duration_i = <span class="code-fn">math.floor</span>(songData.play_time)
         })
     <span class="code-keyword">end</span>
-
-    <span class="code-comment">-- Sort the tracks list descending so the most played song is at the top</span>
+    
     <span class="code-fn">table.sort</span>(formattedSongs, <span class="code-keyword">function</span>(songA, songB)
         <span class="code-keyword">return</span> songA.duration_i > songB.duration_i
     <span class="code-keyword">end</span>)
 
-    <span class="code-comment">-- Push the formatted tracks and total play time to Slint dynamically in real-time</span>
     HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, formattedSongs)
     HPR.setUiProperty_E(<span class="code-string">"trackedTime_Spotify_S"</span>, <span class="code-fn">math.floor</span>(totalPlayTime))
 
-    <span class="code-comment">-- 3. Save memory state to the SQLite database every 10 seconds (10,000ms)</span>
+    <span class="code-comment">-- Save to local db every 10s</span>
     time_since_last_flush = time_since_last_flush + delta
     <span class="code-keyword">if</span> time_since_last_flush >= 10000 <span class="code-keyword">then</span>
-        <span class="code-keyword">local</span> success, err = <span class="code-fn">pcall</span>(flushToDatabase)
-        <span class="code-keyword">if not</span> success <span class="code-keyword">then</span>
-            <span class="code-fn">print</span>(<span class="code-string">"[DEBUG-ERROR] Database save failed: "</span> .. <span class="code-fn">tostring</span>(err))
-        <span class="code-keyword">end</span>
+        <span class="code-fn">pcall</span>(flushToDatabase)
         time_since_last_flush = 0
     <span class="code-keyword">end</span>
 <span class="code-keyword">end</span>
 
-<span class="code-comment">-- Save active tracking state to SQLite database</span>
 <span class="code-keyword">function</span> <span class="code-fn">flushToDatabase</span>()
     <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(spotify_history) <span class="code-keyword">do</span>
         HPR.dbExecute_E(
@@ -824,14 +1004,17 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
           <p style="margin-bottom: 12px;">
             This tutorial covered every major part of the HPR Extension API:
           </p>
-          <p>
+          <p style="line-height: 1.7;">
             • <b>Window detection</b> — <code>getCurrentWindow_E()</code> and <code>getCurrentTitle_E()</code> to identify and read active applications<br>
             • <b>Data extraction</b> — Parsing structured information from window titles using Lua string manipulation<br>
             • <b>In-memory caching</b> — Module-level Lua tables for accumulating live data between ticks<br>
             • <b>Database persistence</b> — <code>dbExecute_E()</code> and <code>dbQuery_E()</code> for saving and loading data across sessions<br>
             • <b>Tick rate configuration</b> — Returning an integer from <code>init()</code> to control how often your extension runs<br>
             • <b>Live UI updates</b> — <code>setUiProperty_E()</code> for pushing real-time data into HPR's Slint UI<br>
-            • <b>Slint UI integration</b> — Creating a view component, defining data structs, and wiring everything into the main window
+            • <b>Slint UI integration</b> — Creating a view component, defining data structs, and wiring everything into the main window<br>
+            • <b>Event Hub &amp; Messaging</b> — Subscribing to central system events like <code>"MIDNIGHT_ROLLOVER"</code> and <code>"LOAD_LIVE_DATA"</code> using <code>HPR.connect_E()</code><br>
+            • <b>Historical DB Queries</b> — Safely querying loaded past database files directly using <code>HPR.dbQueryHistorical_E()</code><br>
+            • <b>Lifecycle Teardown &amp; Safety</b> — Implementing the <code>onExit()</code> hook to write final data and unregistering subscription IDs with <code>HPR.disconnect_E()</code> to avoid memory leaks
           </p>
           <p style="margin-top: 12px;">
             For a complete reference of all available API functions, see the <a href="api.html"

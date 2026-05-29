@@ -132,6 +132,17 @@
     <span class="code-fn">print</span>(<span class="code-string">"Time since last tick: "</span> .. delta .. <span class="code-string">" ms"</span>)
 <span class="code-keyword">end</span></pre>
             </div>
+          <div class="card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">onExit() Hook</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Called exactly once by HPR when the application is closing or when the extension is being stopped. This is the optimal place to perform teardown operations, execute final database writes, and clean up active listeners.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-fn">flushToDatabase</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Extension is shutting down cleanly."</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
           </div>
 
         </div>
@@ -269,6 +280,59 @@
             </div>
           </div>
 
+          <!-- Event Hub & Messaging -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #38bdf8;">Event Hub &amp; Messaging</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            The Event Hub is HPR's high-performance messaging core, acting as a real-time bridge to dispatch lifecycle signals, system changes, or dynamic messages between C++ and Lua extensions.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
+            <div class="api-signature">HPR.connect_E(eventName, callback)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>callback: function</code> &mdash; <strong>Returns:</strong> <code>int</code> (subscription ID)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Subscribes a Lua callback function to a system or custom named event. Whenever the event is emitted, your callback will run. Returns a unique subscription ID integer that must be saved to disconnect later.
+            </p>
+            <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
+              <div class="callout-title">⚠️ CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+              <p style="line-height: 1.7; font-size: 0.85rem;">
+                Whenever you tune into an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie reference</strong>. 
+              </p>
+              <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
+                Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to major **application memory leaks, UI lag, and potential crashes**. 
+                <strong>Rule of thumb:</strong> Every single subscription created with <code>HPR.connect_E</code> must have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> subId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>(data)
+    <span class="code-fn">print</span>(<span class="code-string">"Day rolled over!"</span>)
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
+            <div class="api-signature">HPR.emit_E(eventName, data?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>data: table (optional)</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Broadcasts a named signal to the Event Hub, triggering all active callbacks connected to this event name. You can optionally pass a Lua table/value containing a custom payload structure.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.emit_E(<span class="code-string">"my_custom_alarm"</span>, { temp = 82.5, warning = <span class="code-keyword">true</span> })</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
+            <div class="api-signature">HPR.disconnect_E(eventName, subscriptionId)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>subscriptionId: int</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Unsubscribes a specific listener using its unique subscription ID. **Always invoke this inside onExit() to release hooks and prevent memory leaks.**
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    HPR.disconnect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, subId)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
           <!-- Database Operations -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a78bfa;">Database Operations</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
@@ -310,6 +374,29 @@ HPR.dbExecute_E(
 <span class="code-keyword">for</span> i, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
     <span class="code-fn">print</span>(row.key .. <span class="code-string">" = "</span> .. row.value)
 <span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
+            <div class="api-signature">HPR.getLoadedHistDbPath_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> none &mdash; <strong>Returns:</strong> <code>string</code> (full absolute file path)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the absolute, resolved filesystem path of the currently loaded historical database. Returns an empty string if HPR is currently in live-tracking mode.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> histPath = HPR.getLoadedHistDbPath_E()
+<span class="code-fn">print</span>(<span class="code-string">"Loaded past DB path: "</span> .. histPath)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
+            <div class="api-signature">HPR.dbQueryHistorical_E(sql, params?)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> <code>table</code> (array of rows)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Executes a read SQL query against the currently active historical database file (set during a <code>"LOAD_DATABASE_SINGULAR"</code> calendar switch). This is a safe, high-level helper that completely abstracts database opening, folder traversal, and closing operations.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> rows = HPR.dbQueryHistorical_E(<span class="code-string">"select song_name from spotify_songs;"</span>)</pre>
             </div>
           </div>
 
