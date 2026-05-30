@@ -344,7 +344,23 @@
     <span class="code-fn">print</span>(<span class="code-string">"CSV successfully removed!"</span>)
 <span class="code-keyword">end</span></pre>
             </div>
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.getExtensionDir_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; 
+              <strong>Returns:</strong> <code>string</code> (the absolute path of the calling extension's subdirectory with a trailing separator)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a string containing the absolute path of the calling extension's own subdirectory, falling back to the root extensions directory if the script resides directly at the root.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Get the absolute folder path of this specific extension</span>
+<span class="code-keyword">local</span> myFolder = HPR.getExtensionDir_E()
+<span class="code-comment">-- Seamlessly resolve settings.csv relative to your own subfolder</span>
+<span class="code-keyword">local</span> settings = HPR.readCsv_E(myFolder .. <span class="code-string">"settings.csv"</span>)</pre>
+            </div>
           </div>
+
 
           <!-- ── Pattern Analyzer Insights ──────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Pattern Analyzer Insights</h3>

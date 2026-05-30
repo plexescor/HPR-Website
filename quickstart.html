@@ -382,32 +382,27 @@
         <!-- Mistake 2 -->
         <div class="card"
           style="margin-bottom: 32px; padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
-          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">2. Treating CSV paths as relative to your
-            subfolder</h3>
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">2. Treating CSV paths as relative to your subfolder</h3>
           <p style="margin-bottom: 12px; color: var(--text-secondary);">
-            <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods
-            (like `readCsv_E`, `writeCsv_E`, etc.) are resolved relative to the global <strong>extensions root
-              directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
+            <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods (like `readCsv_E`, `writeCsv_E`, etc.) are resolved relative to the global <strong>extensions root directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>),
-            writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create
-            it right at the global root directory. You must explicitly specify your subfolder in the path argument!
+            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>), writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create it right at the global root extensions directory. To resolve this perfectly, HPR exposes the <code>HPR.getExtensionDir_E()</code> function, which dynamically returns the absolute path to your specific subdirectory so you can write bulletproof path code!
           </p>
 
           <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; margin-top: 16px;">
             <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
-              <pre style="margin: 0;"><span class="code-comment">-- Looks in extensions/settings.csv</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Saves at global root (extensions/settings.csv)</span>
 <span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"settings.csv"</span>)</pre>
             </div>
 
             <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
-              <pre
-                style="margin: 0;"><span class="code-comment">-- Explicitly include your subfolder name</span>
-<span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"cool-addon/settings.csv"</span>)</pre>
+              <pre style="margin: 0;"><span class="code-comment">-- Dynamically resolve paths relative to your folder</span>
+<span class="code-keyword">local</span> myDir = HPR.getExtensionDir_E()
+<span class="code-keyword">local</span> data = HPR.readCsv_E(myDir .. <span class="code-string">"settings.csv"</span>)</pre>
             </div>
           </div>
         </div>
