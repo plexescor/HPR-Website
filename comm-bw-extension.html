@@ -341,35 +341,34 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
 <span class="code-keyword">end</span></pre>
         </div>
 
-        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 6: Executing System Actions</h3>
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 6: Executing Native OS Notifications</h3>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          Inside our callback function, we'll actually annoy the user into taking a break. We'll use
-          <code>HPR.runSystemCommand_E</code> to pop a desktop notification. If you have custom UI files, this is also
+          Inside our callback function, we'll actually annoy the user into taking a break. We'll use the native
+          <code>HPR.showNotification_E</code> function to pop a desktop notification. If you have custom UI files, this is also
           where you would call <code>HPR.setUiProperty_E</code> to push values to your Slint interface.
         </p>
-
+        
         <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
-          <div class="callout-title">Notice on notify-send</div>
+          <div class="callout-title">Cross-Platform Native Notifications</div>
           <p>
-            In the code below, we run the system utility <code>notify-send</code>. This is a standard command on Linux
-            and BSD systems. It won't do anything on Windows or macOS out of the box.
+            The <code>HPR.showNotification_E</code> function is fully cross-platform out of the box!
+            On Linux, it uses the standard <code>notify-send</code> utility internally. On Windows, it integrates
+            directly with the native Windows Action Center using the beautiful <code>WinToast</code> API.
           </p>
           <p style="margin-top: 8px;">
-            But that's the beauty of this architecture! If you are on Windows, you can simply change the system command
-            string to a PowerShell toast notification inside this one file, without ever needing to touch or break the
-            database logic in the Watcher.
+            This means you don't have to write any raw terminal execution commands or worry about OS-specific branching inside your Lua scripts!
           </p>
         </div>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <pre>    <span class="code-comment">-- Inside the connect_E callback:</span>
 
-    <span class="code-comment">-- Trigger a native OS notification (Linux)</span>
-    <span class="code-keyword">local</span> notify_cmd = string.format(
-        <span class="code-string">"notify-send -u critical 'Take a Break!' 'You have been working on %s for %d minutes straight.'"</span>, 
+    <span class="code-comment">-- Trigger a native OS notification (Cross-platform!)</span>
+    <span class="code-keyword">local</span> notify_msg = string.format(
+        <span class="code-string">"You have been working on %s for %d minutes straight."</span>, 
         data.active_app, duration_mins
     )
-    HPR.runSystemCommand_E(notify_cmd)
+    HPR.showNotification_E(<span class="code-string">"Take a Break!"</span>, notify_msg)
 
     <span class="code-comment">-- Do UI stuff here if you have relevant Slint files</span>
     <span class="code-comment">-- HPR.setUiProperty_E("myWarningBanner", "Take a break!")</span>
@@ -448,11 +447,11 @@ HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</
     burnoutListenerId = HPR.connect_E(<span class="code-string">"BURNOUT_WARNING"</span>, <span class="code-keyword">function</span>(data)
         <span class="code-keyword">local</span> duration_mins = math.floor(data.duration_seconds / 60)
         
-        <span class="code-keyword">local</span> notify_cmd = string.format(
-            <span class="code-string">"notify-send -u critical 'Take a Break!' 'You have been working on %s for %d minutes straight.'"</span>, 
+        <span class="code-keyword">local</span> notify_msg = string.format(
+            <span class="code-string">"You have been working on %s for %d minutes straight."</span>, 
             data.active_app, duration_mins
         )
-        HPR.runSystemCommand_E(notify_cmd)
+        HPR.showNotification_E(<span class="code-string">"Take a Break!"</span>, notify_msg)
 
         <span class="code-comment">-- Do UI stuff here if you have relevant Slint files</span>
         <span class="code-comment">-- HPR.setUiProperty_E("myWarningBanner", "Take a break!")</span>

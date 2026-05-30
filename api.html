@@ -653,6 +653,19 @@ HPR.startTracking_E()</pre>
             </div>
           </div>
 
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.showNotification_E(title, message)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>title: string</code>, <code>message: string</code> &mdash; <strong>Returns:</strong>
+              nothing</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Displays a native OS desktop notification. This function is fully cross-platform: on Linux it runs the native <code>notify-send</code> utility internally, and on Windows it leverages the native Windows Action Center Toast Notification API via <code>WinToast</code>. It automatically handles security sanitization and parameter wrapping across different operating systems.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.showNotification_E(<span class="code-string">"Work Completed!"</span>, <span class="code-string">"Your task has finished running."</span>)</pre>
+            </div>
+          </div>
+
           <!-- ── Alias Management ───────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-amber);">Alias Management</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
