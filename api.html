@@ -289,6 +289,40 @@
             </div>
           </div>
 
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.readCsv_E(path, [key])</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>path: string</code> (relative path to CSV file), <code>key: string|number|boolean</code> (optional) &mdash; 
+              <strong>Returns:</strong> <code>string|number|boolean</code> (if key requested) OR <code>table, table</code> (keys and values list if key omitted)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Reads and parses a CSV file located in HPR's designated extension directory (e.g. <code>~/.config/HPR/extensions/</code>). Absolute paths or parent traversals (like <code>../</code>) are blocked for security.
+              If a specific key is requested, returns the parsed value for that key, automatically converting boolean text ("true"/"false") and literal numbers into Lua types, and trimming whitespace for them. If the file read fails or is denied access, an empty string <code>""</code> is returned.
+              If the key is omitted, it returns two Lua tables (lists): the first table contains all keys, and the second table contains their corresponding parsed values.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Read specific key</span>
+<span class="code-keyword">local</span> val = HPR.readCsv_E(<span class="code-string">"config.csv"</span>, <span class="code-string">"enabled"</span>)
+<span class="code-comment">-- Read whole file</span>
+<span class="code-keyword">local</span> keys, values = HPR.readCsv_E(<span class="code-string">"config.csv"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.writeCsv_E(path, key, value)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>path: string</code> (relative path), <code>key: string|number|boolean</code>, <code>value: string|number|boolean</code> &mdash; 
+              <strong>Returns:</strong> <code>boolean</code> (success status)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Writes or updates a key-value entry in the specified CSV file under the extension directory.
+              Nothing is quoted in the CSV file, even strings. Automatically creates necessary subdirectories if requested. If the key already exists in the file, it performs an in-place update (upsert) to preserve the rest of the CSV entries. Returns <code>true</code> on success, or <code>false</code> on failure or access denial (printing standard error to <code>std::cerr</code>).
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> ok = HPR.writeCsv_E(<span class="code-string">"settings/general.csv"</span>, <span class="code-string">"volume"</span>, <span class="code-keyword">95</span>)</pre>
+            </div>
+          </div>
+
           <!-- ── Window State Information ───────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-cyan);">Window State Information</h3>
 
