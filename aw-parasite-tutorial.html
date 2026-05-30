@@ -94,10 +94,8 @@
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
-          <!-- HTTP GET Card -->
           <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
-            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.httpGet_E(host, path,
-              secure)</h3>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.httpGet_E(host, path, secure, headers?)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. This
               function allows your script to communicate directly with local services, devices, or remote web services.
@@ -120,6 +118,8 @@
               </li>
               <li><code>secure</code> (boolean): Set to <code>true</code> to use secure HTTPS encryption; set to
                 <code>false</code> for plain HTTP requests.
+              </li>
+              <li><code>headers</code> (table, optional): A Lua dictionary mapping header name strings to header value strings. Useful for custom headers or authorization.
               </li>
             </ul>
 
