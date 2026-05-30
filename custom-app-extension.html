@@ -395,8 +395,13 @@ time_since_last_flush = time_since_last_flush + delta
         <div class="callout fade-in" style="margin-bottom: 32px;">
           <div class="callout-title">A quick note on Lua "tables"</div>
           <p>
-            If you're coming from C++, Python, or JavaScript, the word <code>table</code> in Lua might be confusing. In Lua, arrays, dictionaries, lists, and hash maps are all just called <strong>tables</strong> (e.g., <code>local my_dict = {}</code>).<br><br>
-            Additionally, <code>table</code> is the name of the built-in Lua module that contains utility functions for working with tables. When you see <code>table.insert()</code> or <code>table.sort()</code> below, it's calling functions from that standard library, much like <code>std::vector::push_back</code> or <code>std::sort</code> in C++.
+            If you're coming from C++, Python, or JavaScript, the word <code>table</code> in Lua might be confusing. In
+            Lua, arrays, dictionaries, lists, and hash maps are all just called <strong>tables</strong> (e.g.,
+            <code>local my_dict = {}</code>).<br><br>
+            Additionally, <code>table</code> is the name of the built-in Lua module that contains utility functions for
+            working with tables. When you see <code>table.insert()</code> or <code>table.sort()</code> below, it's
+            calling functions from that standard library, much like <code>std::vector::push_back</code> or
+            <code>std::sort</code> in C++.
           </p>
         </div>
 
@@ -697,10 +702,13 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
         </div>
 
         <!-- ─── STEP 9: Rollovers & History ────────────────────────────────── -->
-        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 9 — Handle midnight rollovers and historical database views</h2>
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 9 — Handle midnight rollovers and historical database
+          views</h2>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          A crucial aspect of long-running tracker extensions is aligning perfectly with HPR's calendar lifecycle events. 
-          When the clock strikes midnight or when the user loads a historical day, your extension needs to react appropriately to maintain data consistency.
+          A crucial aspect of long-running tracker extensions is aligning perfectly with HPR's calendar lifecycle
+          events.
+          When the clock strikes midnight or when the user loads a historical day, your extension needs to react
+          appropriately to maintain data consistency.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           This is made possible by HPR's built-in <b>Event Hub</b>.
@@ -708,15 +716,26 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
 
         <!-- Beginner Analogy Callout -->
         <div class="callout fade-in" style="margin-bottom: 32px; border-left: 4px solid var(--accent-green);">
-          <div class="callout-title" style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 12px;">💡 Understanding the Event Hub: The "Radio Station" Analogy</div>
+          <div class="callout-title" style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 12px;">💡
+            Understanding the Event Hub: The "Radio Station" Analogy</div>
           <p style="line-height: 1.7; margin-bottom: 12px;">
-            Think of HPR's Event Hub like a <b>central radio station</b>. Different components in HPR broadcast messages on specific frequencies (or "channels"), and anyone who is listening can react:
+            Think of HPR's Event Hub like a <b>central radio station</b>. Different components in HPR broadcast messages
+            on specific frequencies (or "channels"), and anyone who is listening can react:
           </p>
-          <ul style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px;">
-            <li><b>Channels (Event Names):</b> Channels are named strings like <code>"MIDNIGHT_ROLLOVER"</code> or <code>"LOAD_LIVE_DATA"</code>.</li>
-            <li><b>Broadcasting (Emit):</b> When the C++ database manager detects midnight, it turns on the microphone and shouts: <i>"It is midnight!"</i> on the <code>"MIDNIGHT_ROLLOVER"</code> channel. This is called <b>emitting</b> a signal.</li>
-            <li><b>Listening (Connect):</b> In your extension, you tune your radio receiver to that channel. You tell HPR: <i>"Whenever you hear a broadcast on the 'MIDNIGHT_ROLLOVER' channel, run this specific callback function!"</i> This is called <b>connecting</b> a listener.</li>
-            <li><b>Turning Off (Disconnect):</b> When you turn off your radio, you stop receiving broadcasts. In your code, you must disconnect when your extension is stopping so that you don't waste system memory.</li>
+          <ul
+            style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <li><b>Channels (Event Names):</b> Channels are named strings like <code>"MIDNIGHT_ROLLOVER"</code> or
+              <code>"LOAD_LIVE_DATA"</code>.
+            </li>
+            <li><b>Broadcasting (Emit):</b> When the C++ database manager detects midnight, it turns on the microphone
+              and shouts: <i>"It is midnight!"</i> on the <code>"MIDNIGHT_ROLLOVER"</code> channel. This is called
+              <b>emitting</b> a signal.
+            </li>
+            <li><b>Listening (Connect):</b> In your extension, you tune your radio receiver to that channel. You tell
+              HPR: <i>"Whenever you hear a broadcast on the 'MIDNIGHT_ROLLOVER' channel, run this specific callback
+                function!"</i> This is called <b>connecting</b> a listener.</li>
+            <li><b>Turning Off (Disconnect):</b> When you turn off your radio, you stop receiving broadcasts. In your
+              code, you must disconnect when your extension is stopping so that you don't waste system memory.</li>
           </ul>
           <p style="line-height: 1.7;">
             The Event Hub is what lets C++ and Lua speak to each other seamlessly in real time!
@@ -727,48 +746,64 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           To interface with the Event Hub, HPR provides three simple Lua functions:
         </p>
-        <ul style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
+        <ul
+          style="color: var(--text-secondary); line-height: 1.7; margin-left: 20px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
           <li>
-            <code style="color: var(--text-primary); font-weight: 600;">HPR.connect_E("eventName", callback_function)</code><br>
-            Tunes into an event. When that event is fired, HPR will run your <code>callback_function</code>. 
-            <b>Returns:</b> A unique subscription ID (a positive integer). You must store this ID so you can disconnect later!
+            <code
+              style="color: var(--text-primary); font-weight: 600;">HPR.connect_E("eventName", callback_function)</code><br>
+            Tunes into an event. When that event is fired, HPR will run your <code>callback_function</code>.
+            <b>Returns:</b> A unique subscription ID (a positive integer). You must store this ID so you can disconnect
+            later!
           </li>
           <li>
             <code style="color: var(--text-primary); font-weight: 600;">HPR.emit_E("eventName", data_table?)</code><br>
             Broadcasts an event to all active listeners along with an optional table containing event data.
           </li>
           <li>
-            <code style="color: var(--text-primary); font-weight: 600;">HPR.disconnect_E("eventName", subscription_id)</code><br>
-            Stops listening to the event. You pass the same <code>subscription_id</code> returned by <code>connect_E</code>. <b>Always do this inside your <code>onExit()</code> function to prevent memory leaks!</b>
+            <code
+              style="color: var(--text-primary); font-weight: 600;">HPR.disconnect_E("eventName", subscription_id)</code><br>
+            Stops listening to the event. You pass the same <code>subscription_id</code> returned by
+            <code>connect_E</code>. <b>Always do this inside your <code>onExit()</code> function to prevent memory
+              leaks!</b>
           </li>
         </ul>
 
         <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
-          <div class="callout-title">⚠️ CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+          <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
           <p style="line-height: 1.7; font-size: 0.85rem;">
-            Whenever you tune into an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie reference</strong>. 
+            Whenever you tune into an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook
+            in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you
+            <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie
+              reference</strong>.
           </p>
           <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
-            Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to major **application memory leaks, UI lag, and potential crashes**. 
-            <strong>Rule of thumb:</strong> Every single subscription created with <code>HPR.connect_E</code> must have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
+            Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to major <strong>application memory
+            leaks, UI lag, and potential crashes</strong>.
+            <strong>Rule of thumb:</strong> Every single subscription created with <code>HPR.connect_E</code> must have
+            a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
           </p>
         </div>
 
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          To learn how to emit custom signals and establish two-way communication between multiple extensions, you can refer to the next tutorial: 
-          <a href="comm-bw-extension.html" style="color: var(--accent-green); font-weight: 600;">Communication between extensions</a>.
+          To learn how to emit custom signals and establish two-way communication between multiple extensions, you can
+          refer to the next tutorial:
+          <a href="comm-bw-extension.html" style="color: var(--accent-green); font-weight: 600;">Communication between
+            extensions</a>.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          For this tutorial, let's explore how to leverage the Event Hub to handle daily rollovers and calendar view switches:
+          For this tutorial, let's explore how to leverage the Event Hub to handle daily rollovers and calendar view
+          switches:
         </p>
-        
+
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
           <!-- Midnight Rollover -->
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;">1. Midnight Rollovers</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              When the day shifts, HPR automatically creates a new daily SQLite file and fires the <code>"MIDNIGHT_ROLLOVER"</code> signal. 
-              By connecting to this signal, you can reset today's active in-memory counters (<code>spotify_history = {}</code>) so your daily trackers always start fresh.
+              When the day shifts, HPR automatically creates a new daily SQLite file and fires the
+              <code>"MIDNIGHT_ROLLOVER"</code> signal.
+              By connecting to this signal, you can reset today's active in-memory counters
+              (<code>spotify_history = {}</code>) so your daily trackers always start fresh.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Inside init():</span>
@@ -783,12 +818,16 @@ midnightId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>,
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;">2. Historical Views</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              When the user clicks a previous calendar day in the UI, HPR loads that day's statistics and fires the <code>"LOAD_DATABASE_SINGULAR"</code> signal. 
-              To display your custom tracking data for that day, HPR provides a specialized historical querying function: <code>HPR.dbQueryHistorical_E(sql, params?)</code>.
+              When the user clicks a previous calendar day in the UI, HPR loads that day's statistics and fires the
+              <code>"LOAD_DATABASE_SINGULAR"</code> signal.
+              To display your custom tracking data for that day, HPR provides a specialized historical querying
+              function: <code>HPR.dbQueryHistorical_E(sql, params?)</code>.
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              This automatically queries the database file of the loaded historical day directly, without any manual file-path manipulation or raw SQL attachments!
-              We save the queried results into a separate <code>past_spotify_history</code> table and toggle a state variable <code>is_showing_historical = true</code>.
+              This automatically queries the database file of the loaded historical day directly, without any manual
+              file-path manipulation or raw SQL attachments!
+              We save the queried results into a separate <code>past_spotify_history</code> table and toggle a state
+              variable <code>is_showing_historical = true</code>.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Inside init():</span>
@@ -817,8 +856,10 @@ pastDbId = HPR.connect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</spa
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;">3. Returning to Live View</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              When the user exits historical mode and returns back to the active daily dashboard, HPR fires the <code>"LOAD_LIVE_DATA"</code> signal. 
-              We listen to this and immediately set <code>is_showing_historical = false</code> so our UI updates with today's real-time statistics.
+              When the user exits historical mode and returns back to the active daily dashboard, HPR fires the
+              <code>"LOAD_LIVE_DATA"</code> signal.
+              We listen to this and immediately set <code>is_showing_historical = false</code> so our UI updates with
+              today's real-time statistics.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Inside init():</span>
@@ -830,13 +871,33 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
         </div>
 
         <!-- ─── STEP 10: onExit Hook ────────────────────────────────────────── -->
-        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 10 — Clean up resources on exit using <code>onExit()</code></h2>
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 10 — Clean up resources on exit using
+          <code>onExit()</code>
+        </h2>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          The final piece of the HPR lifecycle is the <code>onExit()</code> hook. This function is automatically invoked exactly once by the C++ engine when the HPR application is shutting down or when your extension is being stopped.
+          The final piece of the HPR lifecycle is the <code>onExit()</code> hook. This function is automatically invoked
+          exactly once by the C++ engine when the HPR application is shutting down or when your extension is being
+          stopped.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          Use this hook to write any unsaved tracking data to the SQLite database (ensuring zero data loss on exit) and cleanly disconnect all active Event Hub listeners to keep the operating system's memory clean and leak-free.
+          Use this hook to write any unsaved tracking data to the SQLite database (ensuring zero data loss on exit) and
+          cleanly disconnect all active Event Hub listeners to keep the operating system's memory clean and leak-free.
         </p>
+
+        <div class="callout callout--danger fade-in"
+          style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+            <strong> Database Warning: Strict 200ms exit grace period!</strong><br>
+            While performing a final database save inside <code>onExit()</code> is crucial to prevent data loss, keep
+            the write highly optimized! HPR gives each extension thread a strict <strong>200 milliseconds</strong> grace period to
+            execute its exit hook. If your teardown logic (like a slow database query or I/O bottleneck) takes longer
+            than 200ms, HPR will forcefully detach your extension thread (calling <code>ext->thread.detach()</code>) and
+            force close the entire application with <code>_exit(0)</code> to prevent background hangs. This intentional
+            safety measure will instantly cut off all other running extensions, preventing them from finishing their
+            graceful teardowns! Keep database flushes fast and clean.
+          </p>
+        </div>
+
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">cleanup</span>
           <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
@@ -855,11 +916,20 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
           Putting everything together, here is the complete Spotify tracker extension. This is the full
           <code>main.lua</code> file — copy it into your extensions folder and it works out of the box.
+          Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
+            level</strong> (outside of <code>init()</code>).
+          Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
+            RECOMMENDED</strong> (though not required for script execution) so that HPR can register the identity on
+          startup and show it in the Loaded Extensions manager UI.
         </p>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">main.lua</span>
-          <pre><span class="code-keyword">local</span> spotify_history = {}          <span class="code-comment">-- Live daily data</span>
+          <pre><span class="code-comment">-- Declare extension metadata at the top level (highly recommended for UI registration!)</span>
+HPR.authorName    = <span class="code-string">"Plexescor"</span>
+HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</span>
+
+<span class="code-keyword">local</span> spotify_history = {}          <span class="code-comment">-- Live daily data</span>
 <span class="code-keyword">local</span> past_spotify_history = {}     <span class="code-comment">-- Loaded historical data</span>
 <span class="code-keyword">local</span> is_showing_historical = <span class="code-keyword">false</span> <span class="code-comment">-- View state toggler</span>
 <span class="code-keyword">local</span> time_since_last_flush = 0
@@ -877,9 +947,12 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
     <span class="code-keyword">local</span> artistName = <span class="code-fn">string.sub</span>(windowTitle, 1, hyphen_start - 1):match("^%s*(.-)%s*$")
     <span class="code-keyword">local</span> songName   = <span class="code-fn">string.sub</span>(windowTitle, hyphen_end + 1):match("^%s*(.-)%s*$")
     <span class="code-keyword">return</span> songName, artistName
-<span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+        </div>
 
-<span class="code-keyword">function</span> <span class="code-fn">flushToDatabase</span>()
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">main.lua (continued)</span>
+          <pre><span class="code-keyword">function</span> <span class="code-fn">flushToDatabase</span>()
     <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(spotify_history) <span class="code-keyword">do</span>
         HPR.dbExecute_E(
             <span class="code-string">"insert or replace into spotify_songs (song_name, artist_name, play_duration_ms) values (?, ?, ?);"</span>,
@@ -889,8 +962,6 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
 <span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    HPR.authorName    = <span class="code-string">"Plexescor"</span>
-    HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</span>
 
     <span class="code-comment">-- Initialize database table</span>
     HPR.dbExecute_E([[
@@ -1008,16 +1079,24 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
             This tutorial covered every major part of the HPR Extension API:
           </p>
           <p style="line-height: 1.7;">
-            • <b>Window detection</b> — <code>getCurrentWindow_E()</code> and <code>getCurrentTitle_E()</code> to identify and read active applications<br>
-            • <b>Data extraction</b> — Parsing structured information from window titles using Lua string manipulation<br>
+            • <b>Window detection</b> — <code>getCurrentWindow_E()</code> and <code>getCurrentTitle_E()</code> to
+            identify and read active applications<br>
+            • <b>Data extraction</b> — Parsing structured information from window titles using Lua string
+            manipulation<br>
             • <b>In-memory caching</b> — Module-level Lua tables for accumulating live data between ticks<br>
-            • <b>Database persistence</b> — <code>dbExecute_E()</code> and <code>dbQuery_E()</code> for saving and loading data across sessions<br>
-            • <b>Tick rate configuration</b> — Returning an integer from <code>init()</code> to control how often your extension runs<br>
+            • <b>Database persistence</b> — <code>dbExecute_E()</code> and <code>dbQuery_E()</code> for saving and
+            loading data across sessions<br>
+            • <b>Tick rate configuration</b> — Returning an integer from <code>init()</code> to control how often your
+            extension runs<br>
             • <b>Live UI updates</b> — <code>setUiProperty_E()</code> for pushing real-time data into HPR's Slint UI<br>
-            • <b>Slint UI integration</b> — Creating a view component, defining data structs, and wiring everything into the main window<br>
-            • <b>Event Hub &amp; Messaging</b> — Subscribing to central system events like <code>"MIDNIGHT_ROLLOVER"</code> and <code>"LOAD_LIVE_DATA"</code> using <code>HPR.connect_E()</code><br>
-            • <b>Historical DB Queries</b> — Safely querying loaded past database files directly using <code>HPR.dbQueryHistorical_E()</code><br>
-            • <b>Lifecycle Teardown &amp; Safety</b> — Implementing the <code>onExit()</code> hook to write final data and unregistering subscription IDs with <code>HPR.disconnect_E()</code> to avoid memory leaks
+            • <b>Slint UI integration</b> — Creating a view component, defining data structs, and wiring everything into
+            the main window<br>
+            • <b>Event Hub &amp; Messaging</b> — Subscribing to central system events like
+            <code>"MIDNIGHT_ROLLOVER"</code> and <code>"LOAD_LIVE_DATA"</code> using <code>HPR.connect_E()</code><br>
+            • <b>Historical DB Queries</b> — Safely querying loaded past database files directly using
+            <code>HPR.dbQueryHistorical_E()</code><br>
+            • <b>Lifecycle Teardown &amp; Safety</b> — Implementing the <code>onExit()</code> hook to write final data
+            and unregistering subscription IDs with <code>HPR.disconnect_E()</code> to avoid memory leaks
           </p>
           <p style="margin-top: 12px;">
             For a complete reference of all available API functions, see the <a href="api.html"

@@ -123,7 +123,8 @@
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">⚡</div>
             <h3>Live memory access, no HTTP overhead</h3>
-            <p>When your extension calls <code>HPR.getCurrentWindow_E()</code>, it reads directly from HPR's in-memory state
+            <p>When your extension calls <code>HPR.getCurrentWindow_E()</code>, it reads directly from HPR's in-memory
+              state
               through a mutex-protected C++ lambda. There is no serialization, no network stack, no JSON parsing. The
               call is nanoseconds. Compare this to ActivityWatch where every data read is a full HTTP round-trip to a
               localhost server.</p>
@@ -157,48 +158,57 @@
         </div>
 
         <div style="margin-top: 64px;">
-        <span class="section-label fade-in">Stress Test</span>
-        <h2 class="section-title fade-in">Built to Survive</h2>
-        <p class="section-desc fade-in" style="margin-bottom: 48px;">
-            The extension system has been stress tested under conditions far beyond anything a real user would encounter.
+          <span class="section-label fade-in">Stress Test</span>
+          <h2 class="section-title fade-in">Built to Survive</h2>
+          <p class="section-desc fade-in" style="margin-bottom: 48px;">
+            The extension system has been stress tested under conditions far beyond anything a real user would
+            encounter.
             These are not synthetic benchmarks — they are real runs, on real hardware, with real Lua VMs, real threads,
             and real SQLite writes.
-        </p>
-        <div class="feature-grid feature-grid--2">
+          </p>
+          <div class="feature-grid feature-grid--2">
             <div class="card fade-in">
-                <div class="card-icon">100</div>
-                <h3>100 Extensions</h3>
-                <p>
-                    With <code>100</code> simultaneously loaded extensions — each running its own <code>Lua VM</code>, its own <code>OS thread</code>, its own
-                    SQLite table receiving continuous writes, and its own event subscriptions firing every <code>100–500ms</code>
-                    — HPR consumed <code>5.5% CPU</code> and approximately <code>53 MB</code> of real memory. The database
-                    absorbed over <code>600 MB</code> of writes in under two minutes without a single corrupted row. The UI
-                    remained fully responsive throughout. All <code>100</code> extensions loaded, ran, and shut down cleanly.
-                </p>
+              <div class="card-icon">100</div>
+              <h3>100 Extensions</h3>
+              <p>
+                With <code>100</code> simultaneously loaded extensions — each running its own <code>Lua VM</code>, its
+                own <code>OS thread</code>, its own
+                SQLite table receiving continuous writes, and its own event subscriptions firing every
+                <code>100–500ms</code>
+                — HPR consumed <code>5.5% CPU</code> and approximately <code>53 MB</code> of real memory. The database
+                absorbed over <code>600 MB</code> of writes in under two minutes without a single corrupted row. The UI
+                remained fully responsive throughout. All <code>100</code> extensions loaded, ran, and shut down
+                cleanly.
+              </p>
             </div>
             <div class="card fade-in">
-                <div class="card-icon card-icon--amber">10³</div>
-                <h3>1000 Extensions</h3>
-                <p>
-                    HPR started in under <code>300ms</code>, loaded all <code>1000 Lua VMs</code>,
-                    spawned all <code>1000 threads</code>, and settled at <code>5.6% CPU</code> — essentially identical to the 100 extension result.
-                    Real memory usage was approximately <code>158 MB</code> total for all VMs, threads, and database handles
-                    combined. The database received over <code>2 GB</code> of writes and came up clean on the next launch,
-                    validating <code>WAL</code> mode integrity even under a hard process kill. <code>1</code> extension out of <code>1000</code> exceeded the
-                    <code>200ms</code> shutdown grace period and was detached gracefully.
-                </p>
+              <div class="card-icon card-icon--amber">10³</div>
+              <h3>1000 Extensions</h3>
+              <p>
+                HPR started in under <code>300ms</code>, loaded all <code>1000 Lua VMs</code>,
+                spawned all <code>1000 threads</code>, and settled at <code>5.6% CPU</code> — essentially identical to
+                the 100 extension result.
+                Real memory usage was approximately <code>158 MB</code> total for all VMs, threads, and database handles
+                combined. The database received over <code>2 GB</code> of writes and came up clean on the next launch,
+                validating <code>WAL</code> mode integrity even under a hard process kill. <code>1</code> extension out
+                of <code>1000</code> exceeded the
+                <code>200ms</code> shutdown grace period and was detached gracefully.
+              </p>
             </div>
-        </div>
-        <div class="card fade-in" style="margin-top: 24px; border-left: 4px solid var(--accent-green); padding: 28px;">
+          </div>
+          <div class="card fade-in"
+            style="margin-top: 24px; border-left: 4px solid var(--accent-green); padding: 28px;">
             <h3 style="margin-bottom: 12px;">What this means for you</h3>
             <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 0;">
-                In a realistic deployment with <code>5–10</code> extensions, CPU impact is unmeasurable, memory overhead is under
-                <code>2 MB</code>, and startup time for extension loading is under <code>10ms</code>. The <code>1000</code> extension test
-                represents roughly <code>100–200×</code> the load of a heavy real-world setup. HPR passed it without
-                instability, corruption, or UI degradation.
+              In a realistic deployment with <code>5–10</code> extensions, CPU impact is unmeasurable, memory overhead
+              is under
+              <code>2 MB</code>, and startup time for extension loading is under <code>10ms</code>. The
+              <code>1000</code> extension test
+              represents roughly <code>100–200×</code> the load of a heavy real-world setup. HPR passed it without
+              instability, corruption, or UI degradation.
             </p>
+          </div>
         </div>
-    </div>
 
 
         <p class="section-desc fade-in" style="margin-bottom: 16px;">
@@ -227,30 +237,68 @@
         <h2 class="section-title fade-in">Extension Lifecycle Hooks</h2>
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
           HPR calls specific Lua functions in your script at specific points during its lifecycle. You don't have to
-          define all of them — HPR checks whether each function exists before calling it, so you only implement 
-        <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 48px;">
+          define all of them — HPR checks whether each function exists before calling it, so you only implement
+        <div class="feature-grid"
+          style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 48px;">
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>init()</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Called exactly once when HPR starts and loads your extension, before the tick loop begins. This is where
               you should do any one-time setup — registering a backend, establishing connections, or printing messages.
-              Optionally, you can return an integer from <code>init()</code> to set a custom tick rate (in milliseconds) for your extension thread (defaults to 1000ms).
+              Optionally, you can return an integer from <code>init()</code> to set a custom tick rate (in milliseconds)
+              for your extension thread (defaults to 1000ms).
             </p>
           </div>
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>onTick(delta)</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Called periodically on your extension's isolated background thread (at the rate defined in <code>init()</code>). 
-              It receives a single parameter <code>delta</code> (a float representing actual elapsed milliseconds since the last tick).
+              Called periodically on your extension's isolated background thread (at the rate defined in
+              <code>init()</code>).
+              It receives a single parameter <code>delta</code> (a float representing actual elapsed milliseconds since
+              the last tick).
               This is where you put recurring logic — reading active windows, logging info, or firing notifications.
             </p>
           </div>
           <div class="card fade-in" style="padding: 28px;">
             <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>onExit()</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Called exactly once when HPR shuts down or when your extension is stopped. Use this hook to perform safety flushes of database caches, clean up system hooks, and disconnect Event Hub subscriptions to prevent memory leaks.
+              Called exactly once when HPR shuts down or when your extension is stopped. Use this hook to perform safety
+              flushes of database caches, clean up system hooks, and disconnect Event Hub subscriptions to prevent
+              memory leaks.
+              <br><br>
+              <strong style="color: var(--accent-amber);"> Strict 200ms Exit Budget:</strong>
+              HPR features an intentional shutdown safety timer. Every extension thread is granted a strict <strong>200
+              milliseconds</strong> grace period to complete its <code>onExit()</code> logic. If your code takes longer than
+              200ms, HPR will forcefully detach the extension thread (calling <code>ext->thread.detach()</code>) and
+              immediately terminate the entire HPR application using the C system call <code>_exit(0)</code> to prevent
+              background freezes. Because <code>_exit(0)</code> terminates HPR instantly, <strong>it will cut off all
+                other running extension threads</strong> before they can finish their own cleanups! Keep your
+              <code>onExit()</code> logic highly optimized and extremely fast.
             </p>
           </div>
+        </div>
+
+        <!-- Metadata Identity Callout Card -->
+        <div class="card fade-in"
+          style="border-left: 4px solid var(--accent-green); background: var(--accent-green-dim); padding: 28px; margin-top: 24px; margin-bottom: 40px;">
+          <h3 style="color: var(--accent-green); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            💡 Best Practice: Registering Extension Identity
+          </h3>
+          <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
+            HPR supports registering your extension's name and author so it displays nicely in the <strong>Loaded
+              Extensions</strong> manager UI. To do this, simply set the global <code>HPR.authorName</code> and
+            <code>HPR.extensionName</code> properties.
+            <br><br>
+            <strong style="color: var(--text-primary);"> IMPORTANT: Declare at the Top Level!</strong>
+            These properties <strong>must be defined at the top level of your script</strong> (outside of
+            <code>init()</code> or any other lifecycle function). HPR inspects the Lua VM immediately after parsing the
+            file, <em>before</em> it spawns the dedicated background thread or executes <code>init()</code>. Placed
+            inside <code>init()</code>, HPR's Loaded Extensions manager UI cannot discover them on startup, and your
+            extension won't be listed in the UI.
+            <br><br>
+            Declaring these metadata properties is <em>not strictly required</em> for your script logic to execute, but
+            it is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+          </p>
         </div>
 
         <p class="section-desc fade-in" style="margin-bottom: 16px;">A minimal extension that just prints the active app
@@ -268,24 +316,33 @@
       <div class="container">
         <span class="section-label fade-in" style="color: var(--accent-amber);">Warning</span>
         <h2 class="section-title fade-in">Native Extensions (.dll / .so)</h2>
-        
+
         <!-- Danger Gate Warning Banner -->
-        <div class="card fade-in" style="border: 2px solid var(--accent-amber); background: rgba(224, 82, 82, 0.05); padding: 24px; margin-bottom: 32px; text-align: center;">
+        <div class="card fade-in"
+          style="border: 2px solid var(--accent-amber); background: rgba(224, 82, 82, 0.05); padding: 24px; margin-bottom: 32px; text-align: center;">
           <h3 style="color: var(--accent-amber); margin-bottom: 8px; font-size: 1.3rem;">🛑 WARNING: EXPERTS ONLY</h3>
           <p style="margin: 0; line-height: 1.6; color: var(--text-primary); font-size: 15px;">
-            This feature is strictly intended for <strong>advanced C++ programmers</strong> or developers who fully accept the risk of system instability. If you do not have extensive experience compiling low-level systems, or if you care about the absolute security and stability of your HPR tracking app, <strong>DO NOT USE NATIVE EXTENSIONS</strong>. Stick to standard Lua extensions.
+            This feature is strictly intended for <strong>advanced C++ programmers</strong> or developers who fully
+            accept the risk of system instability. If you do not have extensive experience compiling low-level systems,
+            or if you care about the absolute security and stability of your HPR tracking app, <strong>DO NOT USE NATIVE
+              EXTENSIONS</strong>. Stick to standard Lua extensions.
           </p>
         </div>
 
         <!-- Safety Alert Card -->
-        <div class="card fade-in" style="border-left: 4px solid var(--accent-amber); background: var(--accent-amber-dim); padding: 28px; margin-bottom: 40px;">
+        <div class="card fade-in"
+          style="border-left: 4px solid var(--accent-amber); background: var(--accent-amber-dim); padding: 28px; margin-bottom: 40px;">
           <h3 style="color: var(--accent-amber); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-            ⚠️ Critical Security & Sandbox Warning
+            Critical Security & Sandbox Warning
           </h3>
           <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
-            Unlike standard Lua extensions which execute safely inside a restricted, sandboxed virtual machine, native extensions run as raw compiled code directly on your host operating system. 
+            Unlike standard Lua extensions which execute safely inside a restricted, sandboxed virtual machine, native
+            extensions run as raw compiled code directly on your host operating system.
             <br><br>
-            <strong style="color: var(--text-primary);">What this means:</strong> Native extensions completely bypass ALL Lua sandboxing, dangerous command filtering, system hook protections, and VM isolation. They have absolute read/write access to your system memory, files, and network. **Only enable this feature and load native binaries if you fully trust their origin and have reviewed their source code.**
+            <strong style="color: var(--text-primary);">What this means:</strong> Native extensions completely bypass
+            ALL Lua sandboxing, dangerous command filtering, system hook protections, and VM isolation. They have
+            absolute read/write access to your system memory, files, and network. <strong>Only enable this feature and load
+            native binaries if you fully trust their origin and have reviewed their source code.</strong>
           </p>
         </div>
 
@@ -293,13 +350,16 @@
         <div class="fade-in" style="margin-bottom: 40px;">
           <h3 style="color: var(--text-primary); margin-bottom: 12px;">Enabling Native Extension Support</h3>
           <p class="section-desc" style="margin-bottom: 16px;">
-            By default, HPR blocks native extensions. If a binary is detected but the feature is disabled, HPR will log a warning to the console on startup and skip loading it:
+            By default, HPR blocks native extensions. If a binary is detected but the feature is disabled, HPR will log
+            a warning to the console on startup and skip loading it:
           </p>
           <div class="code-block" style="margin-bottom: 24px;">
-            <pre style="color: #e05252; margin: 0;">[HPR] Native extension found but allow-dynamic-library-extensions is false. Skipping: /path/to/extension.so</pre>
+            <pre
+              style="color: #e05252; margin: 0;">[HPR] Native extension found but allow-dynamic-library-extensions is false. Skipping: /path/to/extension.so</pre>
           </div>
           <p class="section-desc" style="margin-bottom: 16px;">
-            To enable native extension loading, modify your <code>config.csv</code> (located in the HPR configuration directory) and add or modify the following line:
+            To enable native extension loading, modify your <code>config.csv</code> (located in the HPR configuration
+            directory) and add or modify the following line:
           </p>
           <div class="code-block" style="margin-bottom: 24px;">
             <span class="code-label">config.csv</span>
@@ -311,39 +371,52 @@
         <div class="fade-in" style="margin-bottom: 40px;">
           <h3 style="color: var(--text-primary); margin-bottom: 12px;">The Exported C Interface</h3>
           <p class="section-desc" style="margin-bottom: 24px;">
-            Because there is no official pre-built documentation or static library for the C++ extension API, native extensions must be written to export traditional <code>extern "C"</code> symbols that HPR resolves dynamically at runtime.
+            Because there is no official pre-built documentation or static library for the C++ extension API, native
+            extensions must be written to export traditional <code>extern "C"</code> symbols that HPR resolves
+            dynamically at runtime.
           </p>
 
           <p class="section-desc" style="margin-bottom: 16px;">
             To build a native extension, your code must export the following three main lifecycle functions:
           </p>
 
-          <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 32px; gap: 20px;">
+          <div class="feature-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 32px; gap: 20px;">
             <div class="card" style="padding: 24px; margin: 0;">
               <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" int init()</code></h4>
               <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
-                Called exactly once on startup when the library is loaded. 
-                Must return an integer representing the desired **tick interval/sleep time** in milliseconds. 
+                Called exactly once on startup when the library is loaded.
+                Must return an integer representing the desired <strong>tick interval/sleep time</strong> in milliseconds.
                 If omitted or not exported, HPR defaults the thread sleep interval to <code>1000ms</code>.
               </p>
             </div>
             <div class="card" style="padding: 24px; margin: 0;">
-              <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" void onTick(float delta)</code></h4>
+              <h4 style="color: var(--text-primary); margin-bottom: 8px;">
+                <code>extern "C" void onTick(float delta)</code></h4>
               <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
-                Called repeatedly inside a dedicated background thread. 
-                Receives a single float <code>delta</code> representing the actual elapsed time in milliseconds since the previous tick loop.
+                Called repeatedly inside a dedicated background thread.
+                Receives a single float <code>delta</code> representing the actual elapsed time in milliseconds since
+                the previous tick loop.
               </p>
             </div>
             <div class="card" style="padding: 24px; margin: 0;">
               <h4 style="color: var(--text-primary); margin-bottom: 8px;"><code>extern "C" void onExit()</code></h4>
               <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0; font-size: 14px;">
-                Called exactly once when HPR shuts down or stops the extension. Use this hook to free allocated memory, release system resources, flush file streams, or gracefully close network connections to avoid memory leaks.
+                Called exactly once when HPR shuts down or stops the extension. Use this hook to free allocated memory,
+                release system resources, flush file streams, or gracefully close network connections to avoid memory
+                leaks.
+                <br><br>
+                <strong style="color: var(--accent-amber);"> 200ms Budget:</strong> Just like Lua extensions, native
+                extensions must exit within <strong>200ms</strong>. Exceeding this budget causes HPR to invoke
+                <code>ext->thread.detach()</code> and force close using <code>_exit(0)</code> to avoid background hangs,
+                cutting off sibling extensions instantly.
               </p>
             </div>
           </div>
 
           <p class="section-desc" style="margin-bottom: 16px;">
-            Below is a minimal, fully-conforming C++ template for a native extension. You can build this into a shared object (<code>.so</code> / <code>.dylib</code>) or dynamic-link library (<code>.dll</code>):
+            Below is a minimal, fully-conforming C++ template for a native extension. You can build this into a shared
+            object (<code>.so</code> / <code>.dylib</code>) or dynamic-link library (<code>.dll</code>):
           </p>
 
           <div class="code-block" style="margin-bottom: 24px;">
@@ -374,11 +447,17 @@
         <div class="fade-in" style="margin-bottom: 16px;">
           <h3 style="color: var(--text-primary); margin-bottom: 12px;">Linking & Source Code Reference</h3>
           <p class="section-desc">
-            Since HPR does not distribute a pre-compiled SDK or stable public headers for native development, there is no formal linkage protocol. 
+            Since HPR does not distribute a pre-compiled SDK or stable public headers for native development, there is
+            no formal linkage protocol.
             <br><br>
-            To write and link a stable native extension, <strong>developers must read the general HPR Source Code</strong> (not just the extension manager files) to explore how internal structures, database handlers, and APIs are managed, and link against the application's targets.
+            To write and link a stable native extension, <strong>developers must read the general HPR Source
+              Code</strong> (not just the extension manager files) to explore how internal structures, database
+            handlers, and APIs are managed, and link against the application's targets.
             <br><br>
-            To understand the basic dynamic loader lifecycle and thread execution details, see the <a href="https://github.com/plexescor/HPR/blob/main/src/extension/extensionManager.cpp" target="_blank" style="color: var(--accent-green); text-decoration: underline;">src/extension/extensionManager.cpp</a> implementation directly.
+            To understand the basic dynamic loader lifecycle and thread execution details, see the <a
+              href="https://github.com/plexescor/HPR/blob/main/src/extension/extensionManager.cpp" target="_blank"
+              style="color: var(--accent-green); text-decoration: underline;">src/extension/extensionManager.cpp</a>
+            implementation directly.
           </p>
         </div>
 
@@ -396,36 +475,45 @@
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or desktop
+              Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or
+              desktop
               environment. Covers all 6 required functions with a real working example using Hyprland.
             </p>
             <a href="custom-backend.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
           </div>
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
-            <h3 style="color: var(--text-primary); margin-bottom: 12px;">Active Media Monitoring &amp; Spotify Tracker</h3>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px;">Active Media Monitoring &amp; Spotify Tracker
+            </h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Construct a rich media logging extension from the ground up. Track Spotify playback state through window details, structure high-performance SQL databases, and build a beautiful, interactive Slint tracks listing panel.
+              Construct a rich media logging extension from the ground up. Track Spotify playback state through window
+              details, structure high-performance SQL databases, and build a beautiful, interactive Slint tracks listing
+              panel.
             </p>
-            <a href="custom-app-extension.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
+            <a href="custom-app-extension.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial
+              →</a>
           </div>
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Event Hub & Burnout Detector</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Learn how to use HPR's Event Hub to make isolated extensions talk to each other. Build a Focus Shield with a watcher that monitors your work and an enforcer that triggers native OS notifications.
+              Learn how to use HPR's Event Hub to make isolated extensions talk to each other. Build a Focus Shield with
+              a watcher that monitors your work and an enforcer that triggers native OS notifications.
             </p>
             <a href="comm-bw-extension.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
           </div>
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">AW Parasite Extension Tutorial</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Learn how to utilize HPR's native network clients and JSON parser functions. Build a parasitic browser activity tracker that imports full active URLs and displays them in Slint.
+              Learn how to utilize HPR's native network clients and JSON parser functions. Build a parasitic browser
+              activity tracker that imports full active URLs and displays them in Slint.
             </p>
-            <a href="aw-parasite-tutorial.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
+            <a href="aw-parasite-tutorial.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial
+              →</a>
           </div>
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Raw Extension API Reference</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Detailed reference for the global <code>HPR</code> table functions, including alias lookup, reverse-alias lookup, and lifecycle tick configuration.
+              Detailed reference for the global <code>HPR</code> table functions, including alias lookup, reverse-alias
+              lookup, and lifecycle tick configuration.
             </p>
             <a href="api.html" class="btn btn--ghost" style="margin-top: auto;">View API Reference →</a>
           </div>

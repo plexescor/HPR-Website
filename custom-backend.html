@@ -103,11 +103,13 @@
         <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 2 — Define the <code>init()</code> function</h2>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           Backend registration must happen inside the <code>init()</code> function, not at the top level of your script
-          and not inside <code>onTick(delta)</code>. HPR calls <code>init()</code> exactly once at startup before the tick
+          and not inside <code>onTick(delta)</code>. HPR calls <code>init()</code> exactly once at startup before the
+          tick
           loop begins. This guarantees your backend is registered before HPR starts its first window detection cycle.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          If you put <code>registerBackend_E</code> inside <code>onTick(delta)</code>, HPR would attempt to register the same
+          If you put <code>registerBackend_E</code> inside <code>onTick(delta)</code>, HPR would attempt to register the
+          same
           backend once every second, causing duplicate registrations and undefined behavior. Always use
           <code>init()</code> for one-time setup.
         </p>
@@ -237,11 +239,16 @@
             <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
               <div class="callout-title">Dangerous Commands Blocked</div>
               <p>
-                To prevent accidental or malicious destruction from extensions, HPR actively filters and blocks dangerous commands. If you plan/planned to use dangerous commands, FUCK OFF 🖕🖕.
+                To prevent accidental or malicious destruction from extensions, HPR actively filters and blocks
+                dangerous commands. If you plan/planned to use dangerous commands, FUCK OFF 🖕🖕.
               </p>
               <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);">
                 <strong>Some examples of blocked commands:</strong><br>
-                <code>rm</code>, <code>rmdir</code>, <code>chmod</code>, <code>sudo</code>, <code>su</code>, <code>mkfs</code>, <code>fdisk</code>, <code>shutdown</code>, <code>reboot</code>, <code>curl</code>, <code>wget</code>, <code>python</code>, <code>bash</code>, <code>del</code>, <code>reg</code>, <code>apt</code>, <code>pip</code>, <code>systemctl</code>, and common shell injection patterns like <code>| sh</code> or <code>$(rm)</code>.
+                <code>rm</code>, <code>rmdir</code>, <code>chmod</code>, <code>sudo</code>, <code>su</code>,
+                <code>mkfs</code>, <code>fdisk</code>, <code>shutdown</code>, <code>reboot</code>, <code>curl</code>,
+                <code>wget</code>, <code>python</code>, <code>bash</code>, <code>del</code>, <code>reg</code>,
+                <code>apt</code>, <code>pip</code>, <code>systemctl</code>, and common shell injection patterns like
+                <code>| sh</code> or <code>$(rm)</code>.
               </p>
             </div>
             <div class="code-block" style="margin: 0;">
@@ -282,17 +289,34 @@
 
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          Putting all six arguments together, here is the complete working Hyprland backend extension. This is the exact
-          pattern to follow for any other compositor — just replace the <code>hyprctl</code> commands with whatever IPC
-          tool your compositor provides.
+          Putting all six arguments together, here is the complete working Hyprland backend extension.
+          Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
+            level</strong> of the script (outside of <code>init()</code>).
+          Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
+            RECOMMENDED</strong> (though not required for execution) so that HPR can register your extension's identity
+          on startup and show it in the <strong>Loaded Extensions</strong> manager UI.
         </p>
+
+        <div class="callout callout--danger fade-in"
+          style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+            <strong> Teardown Warning: Strict 200ms exit grace period!</strong><br>
+            If you decide to add an <code>onExit()</code> lifecycle hook to your custom backend to perform teardown or
+            cleanup, ensure it completes quickly! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace
+            period to complete its exit operations. Exceeding this budget causes HPR to forcefully detach the extension
+            thread (calling <code>ext->thread.detach()</code>) and force close the entire application with
+            <code>_exit(0)</code> to prevent lingering background hangs. This intentional safety measure will instantly
+            cut off all other running extensions, so keep your teardown logic highly optimized.
+          </p>
+        </div>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">hyprland.lua</span>
-          <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    HPR.authorName    = <span class="code-string">"Plexescor"</span>
-    HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Extension"</span>
+          <pre><span class="code-comment">-- Declare extension metadata at the top level (highly recommended for UI registration!)</span>
+HPR.authorName    = <span class="code-string">"Plexescor"</span>
+HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Extension"</span>
 
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
     HPR.registerBackend_E(
 
         <span class="code-string">"Hyprland"</span>,

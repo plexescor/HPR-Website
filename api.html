@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="HPR Raw Extension API Reference. Discover every C++ function exposed to the Lua scripting engine.">
+  <meta name="description"
+    content="HPR Raw Extension API Reference. Discover every C++ function exposed to the Lua scripting engine.">
   <title>HPR — Extension API Reference</title>
   <link rel="icon" type="image/png" href="assets/logo_256png.png">
   <link rel="stylesheet" href="style.css">
@@ -21,24 +22,24 @@
     .hero-badge-dot {
       background: #ff8c00;
     }
-    
+
     .api-card {
       border-left: 3px solid var(--accent-green);
       transition: transform 0.2s, border-color 0.2s;
     }
-    
+
     .api-card:hover {
       transform: translateY(-2px);
     }
-    
+
     .api-card--utility {
       border-left-color: var(--accent-cyan);
     }
-    
+
     .api-card--alias {
       border-left-color: var(--accent-amber);
     }
-    
+
     .api-signature {
       font-family: var(--font-mono);
       font-size: 0.95rem;
@@ -84,17 +85,22 @@
         <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
 
         <span class="section-label fade-in">API Reference</span>
-        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Raw Extension API Reference</h1>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Raw Extension API Reference
+        </h1>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          HPR embeds a powerful C++ Lua engine. This document describes the raw lifecycle hooks and all functions exposed to the Lua namespace through the global <code>HPR</code> table.
+          HPR embeds a powerful C++ Lua engine. This document describes the raw lifecycle hooks and all functions
+          exposed to the Lua namespace through the global <code>HPR</code> table.
         </p>
 
         <!-- ============================================================ -->
         <!-- LIFECYCLE HOOKS                                               -->
         <!-- ============================================================ -->
-        <h2 style="margin-bottom: 24px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">Lifecycle Hooks</h2>
+        <h2
+          style="margin-bottom: 24px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">
+          Lifecycle Hooks</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          Your Lua extensions are driven by two main entry points executed on a dedicated background thread spawned specifically for your script.
+          Your Lua extensions are driven by two main entry points executed on a dedicated background thread spawned
+          specifically for your script.
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 64px;">
@@ -103,12 +109,15 @@
           <div class="card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">init() Hook</div>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Called exactly once by HPR when the extension is loaded at startup. This is the place to perform one-time initialization, such as registering a window-tracking backend.
+              Called exactly once by HPR when the extension is loaded at startup. This is the place to perform one-time
+              initialization, such as registering a window-tracking backend.
             </p>
             <div class="callout" style="margin-bottom: 20px;">
               <div class="callout-title">Optional sleepTime Return</div>
               <p>
-                You can return an integer value (in milliseconds) from <code>init()</code>. This sets the tick interval (sleep duration) for your extension thread. If no value is returned or if the hook is omitted, the tick rate defaults to <code>1000</code> ms (1 second).
+                You can return an integer value (in milliseconds) from <code>init()</code>. This sets the tick interval
+                (sleep duration) for your extension thread. If no value is returned or if the hook is omitted, the tick
+                rate defaults to <code>1000</code> ms (1 second).
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -123,12 +132,15 @@
           <div class="card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">onTick(delta) Hook</div>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Called periodically on your extension's isolated background thread based on the tick interval configured in <code>init()</code>.
+              Called periodically on your extension's isolated background thread based on the tick interval configured
+              in <code>init()</code>.
             </p>
             <div class="callout" style="margin-bottom: 20px;">
               <div class="callout-title">The delta Parameter</div>
               <p>
-                HPR passes a single argument <code>delta</code> (a float) representing the actual elapsed time in <strong>milliseconds</strong> since the last tick occurred. This allows for extremely precise timing, rate calculation, or event tracking within your script.
+                HPR passes a single argument <code>delta</code> (a float) representing the actual elapsed time in
+                <strong>milliseconds</strong> since the last tick occurred. This allows for extremely precise timing,
+                rate calculation, or event tracking within your script.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -142,8 +154,23 @@
           <div class="card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">onExit() Hook</div>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Called exactly once by HPR when the application is closing or when the extension is being stopped. This is the optimal place to perform teardown operations, execute final database writes, and clean up active listeners.
+              Called exactly once by HPR when the application is closing or when the extension is being stopped. This is
+              the optimal place to perform teardown operations, execute final database writes, and clean up active
+              listeners.
             </p>
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> CRITICAL: 200ms Execution Budget Limit!</strong><br>
+                HPR features a strict, intentional shutdown safety timer. Every extension thread has exactly <strong>200
+                milliseconds</strong> to finish its <code>onExit()</code> handler. If your code takes longer than 200ms, HPR
+                will immediately detach the extension thread (calling <code>ext->thread.detach()</code>) and force close
+                the entire application using <code>_exit(0)</code> to prevent background hangs. Since
+                <code>_exit(0)</code> terminates HPR instantly, <strong>it will cut off all other running extension
+                  threads</strong> before they can finish their cleanups! Ensure all operations inside
+                <code>onExit()</code> are extremely optimized and complete well within the 200ms budget.
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
     <span class="code-fn">flushToDatabase</span>()
@@ -157,22 +184,40 @@
         <!-- ============================================================ -->
         <!-- HPR GLOBAL TABLE                                              -->
         <!-- ============================================================ -->
-        <h2 style="margin-bottom: 32px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">The HPR Global Table</h2>
+        <h2
+          style="margin-bottom: 32px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">
+          The HPR Global Table</h2>
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 64px;">
 
           <!-- ── Extension Identity ────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 16px; color: var(--accent-green);">Extension Identity</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            HPR uses global state fields to register extension identities. Defining these properties enables HPR to track your extension details and display them directly in HPR's Loaded Extensions manager.
+            HPR uses global state fields to register extension identities. Defining these properties enables HPR to
+            track your extension details and display them directly in HPR's Loaded Extensions manager.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.authorName</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong> <code>string</code> (property)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
+              <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the author or developer name of the loaded extension. This must be defined inside your extension's <code>init()</code> function alongside the extension name to register your module's identity.
+              Configures the author or developer name of the loaded extension. This must be defined at the <strong>top
+                level</strong> of your extension's script (outside of <code>init()</code> or any other lifecycle
+              functions).
             </p>
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> CRITICAL: Must be declared at top-level!</strong><br>
+                HPR queries these identity properties immediately after loading the Lua file and <em>before</em>
+                spawning the dedicated execution thread or running <code>init()</code>. Defining them inside
+                <code>init()</code> means the properties won't exist when HPR checks for them, preventing your extension
+                from registering in the C++ backend list and showing up in the <strong>Loaded Extensions</strong>
+                manager UI. Declaring these at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong> (though
+                not strictly required for backend execution).
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.authorName = <span class="code-string">"Plexescor"</span></pre>
             </div>
@@ -180,10 +225,22 @@
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.extensionName</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong> <code>string</code> (property)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
+              <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the custom display name of the loaded extension. Must be set inside your extension's <code>init()</code> function alongside the author name to register your module's identity.
+              Configures the custom display name of the loaded extension. This must be defined at the <strong>top
+                level</strong> of your extension's script (outside of <code>init()</code> or any other lifecycle
+              functions).
             </p>
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> CRITICAL: Declare at top-level!</strong><br>
+                Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script. If placed inside
+                <code>init()</code>, it will fail to register in the Loaded Extensions manager UI. Declaring this at the
+                top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.extensionName = <span class="code-string">"My Custom HPR Extension"</span></pre>
             </div>
@@ -196,38 +253,32 @@
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
-            <div class="api-signature">HPR.getTime_MS()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>uint64</code> (Unix timestamp in milliseconds)</p>
+            <div class="api-signature">HPR.getTime_MS_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong>
+              <code>uint64</code> (Unix timestamp in milliseconds)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Returns the current system time as a Unix timestamp in milliseconds. Useful for timestamping events, measuring elapsed durations, or seeding time-series database entries.
+              Returns the current system time as a Unix timestamp in milliseconds. Useful for timestamping events,
+              measuring elapsed durations, or seeding time-series database entries.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
-              <pre><span class="code-keyword">local</span> now = HPR.getTime_MS()
+              <pre><span class="code-keyword">local</span> now = HPR.getTime_MS_E()
 <span class="code-fn">print</span>(<span class="code-string">"Current time (ms): "</span> .. now)</pre>
             </div>
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.sleep_E(ms)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (milliseconds) &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>ms: int</code> (milliseconds) &mdash; <strong>Returns:</strong> nothing
+            </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Blocks the calling extension's background thread for the specified number of milliseconds. Since every extension runs on its own isolated OS thread, this only pauses your script — HPR and all other extensions remain fully responsive. Useful for rate-limiting inside a callback or performing a one-shot delayed action without restructuring your tick loop.
+              Blocks the calling extension's background thread for the specified number of milliseconds. Since every
+              extension runs on its own isolated OS thread, this only pauses your script — HPR and all other extensions
+              remain fully responsive. Useful for rate-limiting inside a callback or performing a one-shot delayed
+              action without restructuring your tick loop.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.sleep_E(<span class="code-keyword">2000</span>) <span class="code-comment">-- pause this extension thread for 2 seconds</span></pre>
-            </div>
-          </div>
-
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
-            <div class="api-signature">HPR.isUiActive_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>boolean</code></p>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Returns <code>true</code> if the HPR Slint UI window is currently loaded and active, <code>false</code> otherwise. Use this as a guard before calling <code>HPR.setUiProperty_E</code> or <code>HPR.registerUiCallback</code> in situations where you need an explicit check (e.g. in a tick loop rather than a one-time <code>init()</code> call). Note that both UI functions already silently ignore calls when the UI is not active.
-            </p>
-            <div class="code-block" style="margin: 0; width: 100%;">
-              <pre><span class="code-keyword">if</span> HPR.isUiActive_E() <span class="code-keyword">then</span>
-    HPR.setUiProperty_E(<span class="code-string">"statusLabel_S"</span>, <span class="code-string">"Ready"</span>)
-<span class="code-keyword">end</span></pre>
             </div>
           </div>
 
@@ -236,9 +287,12 @@
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.getCurrentWindow_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code> (the raw window class name)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong>
+              <code>string</code> (the raw window class name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Reads directly from HPR's active tracking backend state using a thread-safe C++ lambda. It returns the raw window class name of the currently focused window (before applying aliases or filters). Useful for checking active status or inspecting the currently running window.
+              Reads directly from HPR's active tracking backend state using a thread-safe C++ lambda. It returns the raw
+              window class name of the currently focused window (before applying aliases or filters). Useful for
+              checking active status or inspecting the currently running window.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> windowClass = HPR.getCurrentWindow_E()
@@ -248,9 +302,11 @@
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.getCurrentTitle_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code> (the raw window title)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong>
+              <code>string</code> (the raw window title)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Reads and returns the raw window title string of the currently focused window. This is critical for extensions tracking browser websites, active files in editors, or terminal commands.
+              Reads and returns the raw window title string of the currently focused window. This is critical for
+              extensions tracking browser websites, active files in editors, or terminal commands.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> title = HPR.getCurrentTitle_E()
@@ -260,9 +316,12 @@
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.stopTracking_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong>
+              nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Instructs HPR's <code>CurrentWindowManager</code> to pause all active window-tracking polling. Useful when an extension needs to temporarily suppress tracking — for example, during a screen-lock event or a privacy-sensitive period. Pair with <code>HPR.startTracking_E()</code> to resume.
+              Instructs HPR's <code>CurrentWindowManager</code> to pause all active window-tracking polling. Useful when
+              an extension needs to temporarily suppress tracking — for example, during a screen-lock event or a
+              privacy-sensitive period. Pair with <code>HPR.startTracking_E()</code> to resume.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.stopTracking_E()
@@ -273,9 +332,11 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.startTracking_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong>
+              nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Resumes HPR's <code>CurrentWindowManager</code> window-tracking polling after it has been paused with <code>HPR.stopTracking_E()</code>. Has no effect if tracking is already running.
+              Resumes HPR's <code>CurrentWindowManager</code> window-tracking polling after it has been paused with
+              <code>HPR.stopTracking_E()</code>. Has no effect if tracking is already running.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.startTracking_E()</pre>
@@ -284,18 +345,26 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.runSystemCommand_E(command)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (stdout)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (stdout)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Executes a shell command synchronously and returns the standard output (stdout) as a string. Any trailing whitespace is preserved. The function blocks until completion; keep commands fast.
+              Executes a shell command synchronously and returns the standard output (stdout) as a string. Any trailing
+              whitespace is preserved. The function blocks until completion; keep commands fast.
             </p>
             <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
               <div class="callout-title">Dangerous Commands Blocked</div>
               <p>
-                To prevent accidental or malicious destruction from extensions, HPR actively filters and blocks dangerous commands. If you plan/planned to use dangerous commands, FUCK OFF 🖕🖕.
+                To prevent accidental or malicious destruction from extensions, HPR actively filters and blocks
+                dangerous commands. If you plan/planned to use dangerous commands, FUCK OFF 🖕🖕.
               </p>
               <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);">
                 <strong>Some examples of blocked commands:</strong><br>
-                <code>rm</code>, <code>rmdir</code>, <code>chmod</code>, <code>sudo</code>, <code>su</code>, <code>mkfs</code>, <code>fdisk</code>, <code>shutdown</code>, <code>reboot</code>, <code>curl</code>, <code>wget</code>, <code>python</code>, <code>bash</code>, <code>del</code>, <code>reg</code>, <code>apt</code>, <code>pip</code>, <code>systemctl</code>, and common shell injection patterns like <code>| sh</code> or <code>$(rm)</code>.
+                <code>rm</code>, <code>rmdir</code>, <code>chmod</code>, <code>sudo</code>, <code>su</code>,
+                <code>mkfs</code>, <code>fdisk</code>, <code>shutdown</code>, <code>reboot</code>, <code>curl</code>,
+                <code>wget</code>, <code>python</code>, <code>bash</code>, <code>del</code>, <code>reg</code>,
+                <code>apt</code>, <code>pip</code>, <code>systemctl</code>, and common shell injection patterns like
+                <code>| sh</code> or <code>$(rm)</code>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -307,52 +376,67 @@ HPR.startTracking_E()</pre>
           <!-- ── Alias Management ───────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-amber);">Alias Management</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            HPR provides high-performance lookup in Lua matching its internal configurations for mapping raw window names to user-friendly pretty-names.
+            HPR provides high-performance lookup in Lua matching its internal configurations for mapping raw window
+            names to user-friendly pretty-names.
           </p>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getAlias(command)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> (raw name) &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <div class="api-signature">HPR.getAlias_E(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>command: string</code> (raw name) &mdash; <strong>Returns:</strong>
+              <code>string</code> (aliased pretty name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Returns the user's defined alias pretty-name for a given application class (e.g. mapping <code>kitty</code> to <code>Terminal</code>).
+              Returns the user's defined alias pretty-name for a given application class (e.g. mapping
+              <code>kitty</code> to <code>Terminal</code>).
             </p>
           </div>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getAlias_Tab(command)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <div class="api-signature">HPR.getAlias_Tab_E(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (aliased pretty name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Returns the user's configured alias for browser tab patterns (website pretty-names).
             </p>
           </div>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getAlias_Project(command)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (aliased pretty name)</p>
+            <div class="api-signature">HPR.getAlias_Project_E(command)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>command: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (aliased pretty name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Returns the user's configured pretty alias for active development projects.
             </p>
           </div>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getReverseAlias(aliasName)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw name)</p>
+            <div class="api-signature">HPR.getReverseAlias_E(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (original raw name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Looks up the reverse cache of application aliases to resolve a pretty name (e.g. <code>Terminal</code>) back to its original raw identifier (e.g. <code>kitty</code>).
+              Looks up the reverse cache of application aliases to resolve a pretty name (e.g. <code>Terminal</code>)
+              back to its original raw identifier (e.g. <code>kitty</code>).
             </p>
           </div>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getReverseAlias_Tab(aliasName)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw tab)</p>
+            <div class="api-signature">HPR.getReverseAlias_Tab_E(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (original raw tab)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Resolves a pretty tab website alias back to the original raw web title representation.
             </p>
           </div>
 
           <div class="card api-card api-card--alias fade-in" style="padding: 28px; width: 100%;">
-            <div class="api-signature">HPR.getReverseAlias_Project(aliasName)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong> <code>string</code> (original raw project name)</p>
+            <div class="api-signature">HPR.getReverseAlias_Project_E(aliasName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>aliasName: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (original raw project name)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Resolves a pretty project name back to the original raw project workspace directory or file path keyword.
             </p>
@@ -364,10 +448,14 @@ HPR.startTracking_E()</pre>
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.registerBackend_E(...)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
-              <strong>Parameters:</strong> <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle)</code>
+              <strong>Parameters:</strong>
+              <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle)</code>
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Registers a completely new custom tracking backend dynamically. HPR's backend manager calls the registered functions during startup to inspect compositors and get current window classes/titles. For a detailed guide on using this, please consult the <a href="custom-backend.html" style="color: var(--accent-green);">Custom Backend Tutorial</a>.
+              Registers a completely new custom tracking backend dynamically. HPR's backend manager calls the registered
+              functions during startup to inspect compositors and get current window classes/titles. For a detailed
+              guide on using this, please consult the <a href="custom-backend.html"
+                style="color: var(--accent-green);">Custom Backend Tutorial</a>.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
@@ -386,28 +474,38 @@ HPR.startTracking_E()</pre>
           <!-- ── Event Hub & Messaging ──────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #38bdf8;">Event Hub &amp; Messaging</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            The Event Hub is HPR's high-performance messaging core, acting as a real-time bridge to dispatch lifecycle signals, system changes, or dynamic messages between C++ and Lua extensions.
+            The Event Hub is HPR's high-performance messaging core, acting as a real-time bridge to dispatch lifecycle
+            signals, system changes, or dynamic messages between C++ and Lua extensions.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
             <div class="api-signature">HPR.connect_E(eventName, callback)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>callback: function</code> &mdash; <strong>Returns:</strong> <code>int</code> (subscription ID)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>eventName: string</code>, <code>callback: function</code> &mdash;
+              <strong>Returns:</strong> <code>int</code> (subscription ID)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Subscribes a Lua callback function to a system or custom named event. Whenever the event is emitted, your callback will run. Returns a unique subscription ID integer that must be saved to disconnect later.
+              Subscribes a Lua callback function to a system or custom named event. Whenever the event is emitted, your
+              callback will run. Returns a unique subscription ID integer that must be saved to disconnect later.
             </p>
             <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
-              <div class="callout-title">⚠️ CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+              <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
               <p style="line-height: 1.7; font-size: 0.85rem;">
-                Whenever you subscribe to an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie reference</strong>.
+                Whenever you subscribe to an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener
+                hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you
+                <strong>fail</strong> to call <code>HPR.disconnect_E</code>, this hook becomes a <strong>zombie
+                  reference</strong>.
               </p>
               <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
-                Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to application memory leaks, UI lag, and potential crashes.
-                <strong>Rule of thumb:</strong> every single subscription created with <code>HPR.connect_E</code> must have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
+                Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to application memory
+                leaks, UI lag, and potential crashes.
+                <strong>Rule of thumb:</strong> every single subscription created with <code>HPR.connect_E</code> must
+                have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
               </p>
             </div>
             <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
               <strong>Built-in system event names:</strong><br>
-              <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>, <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code><br>
+              <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
+              <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code><br>
               Any other string is treated as a custom dynamic event shared between extensions.
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -419,9 +517,12 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
             <div class="api-signature">HPR.emit_E(eventName, data?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>data: table (optional)</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>eventName: string</code>, <code>data: table (optional)</code> &mdash;
+              <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Broadcasts a named signal to the Event Hub, triggering all active callbacks connected to this event name. You can optionally pass a Lua table/value containing a custom payload structure.
+              Broadcasts a named signal to the Event Hub, triggering all active callbacks connected to this event name.
+              You can optionally pass a Lua table/value containing a custom payload structure.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.emit_E(<span class="code-string">"my_custom_alarm"</span>, { temp = 82.5, warning = <span class="code-keyword">true</span> })</pre>
@@ -430,9 +531,12 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
             <div class="api-signature">HPR.disconnect_E(eventName, subscriptionId)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>eventName: string</code>, <code>subscriptionId: int</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>eventName: string</code>, <code>subscriptionId: int</code> &mdash;
+              <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Unsubscribes a specific listener using its unique subscription ID. Always invoke this inside <code>onExit()</code> to release hooks and prevent memory leaks.
+              Unsubscribes a specific listener using its unique subscription ID. Always invoke this inside
+              <code>onExit()</code> to release hooks and prevent memory leaks.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
@@ -444,14 +548,20 @@ HPR.startTracking_E()</pre>
           <!-- ── Network & JSON Utilities ───────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #56c8d8;">Network &amp; JSON Utilities</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            HPR provides high-performance utility helpers to query REST APIs and serialize or parse JSON payloads without needing slow external scripting dependencies.
+            HPR provides high-performance utility helpers to query REST APIs and serialize or parse JSON payloads
+            without needing slow external scripting dependencies.
           </p>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.startServer_E(port, handler)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>port: int</code>, <code>handler: function</code> &mdash; <strong>Returns:</strong> <code>boolean</code> (success)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>port: int</code>, <code>handler: function</code> &mdash;
+              <strong>Returns:</strong> <code>boolean</code> (success)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Starts an embedded HTTP server on the given port, delegating all incoming requests to the provided Lua handler function. Returns <code>true</code> if the server bound successfully, <code>false</code> otherwise. The handler is called on the extension's background thread for each incoming request. Useful for exposing a local REST API or webhook receiver from within your extension.
+              Starts an embedded HTTP server on the given port, delegating all incoming requests to the provided Lua
+              handler function. Returns <code>true</code> if the server bound successfully, <code>false</code>
+              otherwise. The handler is called on the extension's background thread for each incoming request. Useful
+              for exposing a local REST API or webhook receiver from within your extension.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
@@ -465,13 +575,24 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.httpGet_E(host, path, secure?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>, <code>secure: boolean (optional, default true)</code> &mdash; <strong>Returns:</strong> <code>(string, int)</code> (body, status)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>,
+              <code>secure: boolean (optional, default true)</code> &mdash; <strong>Returns:</strong>
+              <code>(string, int)</code> (body, status)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. Since each extension is run inside its own background operating system thread, GET requests block only the calling extension's thread, keeping HPR completely responsive.
+              Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. Since
+              each extension is run inside its own background operating system thread, GET requests block only the
+              calling extension's thread, keeping HPR completely responsive.
             </p>
-            <div class="callout callout--danger fade-in" style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> On modern operating systems, passing <code>"localhost"</code> triggers the system's standard name resolution (<code>getaddrinfo</code>), which prioritizes the IPv6 loopback address <code>[::1]</code> over the IPv4 address <code>127.0.0.1</code>. If a local server binds strictly to the IPv4 address <code>127.0.0.1</code>, any request targeting <code>localhost</code> will fail. <strong>Always use literal IPv4 addresses like <code>"127.0.0.1"</code> instead of <code>"localhost"</code> for local communication.</strong>
+                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> On modern operating systems, passing
+                <code>"localhost"</code> triggers the system's standard name resolution (<code>getaddrinfo</code>),
+                which prioritizes the IPv6 loopback address <code>[::1]</code> over the IPv4 address
+                <code>127.0.0.1</code>. If a local server binds strictly to the IPv4 address <code>127.0.0.1</code>, any
+                request targeting <code>localhost</code> will fail. <strong>Always use literal IPv4 addresses like
+                  <code>"127.0.0.1"</code> instead of <code>"localhost"</code> for local communication.</strong>
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -481,13 +602,20 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.httpPost_E(host, path, body, secure?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>, <code>body: string</code>, <code>secure: boolean (optional, default true)</code> &mdash; <strong>Returns:</strong> <code>(string, int)</code> (responseBody, status)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>,
+              <code>body: string</code>, <code>secure: boolean (optional, default true)</code> &mdash;
+              <strong>Returns:</strong> <code>(string, int)</code> (responseBody, status)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Performs a synchronous HTTP or HTTPS POST request. Very useful for pushing tracked events out to local controllers or dispatching Discord webhooks.
+              Performs a synchronous HTTP or HTTPS POST request. Very useful for pushing tracked events out to local
+              controllers or dispatching Discord webhooks.
             </p>
-            <div class="callout callout--danger fade-in" style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> Just like GET requests, local POST targets should use the literal IPv4 <code>"127.0.0.1"</code> instead of <code>"localhost"</code>. See <code>httpGet_E</code> for the full explanation.
+                <strong>Loopback DNS Caveat (localhost vs. 127.0.0.1):</strong> Just like GET requests, local POST
+                targets should use the literal IPv4 <code>"127.0.0.1"</code> instead of <code>"localhost"</code>. See
+                <code>httpGet_E</code> for the full explanation.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -497,9 +625,15 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.parseISO8601_E(str)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>str: string</code> (ISO 8601 datetime) &mdash; <strong>Returns:</strong> <code>uint64</code> (Unix timestamp in milliseconds, or <code>0</code> on parse failure)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>str: string</code> (ISO 8601 datetime) &mdash;
+              <strong>Returns:</strong> <code>uint64</code> (Unix timestamp in milliseconds, or <code>0</code> on parse
+              failure)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Parses an ISO 8601 datetime string (e.g. <code>"2024-05-21T14:30:00.500Z"</code>) and returns the corresponding Unix timestamp in milliseconds. Subsecond precision up to milliseconds is preserved. Returns <code>0</code> if the string cannot be parsed. Commonly used when consuming timestamps from external REST APIs (such as Spotify or calendar services) that return ISO 8601 formatted dates.
+              Parses an ISO 8601 datetime string (e.g. <code>"2024-05-21T14:30:00.500Z"</code>) and returns the
+              corresponding Unix timestamp in milliseconds. Subsecond precision up to milliseconds is preserved. Returns
+              <code>0</code> if the string cannot be parsed. Commonly used when consuming timestamps from external REST
+              APIs (such as Spotify or calendar services) that return ISO 8601 formatted dates.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> ms = HPR.parseISO8601_E(<span class="code-string">"2024-05-21T14:30:00.500Z"</span>)
@@ -509,9 +643,13 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.parseJSON_E(jsonStr, fieldPath?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>jsonStr: string</code>, <code>fieldPath: string (optional)</code> &mdash; <strong>Returns:</strong> <code>table or any</code></p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>jsonStr: string</code>, <code>fieldPath: string (optional)</code>
+              &mdash; <strong>Returns:</strong> <code>table or any</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              A fast convenience transmuter that instantly translates a raw JSON string into a Lua table, sparing you from bundling slow manual string parsers. An optional dot-separated key path can be passed to pluck nested elements directly.
+              A fast convenience transmuter that instantly translates a raw JSON string into a Lua table, sparing you
+              from bundling slow manual string parsers. An optional dot-separated key path can be passed to pluck nested
+              elements directly.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> data = HPR.parseJSON_E(rawJson)
@@ -521,9 +659,12 @@ HPR.startTracking_E()</pre>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.toJSON_E(luaTable)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>luaTable: table</code> &mdash; <strong>Returns:</strong> <code>string</code> (JSON representation)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>luaTable: table</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (JSON representation)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              A convenience utility that serializes a standard Lua table into a minified JSON string representation, ready for outgoing POST requests.
+              A convenience utility that serializes a standard Lua table into a minified JSON string representation,
+              ready for outgoing POST requests.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> jsonStr = HPR.toJSON_E({ name = <span class="code-string">"firefox"</span>, active = <span class="code-keyword">true</span> })</pre>
@@ -533,14 +674,19 @@ HPR.startTracking_E()</pre>
           <!-- ── Database Operations ────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a78bfa;">Database Operations</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            HPR gives every extension direct access to its SQLite database. All extensions share the same database file, so choose unique table names to avoid conflicts.
+            HPR gives every extension direct access to its SQLite database. All extensions share the same database file,
+            so choose unique table names to avoid conflicts.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
             <div class="api-signature">HPR.dbExecute_E(sql, params?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash;
+              <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Executes a write SQL statement (CREATE, INSERT, UPDATE, DELETE) against HPR's SQLite database. The optional second argument is a Lua table of strings bound to <code>?</code> placeholders in the SQL query, preventing SQL injection. Always use parameterized queries when inserting user-derived data.
+              Executes a write SQL statement (CREATE, INSERT, UPDATE, DELETE) against HPR's SQLite database. The
+              optional second argument is a Lua table of strings bound to <code>?</code> placeholders in the SQL query,
+              preventing SQL injection. Always use parameterized queries when inserting user-derived data.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Create a table</span>
@@ -561,9 +707,12 @@ HPR.dbExecute_E(
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
             <div class="api-signature">HPR.dbQuery_E(sql, params?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> <code>table</code> (array of row tables)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash;
+              <strong>Returns:</strong> <code>table</code> (array of row tables)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Executes a read SQL statement (SELECT) and returns the results as a Lua table. Each element in the returned table is a row, represented as a Lua table with column names as keys.
+              Executes a read SQL statement (SELECT) and returns the results as a Lua table. Each element in the
+              returned table is a row, represented as a Lua table with column names as keys.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"select key, value from my_data;"</span>)
@@ -576,9 +725,12 @@ HPR.dbExecute_E(
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
             <div class="api-signature">HPR.getLoadedHistDbPath_E()</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> none &mdash; <strong>Returns:</strong> <code>string</code> (full absolute file path)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> none &mdash; <strong>Returns:</strong> <code>string</code> (full absolute
+              file path)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Returns the absolute, resolved filesystem path of the currently loaded historical database. Returns an empty string if HPR is currently in live-tracking mode.
+              Returns the absolute, resolved filesystem path of the currently loaded historical database. Returns an
+              empty string if HPR is currently in live-tracking mode.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> histPath = HPR.getLoadedHistDbPath_E()
@@ -588,9 +740,14 @@ HPR.dbExecute_E(
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a78bfa;">
             <div class="api-signature">HPR.dbQueryHistorical_E(sql, params?)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash; <strong>Returns:</strong> <code>table</code> (array of rows)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>sql: string</code>, <code>params: table (optional)</code> &mdash;
+              <strong>Returns:</strong> <code>table</code> (array of rows)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Executes a read SQL query against the currently active historical database file (set during a <code>"LOAD_DATABASE_SINGULAR"</code> calendar switch). This is a safe, high-level helper that completely abstracts database opening, folder traversal, and closing operations. Blocks for up to 5 seconds waiting for the async historical DB load to complete before running the query.
+              Executes a read SQL query against the currently active historical database file (set during a
+              <code>"LOAD_DATABASE_SINGULAR"</code> calendar switch). This is a safe, high-level helper that completely
+              abstracts database opening, folder traversal, and closing operations. Blocks for up to 5 seconds waiting
+              for the async historical DB load to complete before running the query.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> rows = HPR.dbQueryHistorical_E(<span class="code-string">"select song_name from spotify_songs;"</span>)</pre>
@@ -600,14 +757,23 @@ HPR.dbExecute_E(
           <!-- ── UI Integration ─────────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #f472b6;">UI Integration</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            Extensions can push data directly into HPR's Slint UI and register callbacks for UI events. Values are converted from Lua types to Slint types automatically — strings, numbers, booleans, arrays of structs are all supported. For a step-by-step guide on building a UI-connected extension, see the <a href="custom-app-extension.html" style="color: var(--accent-green);">Custom App Extension Tutorial</a>.
+            Extensions can push data directly into HPR's Slint UI and register callbacks for UI events. Values are
+            converted from Lua types to Slint types automatically — strings, numbers, booleans, arrays of structs are
+            all supported. For a step-by-step guide on building a UI-connected extension, see the <a
+              href="custom-app-extension.html" style="color: var(--accent-green);">Custom App Extension Tutorial</a>.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #f472b6;">
             <div class="api-signature">HPR.setUiProperty_E(name, value)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>name: string</code>, <code>value: any</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code>, <code>value: any</code> &mdash;
+              <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Sets a named property on the root Slint UI component. The property name must exactly match an <code>in property</code> defined in <code>app-window.slint</code>. HPR converts the Lua value to a C++ intermediate on the extension thread, then dispatches the Slint update to the main UI thread. Supported types: <code>string</code>, <code>number</code>, <code>boolean</code>, <code>table</code> (array → Slint model, key-value → Slint struct). If the UI is not yet loaded, the call is silently ignored.
+              Sets a named property on the root Slint UI component. The property name must exactly match an
+              <code>in property</code> defined in <code>app-window.slint</code>. HPR converts the Lua value to a C++
+              intermediate on the extension thread, then dispatches the Slint update to the main UI thread. Supported
+              types: <code>string</code>, <code>number</code>, <code>boolean</code>, <code>table</code> (array → Slint
+              model, key-value → Slint struct). If the UI is not yet loaded, the call is silently ignored.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Set a simple string property</span>
@@ -622,13 +788,18 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #f472b6;">
-            <div class="api-signature">HPR.registerUiCallback(name, luaFunction)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function</code> &mdash; <strong>Returns:</strong> nothing</p>
+            <div class="api-signature">HPR.registerUiCallback_E(name, luaFunction)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function</code> &mdash;
+              <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Registers a Lua function as a handler for a Slint callback. When the named callback is triggered from the Slint UI (e.g. a button click), HPR invokes your Lua function. The callback name must exactly match a <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently ignored.
+              Registers a Lua function as a handler for a Slint callback. When the named callback is triggered from the
+              Slint UI (e.g. a button click), HPR invokes your Lua function. The callback name must exactly match a
+              <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently
+              ignored.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
-              <pre>HPR.registerUiCallback(<span class="code-string">"myButtonClicked"</span>, <span class="code-keyword">function</span>()
+              <pre>HPR.registerUiCallback_E(<span class="code-string">"myButtonClicked"</span>, <span class="code-keyword">function</span>()
     <span class="code-fn">print</span>(<span class="code-string">"Button was clicked in the UI!"</span>)
 <span class="code-keyword">end</span>)</pre>
             </div>
@@ -637,14 +808,19 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
           <!-- ── Time & Date Utilities ───────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Time &amp; Date Utilities</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            HPR exposes its internal time formatting and parsing functions to Lua. All time values are in milliseconds unless noted otherwise.
+            HPR exposes its internal time formatting and parsing functions to Lua. All time values are in milliseconds
+            unless noted otherwise.
           </p>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.formatTime_HHMMSS_E(ms)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (milliseconds) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>ms: int</code> (milliseconds) &mdash; <strong>Returns:</strong>
+              <code>string</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Converts a duration in milliseconds to a human-readable <code>"HH:MM:SS"</code> formatted string. Commonly used for displaying tracked time in the UI.
+              Converts a duration in milliseconds to a human-readable <code>"HH:MM:SS"</code> formatted string. Commonly
+              used for displaying tracked time in the UI.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> formatted = HPR.formatTime_HHMMSS_E(5025000)
@@ -652,51 +828,74 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
             </div>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.convertToDate_DDMMYY_E(ms)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong>
+              <code>string</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Converts a Unix timestamp in milliseconds to a date string in <code>"DD-MM-YY"</code> format.
             </p>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.convertToDate_MMYY_E(ms)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong>
+              <code>string</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Converts a Unix timestamp in milliseconds to a date string in <code>"MM-YY"</code> format (month and year only).
+              Converts a Unix timestamp in milliseconds to a date string in <code>"MM-YY"</code> format (month and year
+              only).
             </p>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.convertToTime_HHMMSS_12_E(ms)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>ms: int</code> (Unix timestamp in ms) &mdash; <strong>Returns:</strong>
+              <code>string</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Converts a Unix timestamp in milliseconds to a 12-hour time string in <code>"HH:MM:SS AM/PM"</code> format.
+              Converts a Unix timestamp in milliseconds to a 12-hour time string in <code>"HH:MM:SS AM/PM"</code>
+              format.
             </p>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.parseDate_DDMMYY_E(dateStr)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash;
+              <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Parses a <code>"DD-MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds. The inverse of <code>convertToDate_DDMMYY_E</code>.
+              Parses a <code>"DD-MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds.
+              The inverse of <code>convertToDate_DDMMYY_E</code>.
             </p>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.parseDate_MMYY_E(dateStr)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>dateStr: string</code> (<code>"MM-YY"</code>) &mdash;
+              <strong>Returns:</strong> <code>int</code> (Unix timestamp in ms)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Parses a <code>"MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds. The inverse of <code>convertToDate_MMYY_E</code>.
+              Parses a <code>"MM-YY"</code> date string and returns the corresponding Unix timestamp in milliseconds.
+              The inverse of <code>convertToDate_MMYY_E</code>.
             </p>
           </div>
 
-          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
+          <div class="card api-card fade-in"
+            style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-green);">
             <div class="api-signature">HPR.extractMMYY_from_DDMMYY_E(dateStr)</div>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash; <strong>Returns:</strong> <code>string</code> (<code>"MM-YY"</code>)</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>dateStr: string</code> (<code>"DD-MM-YY"</code>) &mdash;
+              <strong>Returns:</strong> <code>string</code> (<code>"MM-YY"</code>)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              Extracts the month-year portion from a full <code>"DD-MM-YY"</code> date string, returning just <code>"MM-YY"</code>. Useful for grouping daily records by month.
+              Extracts the month-year portion from a full <code>"DD-MM-YY"</code> date string, returning just
+              <code>"MM-YY"</code>. Useful for grouping daily records by month.
             </p>
           </div>
 
