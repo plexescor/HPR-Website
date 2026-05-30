@@ -293,18 +293,21 @@
             <div class="api-signature">HPR.readCsv_E(path, [key])</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory), <code>key: string|number|boolean</code> (optional) &mdash; 
-              <strong>Returns:</strong> <code>string|number|boolean</code> (if key requested) OR <code>table, table</code> (keys and values list if key omitted)
+              <strong>Returns:</strong> <code>string|number|boolean</code> (if key requested) OR <code>table</code> (key-value dictionary mapping if key omitted)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Reads and parses a CSV file located in HPR's designated extension directory (e.g. <code>~/.config/HPR/extensions/</code>). Note that the path argument is resolved relative to the global extensions directory root itself, not the specific extension's subdirectory. Absolute paths or parent traversals (like <code>../</code>) are blocked for security.
               If a specific key is requested, returns the parsed value for that key, automatically converting boolean text ("true"/"false") and literal numbers into Lua types, and trimming whitespace for them. If the file read fails or is denied access, an empty string <code>""</code> is returned.
-              If the key is omitted, it returns two Lua tables (lists): the first table contains all keys, and the second table contains their corresponding parsed values.
+              If the key is omitted, it returns a single Lua table (dictionary) mapping all keys directly to their corresponding parsed values (e.g., <code>{ ["usershit"] = true, ["enabled"] = false }</code>).
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Read specific key</span>
 <span class="code-keyword">local</span> val = HPR.readCsv_E(<span class="code-string">"config.csv"</span>, <span class="code-string">"enabled"</span>)
-<span class="code-comment">-- Read whole file</span>
-<span class="code-keyword">local</span> keys, values = HPR.readCsv_E(<span class="code-string">"config.csv"</span>)</pre>
+<span class="code-comment">-- Read whole file as a key-value dictionary</span>
+<span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"config.csv"</span>)
+<span class="code-keyword">for</span> key, value <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(data) <span class="code-keyword">do</span>
+    <span class="code-fn">print</span>(key .. <span class="code-string">": "</span> .. <span class="code-fn">tostring</span>(value))
+<span class="code-keyword">end</span></pre>
             </div>
           </div>
 
