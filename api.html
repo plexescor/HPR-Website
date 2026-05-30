@@ -277,6 +277,13 @@
               remain fully responsive. Useful for rate-limiting inside a callback or performing a one-shot delayed
               action without restructuring your tick loop.
             </p>
+            <div class="callout callout--info fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-cyan); background-color: var(--accent-cyan-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> Note on Long Sleeps & Exit Budget</strong><br>
+                Sleeping for long durations is absolutely fine. Internally, HPR breaks down your requested sleep time into <strong>50ms chunks</strong> so that the thread remains cleanly interruptible on shutdown. You can safely call <code>sleep_E</code> in <code>onExit()</code> or anywhere else for any amount of seconds. However, keep in mind that doing so will reduce your strict exit budget from 200ms to <strong>150ms</strong>, because up to 50ms (one chunk block) will be blown off by the sleep before the thread can proceed with shutdown logic!
+              </p>
+            </div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.sleep_E(<span class="code-keyword">2000</span>) <span class="code-comment">-- pause this extension thread for 2 seconds</span></pre>
             </div>
