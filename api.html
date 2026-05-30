@@ -292,11 +292,11 @@
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.readCsv_E(path, [key])</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
-              <strong>Parameters:</strong> <code>path: string</code> (relative path to CSV file), <code>key: string|number|boolean</code> (optional) &mdash; 
+              <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory), <code>key: string|number|boolean</code> (optional) &mdash; 
               <strong>Returns:</strong> <code>string|number|boolean</code> (if key requested) OR <code>table, table</code> (keys and values list if key omitted)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Reads and parses a CSV file located in HPR's designated extension directory (e.g. <code>~/.config/HPR/extensions/</code>). Absolute paths or parent traversals (like <code>../</code>) are blocked for security.
+              Reads and parses a CSV file located in HPR's designated extension directory (e.g. <code>~/.config/HPR/extensions/</code>). Note that the path argument is resolved relative to the global extensions directory root itself, not the specific extension's subdirectory. Absolute paths or parent traversals (like <code>../</code>) are blocked for security.
               If a specific key is requested, returns the parsed value for that key, automatically converting boolean text ("true"/"false") and literal numbers into Lua types, and trimming whitespace for them. If the file read fails or is denied access, an empty string <code>""</code> is returned.
               If the key is omitted, it returns two Lua tables (lists): the first table contains all keys, and the second table contains their corresponding parsed values.
             </p>
@@ -311,11 +311,11 @@
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.writeCsv_E(path, key, value)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
-              <strong>Parameters:</strong> <code>path: string</code> (relative path), <code>key: string|number|boolean</code>, <code>value: string|number|boolean</code> &mdash; 
+              <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory), <code>key: string|number|boolean</code>, <code>value: string|number|boolean</code> &mdash; 
               <strong>Returns:</strong> <code>boolean</code> (success status)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Writes or updates a key-value entry in the specified CSV file under the extension directory.
+              Writes or updates a key-value entry in the specified CSV file. Note that the path argument is resolved relative to the global extensions directory root itself, not the specific extension's subdirectory.
               Nothing is quoted in the CSV file, even strings. Automatically creates necessary subdirectories if requested. If the key already exists in the file, it performs an in-place update (upsert) to preserve the rest of the CSV entries. Returns <code>true</code> on success, or <code>false</code> on failure or access denial (printing standard error to <code>std::cerr</code>).
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -326,11 +326,11 @@
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.deleteCsv_E(path)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
-              <strong>Parameters:</strong> <code>path: string</code> (relative path to CSV file) &mdash; 
+              <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory) &mdash; 
               <strong>Returns:</strong> <code>boolean</code> (true if the file was deleted successfully, false otherwise)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Deletes the specified CSV file inside the extensions workspace directory.
+              Deletes the specified CSV file. Note that the path argument is resolved relative to the global extensions directory root itself, not the specific extension's subdirectory.
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               <strong>Note on Shared Workspace Design:</strong> Please be aware that the extensions workspace is a shared environment. It operates essentially as a collaborative "wild west" by design, allowing any extension to read, modify, or delete database and configuration files created by any other extension to foster deep script integration and open data exchanges.
