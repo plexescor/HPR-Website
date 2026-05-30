@@ -752,7 +752,7 @@ HPR.startTracking_E()</pre>
               callback will run. Returns a unique subscription ID integer that must be saved to disconnect later.
             </p>
             <div class="callout callout--amber fade-in" style="margin-bottom: 16px;">
-              <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+              <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions as failing to do so WILL cause Crashes and Segfaults!</div>
               <p style="line-height: 1.7; font-size: 0.85rem;">
                 Whenever you subscribe to an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener
                 hook in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you
@@ -760,8 +760,7 @@ HPR.startTracking_E()</pre>
                   reference</strong>.
               </p>
               <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
-                Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to application memory
-                leaks, UI lag, and potential crashes.
+                Zombie hooks lead to invalid memory access on reloads, which <strong>WILL cause application crashes and especially segfaults</strong>.
                 <strong>Rule of thumb:</strong> every single subscription created with <code>HPR.connect_E</code> must
                 have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
               </p>
@@ -800,7 +799,7 @@ HPR.startTracking_E()</pre>
               <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Unsubscribes a specific listener using its unique subscription ID. Always invoke this inside
-              <code>onExit()</code> to release hooks and prevent memory leaks.
+              <code>onExit()</code> because failing to do so WILL cause crashes and especially segfaults.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()

@@ -390,7 +390,7 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           <p style="margin-top: 8px;">
             If your extension exits, errors out, or is reloaded, and you <strong>did not</strong> explicitly disconnect,
             the C++ engine will still have that old pointer. The next time the event fires, C++ will try to execute a
-            Lua function that no longer exists, causing massive memory leaks or an instant hard crash.
+            Lua function that no longer exists, which WILL cause instant hard crashes and especially segfaults.
           </p>
         </div>
 

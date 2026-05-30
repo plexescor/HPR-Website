@@ -445,7 +445,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
             <strong> Teardown Warning: Strict 200ms Exit grace period!</strong><br>
             Whenever you connect to Event Hub events via <code>HPR.connect_E</code>, you must disconnect them inside
-            <code>onExit()</code> via <code>HPR.disconnect_E</code> to avoid memory leaks. However, keep your
+            <code>onExit()</code> via <code>HPR.disconnect_E</code> because failing to do so WILL cause crashes and especially segfaults. However, keep your
             <code>onExit()</code> handler fast! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace
             period to complete its teardown. If your code takes longer than 200ms, HPR will forcefully detach the
             extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with

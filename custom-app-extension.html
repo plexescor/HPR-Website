@@ -763,13 +763,12 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
             <code
               style="color: var(--text-primary); font-weight: 600;">HPR.disconnect_E("eventName", subscription_id)</code><br>
             Stops listening to the event. You pass the same <code>subscription_id</code> returned by
-            <code>connect_E</code>. <b>Always do this inside your <code>onExit()</code> function to prevent memory
-              leaks!</b>
+            <code>connect_E</code>. <b>Always do this inside your <code>onExit()</code> function because failing to do so WILL cause crashes and especially segfaults!</b>
           </li>
         </ul>
 
         <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
-          <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions to Avoid Memory Leaks!</div>
+          <div class="callout-title"> CRITICAL: Always Disconnect Subscriptions as failing to do so WILL cause Crashes and Segfaults!</div>
           <p style="line-height: 1.7; font-size: 0.85rem;">
             Whenever you tune into an event using <code>HPR.connect_E</code>, HPR allocates a persistent listener hook
             in its C++ event registry. If your extension shuts down, gets reloaded, or is disabled, and you
@@ -777,8 +776,7 @@ in property &lt;int&gt;             trackedTime_Spotify_S;</pre>
               reference</strong>.
           </p>
           <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px;">
-            Zombie hooks prevent the Lua garbage collector from freeing up memory, leading to major <strong>application memory
-            leaks, UI lag, and potential crashes</strong>.
+            Zombie hooks lead to invalid memory access on reloads, which <strong>WILL cause application crashes and especially segfaults</strong>.
             <strong>Rule of thumb:</strong> Every single subscription created with <code>HPR.connect_E</code> must have
             a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
           </p>
@@ -881,7 +879,7 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           Use this hook to write any unsaved tracking data to the SQLite database (ensuring zero data loss on exit) and
-          cleanly disconnect all active Event Hub listeners to keep the operating system's memory clean and leak-free.
+          cleanly disconnect all active Event Hub listeners because failing to do so WILL cause application crashes and especially segfaults.
         </p>
 
         <div class="callout callout--danger fade-in"
@@ -904,7 +902,7 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
     <span class="code-comment">-- Force a final database save to persist today's listening time</span>
     <span class="code-fn">flushToDatabase</span>()
     
-    <span class="code-comment">-- Clean up event subscriptions to prevent memory leaks</span>
+    <span class="code-comment">-- Clean up event subscriptions because failing to do so WILL cause crashes and segfaults</span>
     HPR.disconnect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, midnightId)
     HPR.disconnect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, pastDbId)
     HPR.disconnect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, liveDbId)
@@ -1096,7 +1094,7 @@ HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</s
             • <b>Historical DB Queries</b> — Safely querying loaded past database files directly using
             <code>HPR.dbQueryHistorical_E()</code><br>
             • <b>Lifecycle Teardown &amp; Safety</b> — Implementing the <code>onExit()</code> hook to write final data
-            and unregistering subscription IDs with <code>HPR.disconnect_E()</code> to avoid memory leaks
+             and unregistering subscription IDs with <code>HPR.disconnect_E()</code> because failing to do so WILL cause crashes and especially segfaults
           </p>
           <p style="margin-top: 12px;">
             For a complete reference of all available API functions, see the <a href="api.html"
