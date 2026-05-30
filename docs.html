@@ -67,6 +67,7 @@
             </p>
             <div class="hero-actions" style="justify-content: center;">
               <a href="#guides" class="btn btn--primary">↓ Read the Docs</a>
+              <a href="quickstart.html" class="btn btn--primary" style="background: var(--accent-amber); color: var(--bg-primary);">QuickStart Guide →</a>
               <a href="api.html" class="btn btn--ghost">Extension API →</a>
             </div>
           </div>
@@ -470,6 +471,18 @@
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
           Comprehensive guides and references for writing custom HPR extensions.
         </p>
+
+        <!-- QuickStart & Mistakes Callout -->
+        <div class="callout callout--amber fade-in" style="margin-bottom: 32px; border-left-color: var(--accent-green);">
+          <div class="callout-title" style="color: var(--accent-green);">🚀 QuickStart Guide & Common Mistakes</div>
+          <p style="line-height: 1.7; font-size: 0.95rem; margin: 0;">
+            New to building extensions for HPR? We highly recommend starting with our new 
+            <a href="quickstart.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600;">QuickStart Guide</a>. 
+            It contains step-by-step instructions for absolute beginners, including how to configure your first Lua file. 
+            Additionally, make sure to read the <strong>Common Mistakes</strong> section at the bottom of the QuickStart page to learn about crucial execution budgets, variable scoping rules, and event listener safety to ensure your extensions do not cause system crashes or segfaults.
+          </p>
+        </div>
+
         <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>

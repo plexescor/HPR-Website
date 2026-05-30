@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="HPR Beginner QuickStart Guide. Learn how to write your first Lua extension in 3 minutes.">
+  <title>HPR — Beginner QuickStart Guide</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+      --accent-amber: #e05252;
+      --accent-amber-dim: rgba(224, 82, 82, 0.10);
+    }
+
+    .hero-badge-dot {
+      background: #ff8c00;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="hero grid-bg">
+      <div class="container">
+        <div class="hero-grid" style="grid-template-columns: 1fr;">
+          <div class="hero-text" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              Hey friend! Let's build something awesome together.
+            </div>
+            <h1>QuickStart <span class="text-accent">Guide</span></h1>
+            <p class="hero-tagline" style="margin: 0 auto 30px auto; max-width: 600px;">
+              Writing extensions for HPR is incredibly simple once you get the basics down. Let's skip the dry theory
+              and build your very first working tracker in 3 minutes flat!
+            </p>
+            <div class="hero-actions" style="justify-content: center;">
+              <a href="#setup" class="btn btn--primary">Let's Go! ↓</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folder Section (Step 1) -->
+    <section id="setup" class="section section-border anchor">
+      <div class="container">
+        <span class="section-label">Step 1</span>
+        <h2 class="section-title">Where do files go?</h2>
+        <p class="section-desc" style="margin-bottom: 24px;">
+          Before doing anything, find your system's designated extensions folder. HPR will look inside this directory
+          recursively when it boots up:
+        </p>
+        <div class="feature-grid feature-grid--2" style="margin-bottom: 32px; gap: 16px;">
+          <div class="card" style="padding: 24px; width: 100%;">
+            <h4 style="color: var(--text-primary); margin-bottom: 8px;">🐧 Linux</h4>
+            <pre
+              style="font-family: var(--font-mono); font-size: 13px; color: var(--accent-green);">~/.config/HPR/extensions/</pre>
+          </div>
+          <div class="card" style="padding: 24px; width: 100%;">
+            <h4 style="color: var(--text-primary); margin-bottom: 8px;">🪟 Windows</h4>
+            <pre
+              style="font-family: var(--font-mono); font-size: 13px; color: var(--accent-green);">%APPDATA%\HPR\HPR_Config\extensions\</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Minimal 5 Lines -->
+    <section id="minimal" class="section section-border">
+      <div class="container">
+        <span class="section-label">Step 2</span>
+        <h2 class="section-title">The Absolute 5-Line Minimum</h2>
+        <p class="section-desc" style="margin-bottom: 20px;">
+          Create a file called <code>hello.lua</code> in that folder. To load successfully, HPR always needs metadata
+          variables defined right at the top. Here is the absolute smallest extension that runs:
+        </p>
+
+        <div class="code-block" style="margin-bottom: 20px;">
+          <span class="code-label">hello.lua</span>
+          <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
+<span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"Mini"</span>
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Hello from inside HPR!"</span>)
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <!-- Explanation of metadata -->
+        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Do I really need HPR.authorName
+          and HPR.extensionName?</h3>
+        <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+          Technically, these lines are <strong>not strictly required</strong> to make your code run—your script will
+          still execute fine without them! However, defining them is a <strong>strongly recommended best
+            practice</strong>. They register your extension inside HPR's <strong>Loaded Extensions UI</strong>. The C++
+          host application queries these variables at the very top level of your script (before your thread is even
+          spawned) to display your name and extension title in the manager panel. If you omit them or put them inside a
+          function, your extension will still work under the hood, but it will show up as blank or unregistered in the
+          user interface!
+        </p>
+
+        <div class="callout callout--amber fade-in" style="margin-bottom: 20px;">
+          <div class="callout-title" style="color: var(--accent-amber);">⚠️ No Hot Reloading!</div>
+          <p style="margin: 0; font-size: 0.9rem;">
+            Because extensions run on raw C++ backend threads, HPR does <strong>not</strong> hot-reload Lua files.
+            Whenever you make code modifications, <strong>you must restart HPR</strong> to see your changes!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Ticking & Window -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label">Step 3</span>
+        <h2 class="section-title">Ticking and Getting the Active Window</h2>
+        <p class="section-desc" style="margin-bottom: 20px;">
+          Let's make our extension actually do something useful. By returning a number from <code>init()</code>, we can
+          set a tick interval (in milliseconds) and receive window details inside <code>onTick(delta)</code>:
+        </p>
+
+        <div class="code-block" style="margin-bottom: 24px;">
+          <span class="code-label">hello.lua</span>
+          <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
+<span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"ActiveWatcher"</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-keyword">return</span> <span class="code-keyword">1000</span> <span class="code-comment">-- Ticks every 1000ms (1 second)</span>
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-keyword">local</span> currentApp = <span class="code-fn">HPR.getCurrentWindow_E</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Currently focused: "</span> .. currentApp .. <span class="code-string">" | Delta: "</span> .. delta .. <span class="code-string">"ms"</span>)
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <!-- Explanation of Delta parameter and init return -->
+        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Breaking Down the Timing</h3>
+        <p class="section-desc" style="margin-bottom: 16px; max-width: 100%;">
+          Let's make sure we understand exactly how HPR manages timing under the hood:
+        </p>
+        <ul style="list-style: none; padding-left: 0; margin-bottom: 24px;">
+          <li style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-green);">What is the return value of init()?</strong><br>
+            It sets the tick schedule (in milliseconds) specifying how frequently the HPR thread manager will call your
+            <code>onTick()</code> function. It is important to know that <strong>if you don't return anything from
+              init(), HPR defaults to firing onTick() every 1000ms (1 second)</strong>.
+          </li>
+          <li style="margin-bottom: 16px;">
+            <strong style="color: var(--accent-green);">What is the delta parameter in plain english?</strong><br>
+            The <code>delta</code> parameter represents the actual, real-world milliseconds that have passed since your
+            last tick. In a perfect world, if you return <code>1000</code> from <code>init()</code>, delta would be
+            exactly <code>1000.0</code>. But if your operating system is heavily loaded, performing CPU-heavy
+            compilation, or scheduling background writes, the thread sleep might run slightly late. For example, your
+            tick might fire at <code>1023ms</code>. Using the actual <code>delta</code> value instead of assuming a
+            constant 1000ms lets you perform incredibly precise timing calculations!
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Step 4: Event-driven & Complete master -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label">Step 4</span>
+        <h2 class="section-title">The Complete, Safe Masterpiece</h2>
+        <div style="margin-bottom: 32px;">
+          <!-- 1. What the Event Hub actually is -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">First, what is HPR's Event Hub?</h3>
+          <p class="section-desc" style="margin-bottom: 20px; max-width: 100%;">
+            Under the hood, HPR is a beautifully multi-threaded beast. It runs several independent systems all at the same time on separate background threads: the window tracker, the database writer, the daily midnight rollover scheduler, and your custom Lua extensions. The <strong>Event Hub</strong> is HPR's internal messaging backbone that lets all these isolated systems talk to each other by broadcasting signals. 
+          </p>
+          <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+            Think of the Event Hub like a <strong>cork bulletin board</strong> in the middle of HPR's headquarters. Any system can walk up and pin a message to it. Any extension that is subscribed to that specific message type gets notified instantly the exact millisecond it is pinned—no periodic checking required! Instead of your extension constantly asking <em>"hey, did the window change yet?"</em> every single second, HPR's window tracker itself walks up and taps your extension on the shoulder the instant a change occurs.
+          </p>
+
+          <!-- 2. Difference between polling and events -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Polling (onTick) vs. Event-Driven (connect_E)</h3>
+          <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+            The <code>onTick</code> polling approach we built in Step 3 works fine, but let's be honest: it is kind of dumb. Your extension has to wake up every few hundred milliseconds, run code to check the state, and go back to sleep—even if you've been working in the exact same text editor window for three hours straight! That is a waste of clock cycles. 
+            <br><br>
+            <strong>Event-driven programming is way smarter.</strong> Your callback function only wakes up and executes when something actually happens in the real world. For window tracking in particular, events are the correct tool because users do not switch windows on a fixed, predictable schedule.
+          </p>
+
+          <!-- 3. connect_E and what it returns -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">How connect_E works (and your subscription receipt)</h3>
+          <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+            To tune in, we call <code>HPR.connect_E()</code>. This function takes two arguments: the name of the event string we want to listen to, and a callback function to run when the event occurs. 
+            <br><br>
+            Crucially, <code>HPR.connect_E()</code> returns a <strong>subscription ID integer</strong>. Think of this ID as your <strong>claim receipt</strong>. It is the only way HPR knows how to identify your listener, and it is the only way you can cancel that subscription later. Because of this, you should always save this ID in a variable at the very top of your script so that your entire file has access to it.
+          </p>
+
+          <!-- 4. WHY you must disconnect -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">The C++ use-after-free problem: Why you MUST disconnect</h3>
+          <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+            When HPR runs your extension, it spins up an isolated Lua virtual machine. While this VM is alive, your callback function exists in memory, and HPR's C++ event registry holds a raw memory pointer pointing directly to that Lua function. 
+            <br><br>
+            When HPR shuts down or restarts your extension, the Lua VM is completely destroyed, and the memory holding your callback function is freed. However, HPR's C++ event registry still has that raw pointer sitting in its list! If you don't clean it up, the next time a window change occurs, HPR's C++ engine will try to execute the function at that old memory pointer. This is a classic <strong>use-after-free bug</strong>, and it will immediately trigger a fatal <strong>segmentation fault (segfault)</strong> that instantly crashes the entire HPR application!
+            <br><br>
+            Calling <code>HPR.disconnect_E()</code> inside your <code>onExit()</code> handler tells HPR's C++ engine to remove that raw pointer safely before the Lua VM gets torn down. This is why disconnecting <strong>must</strong> happen inside the <code>onExit()</code> hook and nowhere else!
+          </p>
+
+          <!-- Explanation of WINDOW_CHANGED data payload -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">What does WINDOW_CHANGED actually pass to us?</h3>
+          <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+            When the <code>WINDOW_CHANGED</code> event fires, the Event Hub passes <strong>a table with detailed window information</strong> directly to your callback function's argument. Specifically, this table contains two highly useful string properties: <code>data.fromWindow</code> (the class name of the window you just left) and <code>data.toWindow</code> (the class name of the window you just focused, e.g. <code>"chrome"</code>, <code>"code"</code>, or <code>"spotify"</code>). This makes writing complex, event-driven window transitions effortless!
+          </p>
+        </div>
+
+        <p class="section-desc" style="margin-bottom: 16px;">
+          Here is the complete, robust, and safe template. Copy and paste it to see events in action:
+        </p>
+
+        <div class="code-block" style="margin-bottom: 32px;">
+          <span class="code-label">hello.lua</span>
+          <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
+<span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"EventMaster"</span>
+
+<span class="code-keyword">local</span> changeSubId = <span class="code-keyword">nil</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Starting EventMaster..."</span>)
+    
+    <span class="code-comment">-- Listen to a REAL built-in event when focus changes.</span>
+    <span class="code-comment">-- data will be a table containing fromWindow and toWindow strings</span>
+    changeSubId = <span class="code-fn">HPR.connect_E</span>(<span class="code-string">"WINDOW_CHANGED"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-fn">print</span>(<span class="code-string">"[Event] Active application class switched to: "</span> .. data.toWindow)
+    <span class="code-keyword">end</span>)
+    
+    <span class="code-keyword">return</span> <span class="code-keyword">3000</span> <span class="code-comment">-- Run onTick every 3 seconds</span>
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-fn">print</span>(<span class="code-string">"[Tick] Tick delta: "</span> .. delta .. <span class="code-string">"ms"</span>)
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Shutting down cleanly..."</span>)
+    
+    <span class="code-comment">-- CRITICAL: Unregister our event hook to prevent crashes!</span>
+    <span class="code-keyword">if</span> changeSubId <span class="code-keyword">then</span>
+        <span class="code-fn">HPR.disconnect_E</span>(<span class="code-string">"WINDOW_CHANGED"</span>, changeSubId)
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+
+    <!-- Conclusion Section -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label">Wrap Up</span>
+        <h2 class="section-title">You built it!</h2>
+        <p class="section-desc" style="margin-bottom: 24px;">
+          Look at you go! In just a few minutes, you've gone from an empty text file to writing fully event-driven, multi-threaded C++ integrations. 
+        </p>
+        <p class="section-desc" style="margin-bottom: 32px;">
+          You now know the three core lifecycle hooks (<code>init</code>, <code>onTick</code>, and <code>onExit</code>) which are the absolute bread and butter of every HPR extension ever written. You understand how the Event Hub handles message passing under the hood, and crucially, you know how to avoid use-after-free segfaults like an absolute pro. From here, the only real limit is what you decide to build!
+        </p>
+
+        <h3 style="color: var(--text-primary); margin-bottom: 20px;">What's Next?</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px;">
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="api.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">Full API Reference →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Every single function HPR exposes to Lua, documented in detail.</p>
+          </div>
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="custom-backend.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">Building a Custom Window Backend →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Add tracking support for any compositor or desktop environment.</p>
+          </div>
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="custom-app-extension.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">Active Media Monitoring & Spotify Tracker →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Track Spotify playback, build SQL schemas, push data to the Slint UI.</p>
+          </div>
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="comm-bw-extension.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">Event Hub & Burnout Detector →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Make extensions talk to each other and trigger OS notifications.</p>
+          </div>
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="aw-parasite-tutorial.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">AW Parasite Extension Tutorial →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Use HPR's HTTP client and JSON parser to import live browser activity.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Common Mistakes Section -->
+    <section id="mistakes" class="section section-border anchor">
+      <div class="container">
+        <span class="section-label" style="color: var(--accent-amber);">Troubleshooting</span>
+        <h2 class="section-title">Common Mistakes</h2>
+
+        <!-- The exact requested strong warning callout banner -->
+        <div class="card"
+          style="border: 2px solid var(--accent-amber); background: rgba(224, 82, 82, 0.08); padding: 24px; margin-bottom: 40px; text-align: center; width: 100%;">
+          <h3 style="color: var(--accent-amber); margin-bottom: 0; font-size: 1.3rem;">🚨 Refer to this section if you
+            have no idea what the fuck is going on.</h3>
+        </div>
+
+        <p class="section-desc" style="margin-bottom: 32px;">
+          Here are three classic traps beginners fall into, along with how to solve them like a pro:
+        </p>
+
+        <!-- Mistake 1 -->
+        <div class="card"
+          style="margin-bottom: 32px; padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">1. Forgetting to disconnect Event Hub listeners
+          </h3>
+          <p style="margin-bottom: 12px; color: var(--text-secondary);">
+            <strong>Why it happens:</strong> When you subscribe to events using <code>HPR.connect_E()</code>, the C++
+            host engine registers a persistent callback binding inside its global registry, pointing directly to your
+            extension's Lua state. When you exit, restart, or reload the extension, your script's isolated Lua virtual
+            machine is destroyed.
+          </p>
+          <p style="margin-bottom: 16px; color: var(--text-secondary);">
+            If you do not explicitly invoke <code>HPR.disconnect_E()</code>, HPR is left holding a dangling "zombie
+            pointer" targeting freed virtual memory. The very next time a tracking event fires, the C++ backend tries to
+            execute code at that invalid memory location, resulting in an instant, uncatchable <strong>segmentation
+              fault (segfault)</strong> that brings down the entire HPR application!
+          </p>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; margin-top: 16px;">
+            <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Subscribed, but left to rot</span>
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-comment">-- Completely missing disconnect!</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+
+            <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
+              <pre style="margin: 0;"><span class="code-keyword">local</span> subId = <span class="code-keyword">nil</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    subId = HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-comment">-- Clean up subscription safely</span>
+    <span class="code-keyword">if</span> subId <span class="code-keyword">then</span>
+        HPR.disconnect_E(<span class="code-string">"WINDOW_CHANGED"</span>, subId)
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mistake 2 -->
+        <div class="card"
+          style="margin-bottom: 32px; padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">2. Treating CSV paths as relative to your
+            subfolder</h3>
+          <p style="margin-bottom: 12px; color: var(--text-secondary);">
+            <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods
+            (like `readCsv_E`, `writeCsv_E`, etc.) are resolved relative to the global <strong>extensions root
+              directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
+          </p>
+          <p style="margin-bottom: 16px; color: var(--text-secondary);">
+            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>),
+            writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create
+            it right at the global root directory. You must explicitly specify your subfolder in the path argument!
+          </p>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; margin-top: 16px;">
+            <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Looks in extensions/settings.csv</span>
+<span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"settings.csv"</span>)</pre>
+            </div>
+
+            <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
+              <pre
+                style="margin: 0;"><span class="code-comment">-- Explicitly include your subfolder name</span>
+<span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"cool-addon/settings.csv"</span>)</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mistake 3 -->
+        <div class="card" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">3. Using "localhost" instead of "127.0.0.1"</h3>
+          <p style="margin-bottom: 12px; color: var(--text-secondary);">
+            <strong>Why it happens:</strong> Modern operating systems use Dual-Stack sockets and prioritize IPv6 by
+            default. When you provide the hostname string <code>"localhost"</code>, the DNS lookup layer resolves it to
+            the IPv6 loopback address (<code>::1</code>).
+          </p>
+          <p style="margin-bottom: 16px; color: var(--text-secondary);">
+            However, most legacy applications and local helper APIs (including standard ActivityWatch server backends)
+            bind strictly to the IPv4 address <code>127.0.0.1</code>. Targeting <code>"localhost"</code> causes HPR's
+            request to bounce off the IPv6 address and time out, resulting in empty responses or instant 502/refused
+            connection errors!
+          </p>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; margin-top: 16px;">
+            <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Fails or times out on IPv6 loopback resolution</span>
+<span class="code-keyword">local</span> body, status = HPR.httpGet_E(
+    <span class="code-string">"localhost:5600"</span>, 
+    <span class="code-string">"/api/0/buckets"</span>, 
+    <span class="code-keyword">false</span>
+)</pre>
+            </div>
+
+            <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
+              <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Bypasses DNS lookup and hits IPv4 directly</span>
+<span class="code-keyword">local</span> body, status = HPR.httpGet_E(
+    <span class="code-string">"127.0.0.1:5600"</span>, 
+    <span class="code-string">"/api/0/buckets"</span>, 
+    <span class="code-keyword">false</span>
+)</pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>

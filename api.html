@@ -765,17 +765,18 @@ HPR.startTracking_E()</pre>
                 have a matching <code>HPR.disconnect_E</code> inside your <code>onExit()</code> handler.
               </p>
             </div>
-            <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
-              <strong>Built-in system event names:</strong><br>
-              <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
-              <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code><br>
-              Any other string is treated as a custom dynamic event shared between extensions.
-            </div>
-            <div class="code-block" style="margin: 0; width: 100%;">
-              <pre><span class="code-keyword">local</span> subId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>(data)
-    <span class="code-fn">print</span>(<span class="code-string">"Day rolled over!"</span>)
+             <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
+               <strong>Built-in system event names:</strong><br>
+               <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
+               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code><br>
+               <em>Note on <code>WINDOW_CHANGED</code>:</em> Passes a Lua table payload containing <code>data.fromWindow</code> (previous window class name string) and <code>data.toWindow</code> (focused window class name string).<br>
+               Any other string is treated as a custom dynamic event shared between extensions.
+             </div>
+             <div class="code-block" style="margin: 0; width: 100%;">
+               <pre><span class="code-keyword">local</span> subId = HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, <span class="code-keyword">function</span>(data)
+    <span class="code-fn">print</span>(<span class="code-string">"Active window class changed to: "</span> .. data.toWindow)
 <span class="code-keyword">end</span>)</pre>
-            </div>
+             </div>
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #38bdf8;">
