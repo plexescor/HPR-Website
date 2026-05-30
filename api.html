@@ -333,7 +333,7 @@
               Deletes the specified CSV file inside the extensions workspace directory.
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              <strong>Note on Shared Workspace Design:</strong> Please be aware that the extensions workspace is fully shared. Any extension can read, overwrite, or delete configurations and database files created by another extension. This non-restrictive model is intentionally designed to promote open communication, shared settings, and collaborative integration among various scripts.
+              <strong>Note on Shared Workspace Design:</strong> Please be aware that the extensions workspace is a shared environment. It operates essentially as a collaborative "wild west" by design, allowing any extension to read, modify, or delete database and configuration files created by any other extension to foster deep script integration and open data exchanges.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> deleted = HPR.deleteCsv_E(<span class="code-string">"settings/general.csv"</span>)
