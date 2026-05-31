@@ -352,7 +352,7 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           <div class="callout-title">Cross-Platform Native Notifications</div>
           <p>
             The <code>HPR.showNotification_E</code> function is fully cross-platform out of the box!
-            On Linux, it uses the standard <code>notify-send</code> utility internally. On Windows, it integrates
+            On Linux, it uses D-Bus directly via <code>libdbus-1</code> internally. On Windows, it integrates
             directly with the native Windows Action Center using the beautiful <code>WinToast</code> API.
           </p>
           <p style="margin-top: 8px;">
@@ -483,7 +483,7 @@ HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</
 
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Why This Architecture Matters</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          You might be wondering: <em>"Why didn't we just put the notify-send command straight into the watcher
+          You might be wondering: <em>"Why didn't we just put the notification command straight into the watcher
             script?"</em>
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">

@@ -659,7 +659,7 @@ HPR.startTracking_E()</pre>
               <strong>Parameters:</strong> <code>title: string</code>, <code>message: string</code> &mdash; <strong>Returns:</strong>
               nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Displays a native OS desktop notification. This function is fully cross-platform: on Linux it runs the native <code>notify-send</code> utility internally, and on Windows it leverages the native Windows Action Center Toast Notification API via <code>WinToast</code>. It automatically handles security sanitization and parameter wrapping across different operating systems.
+              Displays a native OS desktop notification. This function is fully cross-platform: on Linux it uses native D-Bus notifications over <code>libdbus-1</code> directly, and on Windows it leverages the native Windows Action Center Toast Notification API via <code>WinToast</code>. It automatically handles security sanitization and parameter wrapping across different operating systems.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.showNotification_E(<span class="code-string">"Work Completed!"</span>, <span class="code-string">"Your task has finished running."</span>)</pre>
