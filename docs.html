@@ -264,7 +264,7 @@
             <h3 style="color: var(--text-primary); margin-bottom: 8px;"><code>onExit()</code></h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
               Called exactly once when HPR shuts down or when your extension is stopped. Use this hook to perform safety
-              flushes of database caches, clean up system hooks, and disconnect Event Hub subscriptions because failing to do so WILL cause crashes and especially segfaults.
+              flushes of database caches and clean up system hooks (HPR's RAII architecture automatically disconnects all active Event Hub subscriptions upon exit to prevent crashes and segfaults).
               <br><br>
               <strong style="color: var(--accent-amber);"> Strict 200ms Exit Budget:</strong>
               HPR features an intentional shutdown safety timer. Every extension thread is granted a strict <strong>200

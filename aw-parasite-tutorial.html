@@ -444,13 +444,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
           style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
             <strong> Teardown Warning: Strict 200ms Exit grace period!</strong><br>
-            Whenever you connect to Event Hub events via <code>HPR.connect_E</code>, you must disconnect them inside
-            <code>onExit()</code> via <code>HPR.disconnect_E</code> because failing to do so WILL cause crashes and especially segfaults. However, keep your
-            <code>onExit()</code> handler fast! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace
-            period to complete its teardown. If your code takes longer than 200ms, HPR will forcefully detach the
-            extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with
-            <code>_exit(0)</code> to prevent lingering background hangs. This intentional safety measure will instantly
-            cut off all other extensions mid-execution, so keep your exit teardown highly optimized!
+            Whenever you connect to Event Hub events via <code>HPR.connect_E</code>, HPR's C++ manager automatically tracks these subscriptions and safely cleans them up upon exit to prevent crashes, segfaults, or memory leaks. Manual disconnection in <code>onExit()</code> is no longer mandatory for stability, but you must still keep your <code>onExit()</code> handler fast! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace period to complete its teardown. If your code takes longer than 200ms, HPR will forcefully detach the extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with <code>_exit(0)</code> to prevent lingering background hangs. Keep your exit teardown highly optimized!
           </p>
         </div>
 

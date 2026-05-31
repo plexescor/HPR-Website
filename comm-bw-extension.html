@@ -380,16 +380,13 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           We aren't done yet. This last step is the most important part of the entire tutorial.
         </p>
 
-        <div class="callout callout--danger fade-in" style="margin-bottom: 24px;">
-          <div class="callout-title">Dangling Callbacks & Memory Safety</div>
+        <div class="callout callout--green fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">💡 HPR's Automatic RAII Cleanup</div>
           <p>
-            When you call <code>HPR.connect_E()</code>, the underlying C++ engine saves a pointer to your Lua callback
-            function in memory.
+            When you call <code>HPR.connect_E()</code>, the underlying C++ engine keeps track of your subscription. 
           </p>
           <p style="margin-top: 8px;">
-            If your extension exits, errors out, or is reloaded, and you <strong>did not</strong> explicitly disconnect,
-            the C++ engine will still have that old pointer. The next time the event fires, C++ will try to execute a
-            Lua function that no longer exists, which WILL cause instant hard crashes and especially segfaults.
+            To ensure zero crashes and segfaults on shutdown or reload, HPR features <strong>automatic RAII connection tracking</strong>. If your extension is reloaded or stopped, HPR automatically and safely unregisters every Event Hub connection it created, preventing use-after-free conditions entirely.
           </p>
         </div>
 
@@ -397,20 +394,16 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
             <strong> Watcher-Enforcer Warning: Strict 200ms exit grace period!</strong><br>
-            While disconnecting subscriptions is critical, your <code>onExit()</code> handler must complete fast! HPR
+            While HPR automatically unregisters Event Hub connections, if you decide to write custom database saving or resource cleanup inside your <code>onExit()</code> handler, it must complete fast! HPR
             gives each extension thread a strict <strong>200 milliseconds</strong> grace period to execute <code>onExit()</code> on
             exit. If one extension (e.g., Wellness Officer) takes longer than 200ms, HPR will immediately detach its
             extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with
-            <code>_exit(0)</code> to prevent background hangs. This intentional safety measure will instantly cut off
-            all other extensions (e.g., Burnout Watcher), preventing them from executing their own graceful teardowns!
-            Keep all exit teardowns extremely lightweight.
+            <code>_exit(0)</code> to prevent background hangs. Keep all exit teardowns extremely lightweight.
           </p>
         </div>
 
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          To prevent this, you must always provide an <code>onExit()</code> function in any script that subscribes to
-          events. HPR calls <code>onExit()</code> automatically right before shutting down the script. Here, you pass
-          the IDs we saved earlier to <code>HPR.disconnect_E()</code>.
+          While HPR automatically cleans up all event listeners when the extension is shut down, you can still provide an <code>onExit()</code> function to perform custom cleanups or manual disconnections:
         </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()

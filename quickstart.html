@@ -222,13 +222,13 @@
           </p>
 
           <!-- 4. WHY you must disconnect -->
-          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">The C++ use-after-free problem: Why you MUST disconnect</h3>
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">HPR's Automatic RAII Connection Tracking</h3>
           <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
-            When HPR runs your extension, it spins up an isolated Lua virtual machine. While this VM is alive, your callback function exists in memory, and HPR's C++ event registry holds a raw memory pointer pointing directly to that Lua function. 
+            When HPR runs your extension, it spins up an isolated Lua virtual machine. While this VM is alive, your callback function exists in memory, and HPR's C++ event registry holds a reference to that Lua function. 
             <br><br>
-            When HPR shuts down or restarts your extension, the Lua VM is completely destroyed, and the memory holding your callback function is freed. However, HPR's C++ event registry still has that raw pointer sitting in its list! If you don't clean it up, the next time a window change occurs, HPR's C++ engine will try to execute the function at that old memory pointer. This is a classic <strong>use-after-free bug</strong>, and it will immediately trigger a fatal <strong>segmentation fault (segfault)</strong> that instantly crashes the entire HPR application!
+            To prevent classic <strong>use-after-free bugs</strong> and <strong>segmentation faults (segfaults)</strong> upon extension shutdown, HPR's C++ manager features an elegant, automatic <strong>RAII lifecycle tracking</strong> architecture. The core engine dynamically registers and monitors every Event Hub subscription established by your extension. 
             <br><br>
-            Calling <code>HPR.disconnect_E()</code> inside your <code>onExit()</code> handler tells HPR's C++ engine to remove that raw pointer safely before the Lua VM gets torn down. This is why disconnecting <strong>must</strong> happen inside the <code>onExit()</code> hook and nowhere else!
+            When your extension is stopped, disabled, or reloaded, HPR automatically and cleanly disconnects all active subscriptions from the C++ event loop before the Lua VM is destroyed. Manual cleanup via <code>HPR.disconnect_E()</code> is completely optional but still a great practice to keep your code organized!
           </p>
 
           <!-- Explanation of WINDOW_CHANGED data payload -->
@@ -332,37 +332,27 @@
         <!-- Mistake 1 -->
         <div class="card"
           style="margin-bottom: 32px; padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
-          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">1. Forgetting to disconnect Event Hub listeners
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">1. Forgetting to save subscription IDs (when early/dynamic disconnection is needed)
           </h3>
           <p style="margin-bottom: 12px; color: var(--text-secondary);">
-            <strong>Why it happens:</strong> When you subscribe to events using <code>HPR.connect_E()</code>, the C++
-            host engine registers a persistent callback binding inside its global registry, pointing directly to your
-            extension's Lua state. When you exit, restart, or reload the extension, your script's isolated Lua virtual
-            machine is destroyed.
+            <strong>Why it matters:</strong> Previously, failing to manually call <code>HPR.disconnect_E()</code> upon exit was a severe issue that caused use-after-free crashes. Fortunately, HPR's C++ manager now features <strong>automatic RAII connection tracking</strong>, meaning all active listeners are automatically unregistered when your extension stops, completely preventing any shutdown segfaults.
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            If you do not explicitly invoke <code>HPR.disconnect_E()</code>, HPR is left holding a dangling "zombie
-            pointer" targeting freed virtual memory. The very next time a tracking event fires, the C++ backend tries to
-            execute code at that invalid memory location, resulting in an instant, uncatchable <strong>segmentation
-              fault (segfault)</strong> that brings down the entire HPR application!
+            However, keeping track of your subscription IDs is still highly recommended! If you need to stop listening to an event dynamically mid-execution (for example, after a specific state is reached, or to switch behaviors), you will still need to invoke <code>HPR.disconnect_E()</code> using the saved subscription ID.
           </p>
 
           <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; width: 100%; margin-top: 16px;">
             <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
-              <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
-              <pre style="margin: 0;"><span class="code-comment">-- Subscribed, but left to rot</span>
+              <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Outdated / Loose Code</span>
+              <pre style="margin: 0;"><span class="code-comment">-- Subscribed, but no ID saved to disconnect early</span>
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
     HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
-<span class="code-keyword">end</span>
-
-<span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
-    <span class="code-comment">-- Completely missing disconnect!</span>
 <span class="code-keyword">end</span></pre>
             </div>
 
             <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
-              <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
+              <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Best Practice Code</span>
               <pre style="margin: 0;"><span class="code-keyword">local</span> subId = <span class="code-keyword">nil</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
@@ -370,7 +360,7 @@
 <span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
-    <span class="code-comment">-- Clean up subscription safely</span>
+    <span class="code-comment">-- Explicit cleanup is still a great practice!</span>
     <span class="code-keyword">if</span> subId <span class="code-keyword">then</span>
         HPR.disconnect_E(<span class="code-string">"WINDOW_CHANGED"</span>, subId)
     <span class="code-keyword">end</span>
