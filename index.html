@@ -50,7 +50,7 @@
             <h1>Know where<br>your time <span class="text-accent">actually</span> went.</h1>
             <p class="hero-tagline">
               A compiled C++23 binary that watches your active window, every 50ms, all day. 
-              One string. Written locally. No accounts. No telemetry. No network calls. Ever.
+              One string. Written locally. No accounts. No telemetry. 100% offline core.
             </p>
             <div class="hero-stats">
               <div class="hero-stat">
@@ -283,7 +283,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span class="badge badge--red">✕</span>
-                  <span style="font-size: 0.9rem; color: var(--text-secondary);">No network communication. Ever.</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">100% offline core</span>
                 </div>
               </div>
             </div>
@@ -298,12 +298,11 @@
               <pre><span class="code-string">No accounts.</span>
 <span class="code-string">No telemetry.</span>
 <span class="code-string">No analytics.</span>
-<span class="code-string">No network communication. Ever.</span>
+<span class="code-string">100% offline core.</span>
 
-<span class="code-comment">// The only external call in the entire codebase</span>
-<span class="code-comment">// is a git clone in the GNOME extension install</span>
-<span class="code-comment">// script. That's a shell command you run once,</span>
-<span class="code-comment">// manually. HPR itself touches no network.</span></pre>
+<span class="code-comment">// HPR *does* have networking code inside the binary,</span>
+<span class="code-comment">// but no core HPR utility uses it AT ALL.</span>
+<span class="code-comment">// the networking code is solely for lua extension API</span>
             </div>
           </div>
         </div>
@@ -365,7 +364,7 @@
         <span class="section-label fade-in">Under The Hood</span>
         <h2 class="section-title fade-in">Multi-threaded C++23.</h2>
         <p class="section-desc fade-in" style="margin-bottom: 40px;">
-          Four threads. Defined responsibilities. Defined cadences. No surprises.
+          12-14 threads active, out of which 4-7 are slint ui.
         </p>
         <div class="arch-diagram fade-in">Main Thread          (Slint event loop)
   ├── Window Poller      [50ms  tick  —  CurrentWindowManager]

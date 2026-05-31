@@ -80,7 +80,7 @@
               </tr>
               <tr>
                 <td><strong style="color: var(--text-primary);">KDE Plasma 6+</strong></td>
-                <td>KWin scripting via <code>qdbus6</code></td>
+                <td>KWin scripting</td>
                 <td><span class="badge badge--green">Wayland</span> <span class="badge badge--cyan">X11</span></td>
                 <td><span class="badge badge--green">None</span></td>
               </tr>
@@ -196,15 +196,11 @@
         <div class="two-col fade-in">
           <div>
             <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
-              The KDE backend injects a JavaScript payload into KWin via <code>qdbus6</code> (or <code>qdbus-qt6</code> on Fedora — auto-detected at startup) on every 50ms tick and scrapes the system journal for the output.
+              The KDE backend uses Kwin scripting (Just like kdotool without relying on kdotool itself).
             </p>
             <div class="callout--amber callout" style="margin-bottom: 24px;">
               <div class="callout-title">⚠ Honest Engineering Note</div>
-              <p>That means shell forks and disk reads at 20 Hz. Somehow this lands at around 1% CPU. Every other approach tested did not work. This one does and has been validated across multiple KDE configurations. It is a hack. It is a working hack.</p>
-            </div>
-            <div class="card">
-              <h3>JS Noise Filter</h3>
-              <p>During the JavaScript injection, KWin's own JS runtime briefly appears as the active window. HPR's <code>validateAndUpdateWindow_Cross</code> function contains a specific <code>js::</code> filter to suppress strings like <code>js::kwin_tmp_1234</code> from polluting your time log.</p>
+              <p>As HPR uses same underlying Kwin scripting approach, its mostly accurate that where kdotool works, HPR also works.<p>
             </div>
           </div>
           <div>
@@ -212,22 +208,18 @@
               <span class="code-label">How It Works</span>
               <pre><span class="code-comment">// Platform: KDE Plasma</span>
 <span class="code-comment">// Works on both Wayland and X11</span>
-<span class="code-comment">// Auto-detects qdbus6 vs qdbus-qt6</span>
 
 <span class="code-comment">// Every 50ms:</span>
-<span class="code-comment">1.</span> Inject JS payload via <span class="code-fn">qdbus6</span>
-<span class="code-comment">2.</span> Scrape <span class="code-fn">journalctl</span> for output
+<span class="code-comment">1.</span> Get window data via <span class="code-fn">Kwin script</span>
+<span class="code-comment">2.</span> Parse output into required format
 <span class="code-comment">3.</span> Parse window class + title
 <span class="code-comment">4.</span> Filter out <span class="code-string">js::</span> noise
 
-<span class="code-comment">// ~1% CPU despite 20 Hz forks</span>
 <span class="code-comment">// Validated on multiple KDE configs</span></pre>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <span class="tag">Wayland + X11</span>
               <span class="tag">KWin Scripting</span>
-              <span class="tag">qdbus6 / qdbus-qt6</span>
-              <span class="tag">Auto-Detected</span>
               <span class="tag">Zero Setup</span>
             </div>
           </div>

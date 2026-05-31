@@ -632,8 +632,8 @@
           </div>
           <div class="card">
             <div class="card-icon card-icon--purple">✓</div>
-            <h3>Dynamic Hot Reloading</h3>
-            <p>Save your Lua script or companion Slint UI file, and HPR instantly hot-reloads the extension runtime on-the-fly. No app restart needed.</p>
+            <h3>And much more!</h3>
+            <p>The HPR extension API supports a wide range of features and capabilities, making it a powerful tool for customizing and extending the functionality of the application.</p>
           </div>
         </div>
       </div>
@@ -734,8 +734,8 @@ Slint's font rendering pipeline.</span></pre>
           <div class="card">
             <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
             <h3>No Network</h3>
-            <p>HPR at runtime touches no network, no DNS, nothing. The only external call in the entire codebase is a
-              <code>git clone</code> in the GNOME extension install script — a shell command you run once, manually.</p>
+            <p>HPR's Core at runtime touches no network, no DNS, nothing. The binary does have network code inside but its solely for
+              <code>lua extensions</code> so they have wide range of capabilities.</p>
           </div>
         </div>
       </div>
@@ -902,39 +902,6 @@ destructor  → set running=false, <span class="code-fn">join()</span></pre>
                 new ones.</p>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Roadmap -->
-    <section class="section section-border" id="roadmap">
-      <div class="container">
-        <span class="section-label fade-in">Future</span>
-        <h2 class="section-title fade-in">Roadmap</h2>
-        <p class="section-desc fade-in" style="margin-bottom: 40px;">
-          The foundational work is mostly done. What comes next is refinement, not new pillars.
-        </p>
-        <div class="feature-grid fade-in">
-          <div class="card">
-            <div class="card-icon card-icon--amber">AI</div>
-            <h3>LLM-Powered Analysis</h3>
-            <p>Pattern analysis powered by local LLM inference. All processing stays on-device.</p>
-          </div>
-          <div class="card">
-            <div class="card-icon card-icon--red">⊘</div>
-            <h3>Focus Mode</h3>
-            <p>Application blocking during focus sessions. Enforced deep work periods with configurable block lists.</p>
-          </div>
-          <div class="card">
-            <div class="card-icon card-icon--cyan">📊</div>
-            <h3>Advanced Reporting</h3>
-            <p>Extended analytics, historical trend visualization, and exportable reports.</p>
-          </div>
-        </div>
-        <div class="callout fade-in" style="margin-top: 32px;">
-          <div class="callout-title">All Free, Forever</div>
-          <p>The premium version has been merged into the free version. Every feature — current and future, including
-            LLM analysis, Focus mode, and Advanced reporting — is available to everyone at no cost.</p>
         </div>
       </div>
     </section>

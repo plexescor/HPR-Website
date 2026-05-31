@@ -349,71 +349,7 @@ NEXT TO THE HPR BINARY AND THEN RESTART PC</span></pre>
         </div>
       </div>
     </section>
-
-    <!-- Extending HPR -->
-    <section class="section section-border">
-      <div class="container">
-        <span class="section-label fade-in">For Developers</span>
-        <h2 class="section-title fade-in">Adding new platforms & tracked data.</h2>
-        <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          HPR has well-defined extension points for platform backends and new data types.
-        </p>
-
-        <div class="two-col fade-in">
-          <div>
-            <div class="card">
-              <h3>Adding a New Platform</h3>
-              <p style="margin-bottom: 16px;">Platform window detection is fully contained inside <code>CurrentWindowManager</code>. Four steps:</p>
-              <div class="code-block" style="margin-top: 12px;">
-                <pre><span class="code-comment">1.</span> Declare <span class="code-fn">getCurrentWindow_YourPlatform()</span>
-   in <span class="code-string">getCurrentWindow.hpp</span>
-
-<span class="code-comment">2.</span> Implement in <span class="code-string">getCurrentWindow.cpp</span>
-   Return raw title as std::string.
-
-<span class="code-comment">3.</span> Add <span class="code-keyword">else if</span> branch in
-   <span class="code-fn">getCurrentWindow()</span>
-
-<span class="code-comment">4.</span> Add init checks in constructor
-   inside preprocessor guard
-
-<span class="code-comment">// New backends inherit all normalization</span>
-<span class="code-comment">// and noise filtering automatically.</span></pre>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="card">
-              <h3>Adding New Tracked Data</h3>
-              <p style="margin-bottom: 16px;">Five steps, fixed order:</p>
-              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <span class="badge badge--amber">1</span>
-                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Slint:</strong> Add property, struct, or UI element to <code>app-window.slint</code></span>
-                </div>
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <span class="badge badge--amber">2</span>
-                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>State:</strong> Add field to <code>AppState::AppState</code> in <code>appState.hpp</code></span>
-                </div>
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <span class="badge badge--amber">3</span>
-                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Collection:</strong> Populate in <code>getCurrentWindow_Loop()</code></span>
-                </div>
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <span class="badge badge--amber">4</span>
-                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Bridge:</strong> Thread through <code>modelManager.update()</code> using <code>syncModel</code></span>
-                </div>
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <span class="badge badge--amber">5</span>
-                  <span style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Persistence:</strong> Add table in <code>initDatabase</code>, flush in <code>writeLoop</code></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    
     <!-- Contributing -->
     <section class="section section-border">
       <div class="container">
