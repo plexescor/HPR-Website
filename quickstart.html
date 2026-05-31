@@ -118,31 +118,31 @@
         </div>
 
         <!-- Explanation of metadata -->
-      <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Do I really need HPR.authorName and HPR.extensionName?</h3>
-      <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
-        Technically, these lines are <strong>not strictly required</strong> to make your code run — your script will
-        still execute fine without them! However, defining them is <strong>strongly recommended</strong>. They register
-        your extension inside HPR's <strong>Extensions tab</strong>, which is also where hot reloading lives. Without
-        them, your extension will load and run fine in the background, but it won't show up in the Extensions tab at all,
-        meaning you won't be able to <strong>Reload</strong> or <strong>Disable</strong> it from the UI without
-        restarting HPR. Make sure to define them at the <strong>top level</strong> of your script and not inside a
-        function, otherwise HPR won't be able to read them.
-      </p>
+        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Do I really need HPR.authorName and HPR.extensionName?</h3>
+        <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+          Technically, these lines are <strong>not strictly required</strong> to make your code run — your script will
+          still execute fine without them! However, defining them is <strong>strongly recommended</strong>. They register
+          your extension inside HPR's <strong>Extensions tab</strong>, which is also where hot reloading lives. If you
+          skip them, HPR will still load and run your extension, but it will show up in the Extensions tab with a
+          <strong>randomly generated name</strong> — so you can still Reload or Disable it, but good luck figuring out
+          which one it is if you have multiple unnamed extensions. Make sure to define them at the
+          <strong>top level</strong> of your script and not inside a function, otherwise HPR won't be able to read them.
+        </p>
 
         <div class="callout callout--amber fade-in" style="margin-bottom: 20px;">
           <div class="callout-title" style="color: var(--accent-amber);">Hot Reloading</div>
-          <p style="margin: 0; font-size: 0.9rem;">
-            HPR supports hot reloading extensions without restarting the app! Head to the Extensions tab in the UI where you will find three buttons:
-            <br><br>
-            <strong>RESCAN</strong> — Scans your extensions folder for any new .lua files you dropped in and loads them instantly.
-            <br><br>
-            <strong>RELOAD</strong> — Restarts a specific extension from scratch. If you edited an extension's code and want the changes to take effect, hit this.
-            <br><br>
-            <strong>DISABLE</strong> — Stops a specific extension and removes it from the list. The .lua file stays on disk, so hitting RESCAN will bring it back whenever you want.
-            <br><br>
-            <strong>Note:</strong> For an extension to appear in the Extensions tab and be eligible for hot reloading, it must define both <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the top of the file. Without these, HPR has no way to identify the extension and it will be skipped in the UI.
-          </p>
-        </div>
+            <p style="margin: 0; font-size: 0.9rem;">
+              HPR supports hot reloading extensions without restarting the app! Head to the Extensions tab in the UI where you will find three buttons:
+              <br><br>
+              <strong>RESCAN</strong> — Scans your extensions folder for any new .lua files you dropped in and loads them instantly. Also brings back any extensions you previously disabled.
+              <br><br>
+              <strong>RELOAD</strong> — Restarts a specific extension from scratch. If you edited an extension's code and want the changes to take effect, hit this.
+              <br><br>
+              <strong>DISABLE</strong> — Stops a specific extension and removes it from the list. The .lua file stays on disk, so hitting RESCAN will bring it back whenever you want.
+              <br><br>
+              <strong>Note:</strong> Extensions without <code>HPR.authorName</code> and <code>HPR.extensionName</code> will still appear in the Extensions tab, but with a randomly generated name. You can still Reload or Disable them — just harder to tell apart if you have multiple unnamed ones.
+            </p>
+            </div>
       </div>
     </section>
 
