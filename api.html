@@ -797,8 +797,9 @@ HPR.startTracking_E()</pre>
              <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
                <strong>Built-in system event names:</strong><br>
                <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
-               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code><br>
+               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code><br>
                <em>Note on <code>WINDOW_CHANGED</code>:</em> Passes a Lua table payload containing <code>data.fromWindow</code> (previous window class name string) and <code>data.toWindow</code> (focused window class name string).<br>
+               <em>Note on <code>UI_READY</code>:</em> Emitted once when the Slint UI is 100% initialized and running. Extensions can subscribe to this signal to safely begin UI operations or initialize background window polling.<br>
                Any other string is treated as a custom dynamic event shared between extensions.
              </div>
              <div class="code-block" style="margin: 0; width: 100%;">
