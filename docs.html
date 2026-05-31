@@ -130,6 +130,16 @@
               call is nanoseconds. Compare this to ActivityWatch where every data read is a full HTTP round-trip to a
               localhost server.</p>
           </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">🛡️</div>
+            <h3>C++ RAII Auto-Disconnection</h3>
+            <p>EventHub subscriptions are bound to C++ connection tracking handles. They disconnect automatically when extensions are reloaded or unloaded, completely eliminating the risk of dangling zombie references or use-after-free crashes.</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">🧩</div>
+            <h3>Interactive Callback Forwarding</h3>
+            <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback parameters (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -203,7 +213,7 @@
             <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 0;">
               In a realistic deployment with <code>5–10</code> extensions, CPU impact is unmeasurable, memory overhead
               is under
-              <code>2 MB</code>, and startup time for extension loading is under <code>10ms</code>. The
+              <code>4-5 MB</code>, and startup time for extension loading is under <code>10ms</code>. The
               <code>1000</code> extension test
               represents roughly <code>100–200×</code> the load of a heavy real-world setup. HPR passed it without
               instability, corruption, or UI degradation.
@@ -537,7 +547,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.69 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

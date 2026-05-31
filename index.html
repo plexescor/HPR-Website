@@ -45,7 +45,7 @@
           <div class="hero-text">
             <div class="hero-badge">
               <span class="hero-badge-dot"></span>
-              v0.6 — Free & Open Source
+              v0.69 — Free & Open Source
             </div>
             <h1>Know where<br>your time <span class="text-accent">actually</span> went.</h1>
             <p class="hero-tagline">
@@ -54,11 +54,11 @@
             </p>
             <div class="hero-stats">
               <div class="hero-stat">
-                <span class="hero-stat-value">~2 MB</span>
+                <span class="hero-stat-value">~4-5 MB</span>
                 <span class="hero-stat-label">Binary Size</span>
               </div>
               <div class="hero-stat">
-                <span class="hero-stat-value">~8 MB</span>
+                <span class="hero-stat-value">~13 MB</span>
                 <span class="hero-stat-label">RAM (Windows)</span>
               </div>
               <div class="hero-stat">
@@ -189,6 +189,66 @@
       </div>
     </section>
 
+    <!-- Sandboxed Lua Extension Engine -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">Standout Feature</span>
+        <h2 class="section-title fade-in">Dynamic, Sandboxed Lua Extensions.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 12px;">
+          Build dynamic widgets, advanced database views, custom logging handlers, and integrations using a secure,
+          isolated Lua 5.4 scripting VM. Fully integrated with C++ handles, real-time EventHub messaging, and SQLite.
+        </p>
+
+        <div class="highlight-box fade-in" style="margin-top: 40px; border-left: 3px solid var(--accent-amber);">
+          <div class="interpreter-grid">
+            <div>
+              <h3 style="margin-bottom: 24px; color: var(--accent-amber);">Extension Highlights</h3>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(240, 160, 48, 0.15); color: var(--accent-amber);">1</span>
+                <div class="interpreter-step-text">
+                  <h4>Interactive UI Callbacks</h4>
+                  <p>Register handlers using <code>registerUiCallback_E</code>. Pass nested structures (arrays, objects) dynamically between Slint and Lua VM handlers.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(240, 160, 48, 0.15); color: var(--accent-amber);">2</span>
+                <div class="interpreter-step-text">
+                  <h4>C++ RAII Auto-Disconnection</h4>
+                  <p>EventHub subscriptions are bound to C++ connection tracking handles. They disconnect automatically when extensions are reloaded or unloaded.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(240, 160, 48, 0.15); color: var(--accent-amber);">3</span>
+                <div class="interpreter-step-text">
+                  <h4>Safe SQLite Queries</h4>
+                  <p>Interrogate tracking database records and perform calculations directly in sandboxed scripts safely in real-time.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="code-block" style="margin-bottom: 20px;">
+                <span class="code-label">extension.lua</span>
+                <pre><span class="code-comment">-- Subscribe to EventHub securely</span>
+<span class="code-keyword">HPR.connect_E</span>(<span class="code-string">"TICK"</span>, <span class="code-keyword">function</span>(data)
+    <span class="code-comment">-- Direct database query</span>
+    <span class="code-keyword">local</span> res = <span class="code-keyword">HPR.dbQuery_E</span>(<span class="code-string">"SELECT count(*) FROM active"</span>)
+    <span class="code-keyword">print</span>(<span class="code-string">"Active tracking entries: "</span> .. res[<span class="code-number">1</span>][<span class="code-number">1</span>])
+<span class="code-keyword">end</span>)</pre>
+              </div>
+              <div class="code-block">
+                <span class="code-label">Extension location</span>
+                <pre><span class="code-comment">// Linux config path</span>
+~/.config/HPR/extensions/<span class="code-string">my_widget.lua</span>
+
+<span class="code-comment">// Hot Reloading</span>
+<span class="code-comment">// Save your script and HPR reloads it on-the-fly!</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- What It Does Not Do -->
     <section class="section section-border">
       <div class="container">
@@ -231,7 +291,7 @@
           <div>
             <div class="callout fade-in" style="margin-bottom: 24px;">
               <div class="callout-title">Not an Electron app</div>
-              <p>Compiled C++23 binary. Starts in milliseconds. Under 10MB of RAM on Windows. No Python runtime. No embedded web server. No subscription.</p>
+              <p>Compiled C++23 binary. Starts in milliseconds. Under 13MB of RAM on Windows. No Python runtime. No embedded web server. No subscription.</p>
             </div>
             <div class="code-block fade-in">
               <span class="code-label">Privacy</span>
@@ -392,7 +452,7 @@ Data Flow:
     <div class="container">
       <div class="footer-inner">
         <div class="footer-left">
-          HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3
+          HPR v0.69 — C++23 · Slint 1.16.1 · SQLite3
         </div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>

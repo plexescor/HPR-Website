@@ -1130,17 +1130,17 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #f472b6;">
             <div class="api-signature">HPR.registerUiCallback_E(name, luaFunction)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
-              <strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function</code> &mdash;
+              <strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function(...any)</code> &mdash;
               <strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Registers a Lua function as a handler for a Slint callback. When the named callback is triggered from the
-              Slint UI (e.g. a button click), HPR invokes your Lua function. The callback name must exactly match a
-              <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently
-              ignored.
+              Slint UI (e.g. clicking a row or a button), HPR invokes your Lua function.
+              <br><br>
+              <strong>Parameters Forwarding:</strong> HPR dynamically converts and forwards all arguments passed from the Slint UI trigger (including strings, numbers, booleans, structs, and arrays) directly to your Lua function's parameters! The callback name must exactly match a <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently ignored.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
-              <pre>HPR.registerUiCallback_E(<span class="code-string">"myButtonClicked"</span>, <span class="code-keyword">function</span>()
-    <span class="code-fn">print</span>(<span class="code-string">"Button was clicked in the UI!"</span>)
+              <pre>HPR.registerUiCallback_E(<span class="code-string">"songRowClicked"</span>, <span class="code-keyword">function</span>(songData)
+    <span class="code-fn">print</span>(<span class="code-string">"User clicked song: "</span> .. tostring(songData.name) .. <span class="code-string">" by "</span> .. tostring(songData.artist))
 <span class="code-keyword">end</span>)</pre>
             </div>
           </div>
@@ -1247,7 +1247,7 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.69 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

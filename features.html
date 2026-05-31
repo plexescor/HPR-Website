@@ -590,6 +590,55 @@
       </div>
     </section>
 
+    <!-- Sandboxed Lua Extension Engine -->
+    <section class="section section-border" id="extensions">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">★ Standout Feature</span>
+        <h2 class="section-title fade-in">Sandboxed Lua Extension Engine</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Build dynamic custom behaviors, widgets, integrations, and automation directly using a highly secure,
+          concurrency-safe Lua 5.4 scripting sandbox. No binary compilation required. Zero chance of destabilizing the core.
+        </p>
+
+        <div class="highlight-box fade-in">
+          <h3 style="color: var(--accent-amber); margin-bottom: 24px;">The Extension Architecture</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            HPR embeds a sandboxed sol2-bound Lua VM inside its extension manager. Scripts run with safe limits,
+            isolated variables, and restricted OS API wrappers, allowing robust third-party expansion without
+            compromising core tracking thread execution.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <h3>Interactive UI Callbacks</h3>
+              <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback parameters (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners.</p>
+            </div>
+            <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+              <h3 style="color: var(--accent-amber);">C++ RAII Auto-Disconnection</h3>
+              <p>Forget manual cleanup. All EventHub event subscriptions are bound to C++ connection tracking handles. When an extension is unloaded or reloaded, subscriptions are cleanly disconnected automatically.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid fade-in" style="margin-top: 32px;">
+          <div class="card">
+            <div class="card-icon card-icon--green">✓</div>
+            <h3>Embedded SQLite Access</h3>
+            <p>Execute fast, safe database queries directly from your extension. Interrogate tracking history, fetch active categories, and calculate stats inside your scripts.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">✓</div>
+            <h3>EventHub Messaging</h3>
+            <p>Subscribe to application events, lock states, time changes, and idle periods in real-time. Publish custom signals to drive modular widgets.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--purple">✓</div>
+            <h3>Dynamic Hot Reloading</h3>
+            <p>Save your Lua script or companion Slint UI file, and HPR instantly hot-reloads the extension runtime on-the-fly. No app restart needed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Performance -->
     <section class="section section-border" id="performance">
       <div class="container">
@@ -601,11 +650,11 @@
 
         <div class="stats-row fade-in">
           <div class="stat-card">
-            <div class="stat-card-value">~8 MB</div>
+            <div class="stat-card-value">~13 MB</div>
             <div class="stat-card-label">RAM (Windows)</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-value">~22 MB</div>
+            <div class="stat-card-value">~26 MB</div>
             <div class="stat-card-label">Private (Linux)</div>
           </div>
           <div class="stat-card">
@@ -613,7 +662,7 @@
             <div class="stat-card-label">CPU Usage</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card-value">~2 MB</div>
+            <div class="stat-card-value">~4-5 MB</div>
             <div class="stat-card-label">Binary Size</div>
           </div>
         </div>
@@ -622,7 +671,7 @@
           <div>
             <div class="card" style="margin-bottom: 16px;">
               <h3>Linux Memory Explained</h3>
-              <p>BTOP/htop report ~47 MB. The actual private memory (heap + stack + data) is ~22 MB. The remaining ~25
+              <p>BTOP/htop report ~47 MB. The actual private memory (heap + stack + data) is ~26 MB. The remaining ~25
                 MB is shared GPU library pages from Mesa/LLVM loaded by Slint's OpenGL renderer. These pages are shared
                 with every GPU-accelerated process on your system.</p>
               <div class="code-block" style="margin-top: 16px;">
@@ -634,7 +683,7 @@
             <div class="card">
               <h3>Disable GPU Overhead</h3>
               <p>Set <code>hardware-acceleration,false</code> in config.csv. Mesa never loads. libLLVM never loads. RSS
-                drops to ~22 MB. UI is visually identical — CPU renderer only costs slightly more during redraws at
+                drops to ~26 MB. UI is visually identical — CPU renderer only costs slightly more during redraws at
                 500ms intervals.</p>
             </div>
           </div>
@@ -910,7 +959,7 @@ destructor  → set running=false, <span class="code-fn">join()</span></pre>
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.69 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

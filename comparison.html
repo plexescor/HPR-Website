@@ -69,14 +69,14 @@
             <tbody>
               <tr>
                 <td><strong style="color: var(--text-primary);">Binary Size</strong></td>
-                <td><span class="badge badge--green">~2 MB</span></td>
+                <td><span class="badge badge--green">~4-5 MB</span></td>
                 <td>200 MB+</td>
                 <td>Cloud app</td>
                 <td>Cloud app</td>
               </tr>
               <tr>
                 <td><strong style="color: var(--text-primary);">RAM (Real)</strong></td>
-                <td><span class="badge badge--green">~8 MB Win / ~22 MB Linux</span></td>
+                <td><span class="badge badge--green">~13 MB Win / ~26 MB Linux</span></td>
                 <td>200 MB+</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -177,12 +177,13 @@
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
             <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
             <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
+            <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries.</p>
             <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime without recompiling. No other tracker offers this.</p>
             <p>Browser tab tracking and VS Code project tracking with <strong>no extensions whatsoever</strong> &mdash; not optional, not recommended, literally not needed. HPR reads the window title the OS already exposes. Both support toggleable raw and formatted name views built into the app.</p>
           </div>
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-amber);">
             <h3 style="color: var(--accent-amber); margin-bottom: 16px;">Where ActivityWatch leads</h3>
-            <p style="margin-bottom: 12px;">Full web dashboard. Browser extensions for detailed URL tracking. Plugin ecosystem. Years of production stability. Active community and documentation.</p>
+            <p style="margin-bottom: 12px;">Full web dashboard. Browser extensions for detailed URL tracking. Massive pre-built plugin/watcher collection. Years of production stability. Active community and documentation.</p>
             <p>If you need something mature and battle-tested today, use ActivityWatch. HPR is for those who value the architecture and can tolerate being early.</p>
           </div>
         </div>
@@ -196,6 +197,7 @@
               <pre><span class="code-string">Single binary</span> (C++23)
   └── <span class="code-fn">Slint UI</span> (native rendering)
   └── <span class="code-fn">SQLite3</span> (amalgamation, compiled-in)
+  └── <span class="code-fn">Sandboxed Lua Engine</span> (extensions)
   └── <span class="code-fn">4 threads</span>, defined cadences
 
 <span class="code-comment">No web server</span>
@@ -206,11 +208,15 @@
             <div style="display: flex; flex-direction: column; gap: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="badge badge--green">✓</span>
-                <span style="font-size: 0.85rem; color: var(--text-secondary);">~2 MB binary</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">~4-5 MB binary</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="badge badge--green">✓</span>
-                <span style="font-size: 0.85rem; color: var(--text-secondary);">~8 MB RAM (Windows)</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">~13 MB RAM (Windows)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge--green">✓</span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Sandboxed Lua scripting</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="badge badge--green">✓</span>
@@ -260,7 +266,7 @@
         <h3 class="fade-in" style="margin-bottom: 24px;">Resource footprint</h3>
         <div class="stats-row fade-in" style="margin-bottom: 16px;">
           <div class="stat-card" style="border-top: 3px solid var(--accent-green);">
-            <div class="stat-card-value" style="font-size: 1.75rem;">~2 MB</div>
+            <div class="stat-card-value" style="font-size: 1.75rem;">~4-5 MB</div>
             <div class="stat-card-label">HPR Binary</div>
           </div>
           <div class="stat-card" style="border-top: 3px solid var(--accent-amber);">
@@ -268,7 +274,7 @@
             <div class="stat-card-label">AW Install</div>
           </div>
           <div class="stat-card" style="border-top: 3px solid var(--accent-green);">
-            <div class="stat-card-value" style="font-size: 1.75rem;">~8 MB</div>
+            <div class="stat-card-value" style="font-size: 1.75rem;">~13 MB</div>
             <div class="stat-card-label">HPR RAM (Win)</div>
           </div>
           <div class="stat-card" style="border-top: 3px solid var(--accent-amber);">
@@ -334,7 +340,7 @@
         <span class="section-label fade-in" style="color: var(--accent-amber);">Honesty</span>
         <h2 class="section-title fade-in">What HPR doesn't have yet.</h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          HPR is v0.6. These are real gaps that ActivityWatch has filled over years of development.
+          HPR is v0.69. These are real gaps that ActivityWatch has filled over years of development.
         </p>
 
         <div class="feature-grid fade-in">
@@ -345,8 +351,8 @@
           </div>
           <div class="card" style="border-left: 3px solid var(--accent-amber);">
             <div class="card-icon card-icon--amber">✕</div>
-            <h3>No Plugin Ecosystem</h3>
-            <p>No third-party watchers. No editor integrations. Extension is done by modifying the source directly.</p>
+            <h3>No Mobile Apps</h3>
+            <p>No iOS or Android companion apps. HPR is strictly focused on desktop tracking environments (Linux, macOS, and Windows).</p>
           </div>
           <div class="card" style="border-left: 3px solid var(--accent-amber);">
             <div class="card-icon card-icon--amber">✕</div>
@@ -420,7 +426,7 @@
       <div class="container">
         <h2 class="fade-in" style="margin-bottom: 16px;">Try HPR alongside ActivityWatch.</h2>
         <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
-          They track the same thing. Run both, compare the experience. HPR uses ~8 MB on Windows — you won't notice it.
+          They track the same thing. Run both, compare the experience. HPR uses ~13 MB on Windows — you won't notice it.
         </p>
         <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
           <a href="installation.html" class="btn btn--primary">Install HPR →</a>
@@ -434,7 +440,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.6 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.69 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>
