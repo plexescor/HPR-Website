@@ -1179,12 +1179,16 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
             <div class="api-signature">HPR.registerUiCallback_E(name, luaFunction)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>name: string</code>, <code>luaFunction: function(...any)</code> &mdash;
-              <strong>Returns:</strong> nothing</p>
+              <strong>Returns:</strong> nothing (registers the handler)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Registers a Lua function as a handler for a Slint callback. When the named callback is triggered from the
               Slint UI (e.g. clicking a row or a button), HPR invokes your Lua function.
               <br><br>
-              <strong>Parameters Forwarding:</strong> HPR dynamically converts and forwards all arguments passed from the Slint UI trigger (including strings, numbers, booleans, structs, and arrays) directly to your Lua function's parameters! The callback name must exactly match a <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently ignored.
+              <strong>Argument Forwarding:</strong> As implemented in the C++ extension manager, the callback lambda intercepts the arguments passed from the Slint UI (<code>auto args</code>), converts each from its Slint type to C++ and then to Lua objects, and forwards all of them as positional parameters directly to your Lua function.
+              <br><br>
+              <strong>Return Behavior:</strong> The C++ handler is defined with a void/empty return (<code>return slint::interpreter::Value();</code>). Any values returned by your Lua callback function are ignored, meaning the callback bridge is strictly one-way (parameter-only forwarding from Slint to Lua).
+              <br><br>
+              The callback name must exactly match a <code>callback</code> defined in the Slint component. If the UI is not yet loaded, the call is silently ignored.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.registerUiCallback_E(<span class="code-string">"songRowClicked"</span>, <span class="code-keyword">function</span>(songData)
