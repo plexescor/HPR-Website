@@ -198,8 +198,8 @@
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
             <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
             <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
-            <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries.</p>
-            <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime without recompiling. No other tracker offers this.</p>
+            <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries. Supports **live drop-in hot-reloading** of extensions on the fly without restarting the application.</p>
+            <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime inside <code>app-window.slint</code> without recompiling, and trigger an instant hot-reload of the UI with a single press of the <strong>"Reload UI"</strong> button.</p>
             <p>Browser tab tracking and VS Code project tracking with <strong>no extensions whatsoever</strong> &mdash; not optional, not recommended, literally not needed. HPR reads the window title the OS already exposes. Both support toggleable raw and formatted name views built into the app.</p>
           </div>
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-amber);">
