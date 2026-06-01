@@ -302,9 +302,9 @@
             <strong style="color: var(--text-primary);"> IMPORTANT: Declare at the Top Level!</strong>
             These properties <strong>must be defined at the top level of your script</strong> (outside of
             <code>init()</code> or any other lifecycle function). HPR inspects the Lua VM immediately after parsing the
-            file, <em>before</em> it spawns the dedicated background thread or executes <code>init()</code>. Placed
-            inside <code>init()</code>, HPR's Loaded Extensions manager UI cannot discover them on startup, and your
-            extension won't be listed in the UI.
+            file, <em>before</em> it spawns the dedicated background thread or executes <code>init()</code>.
+            <br><br>
+            If you place them inside <code>init()</code> or skip them entirely, HPR will <strong>still load and run your extension successfully</strong>, but it will show up in the Extensions manager UI under a <strong>randomly generated name</strong>. This makes it much harder to identify which extension is which when you want to reload or disable them.
             <br><br>
             Declaring these metadata properties is <em>not strictly required</em> for your script logic to execute, but
             it is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
