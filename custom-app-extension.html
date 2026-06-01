@@ -1053,15 +1053,6 @@ HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</s
         <span class="code-fn">pcall</span>(flushToDatabase)
         time_since_last_flush = 0
     <span class="code-keyword">end</span>
-<span class="code-keyword">end</span>
-
-<span class="code-keyword">function</span> <span class="code-fn">flushToDatabase</span>()
-    <span class="code-keyword">for</span> songName, songData <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(spotify_history) <span class="code-keyword">do</span>
-        HPR.dbExecute_E(
-            <span class="code-string">"insert or replace into spotify_songs (song_name, artist_name, play_duration_ms) values (?, ?, ?);"</span>,
-            { songName, songData.artist, <span class="code-fn">tostring</span>(<span class="code-fn">math.floor</span>(songData.play_time)) }
-        )
-    <span class="code-keyword">end</span>
 <span class="code-keyword">end</span></pre>
         </div>
 

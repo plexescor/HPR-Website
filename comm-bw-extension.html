@@ -203,8 +203,12 @@
           extensions are talking to each other!
         </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
-          <pre>    <span class="code-comment">-- 2 hours = 1000ms * 60s * 60m * 2</span>
-    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">then</span>
+          <pre>    <span class="code-keyword">if</span> burnout_cooldown > 0 <span class="code-keyword">then</span>
+        burnout_cooldown = burnout_cooldown - delta
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- 2 hours = 1000ms * 60s * 60m * 2</span>
+    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">and</span> burnout_cooldown <= 0 <span class="code-keyword">then</span>
         
         <span class="code-comment">-- Broadcast the event!</span>
         HPR.emit_E(<span class="code-string">"BURNOUT_WARNING"</span>, {
@@ -212,6 +216,7 @@
             duration_seconds = math.floor(focused_time / 1000),
             intensity = <span class="code-string">"HIGH"</span>
         })
+        burnout_cooldown = 300000 <span class="code-comment">-- 5 minutes cooldown</span>
         
     <span class="code-keyword">end</span>
     
@@ -242,6 +247,7 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
 
 <span class="code-keyword">local</span> focused_time = 0
 <span class="code-keyword">local</span> debug_timer = 0
+<span class="code-keyword">local</span> burnout_cooldown = 0
 <span class="code-keyword">local</span> productive_apps = {
     [<span class="code-string">"code"</span>] = <span class="code-keyword">true</span>,
     [<span class="code-string">"kitty"</span>] = <span class="code-keyword">true</span>,
@@ -277,12 +283,17 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
         <span class="code-keyword">end</span>
     <span class="code-keyword">end</span>
 
-    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">then</span>
+    <span class="code-keyword">if</span> burnout_cooldown > 0 <span class="code-keyword">then</span>
+        burnout_cooldown = burnout_cooldown - delta
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">and</span> burnout_cooldown <= 0 <span class="code-keyword">then</span>
         HPR.emit_E(<span class="code-string">"BURNOUT_WARNING"</span>, {
             active_app = activeWindow or <span class="code-string">"Unknown"</span>,
             duration_seconds = math.floor(focused_time / 1000),
             intensity = <span class="code-string">"HIGH"</span>
         })
+        burnout_cooldown = 300000
     <span class="code-keyword">end</span>
 
     <span class="code-comment">-- Send a test signal every 5 seconds to verify communication is working</span>
@@ -407,7 +418,7 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
         </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
-    <span class="code-comment">-- CRITICAL: Disconnect our listener hooks!</span>
+    <span class="code-comment">-- Optional/Best Practice: Disconnect listener hooks (HPR automatically cleans up on exit)</span>
     <span class="code-keyword">if</span> burnoutListenerId ~= 0 <span class="code-keyword">then</span>
         HPR.disconnect_E(<span class="code-string">"BURNOUT_WARNING"</span>, burnoutListenerId)
     <span class="code-keyword">end</span>

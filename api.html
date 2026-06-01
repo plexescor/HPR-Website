@@ -344,17 +344,18 @@
     <span class="code-fn">print</span>(<span class="code-string">"CSV successfully removed!"</span>)
 <span class="code-keyword">end</span></pre>
             </div>
+          </div>
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
-            <div class="api-signature">HPR.getExtensionDir_E()</div>
+            <div class="api-signature">HPR.getExtensionDir_E() / HPR.getExtensionPath_E()</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> None &mdash; 
-              <strong>Returns:</strong> <code>string</code> (the absolute path of the calling extension's subdirectory with a trailing separator)
+              <strong>Returns:</strong> <code>string</code> (the relative path from the extensions root of the calling extension's subdirectory with a trailing separator)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Returns a string containing the absolute path of the calling extension's own subdirectory, falling back to the root extensions directory if the script resides directly at the root.
+              Returns a string containing the relative path from HPR's global extensions directory root to the calling extension's own subdirectory, falling back to an empty string if the script resides directly at the extensions root folder. Both names (<code>getExtensionDir_E</code> and <code>getExtensionPath_E</code>) reference the exact same underlying function.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
-              <pre><span class="code-comment">-- Get the absolute folder path of this specific extension</span>
+              <pre><span class="code-comment">-- Get the relative folder path of this specific extension</span>
 <span class="code-keyword">local</span> myFolder = HPR.getExtensionDir_E()
 <span class="code-comment">-- Seamlessly resolve settings.csv relative to your own subfolder</span>
 <span class="code-keyword">local</span> settings = HPR.readCsv_E(myFolder .. <span class="code-string">"settings.csv"</span>)</pre>
@@ -413,6 +414,22 @@
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Returns the specific hour of the day where the user showed maximum active productive engagement.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getMostSwitchedFrom_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the application class name from which the user switched away most frequently during active tracking.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getMostSwitchedTo_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the application class name to which the user switched most frequently during active tracking.
             </p>
           </div>
 
@@ -793,9 +810,12 @@ HPR.startTracking_E()</pre>
                <strong>Built-in system event names:</strong><br>
                <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
                <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code><br>
+               <em>Note on <code>LOAD_DATABASE_SINGULAR</code>:</em> Emitted when the user starts loading a past day's SQLite database file.<br>
+               <em>Note on <code>HISTORY_LOADED_SINGULAR</code>:</em> Emitted when the query or load of a past day's historical database has successfully completed and all historical stats are ready.<br>
+               <em>Note on <code>LOAD_LIVE_DATA</code>:</em> Emitted when the user switches view from historical databases back to the real-time active daily logs.<br>
                <em>Note on <code>WINDOW_CHANGED</code>:</em> Passes a Lua table payload containing <code>data.fromWindow</code> (previous window class name string) and <code>data.toWindow</code> (focused window class name string).<br>
                <em>Note on <code>UI_READY</code>:</em> Emitted once when the Slint UI is 100% initialized and running. Extensions can subscribe to this signal to safely begin UI operations or initialize background window polling.<br>
-               Any other string is treated as a custom dynamic event shared between extensions.
+               Any other string is treated as a dynamic custom event shared between extensions.
              </div>
              <div class="code-block" style="margin: 0; width: 100%;">
                <pre><span class="code-keyword">local</span> subId = HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, <span class="code-keyword">function</span>(data)
@@ -852,16 +872,48 @@ HPR.startTracking_E()</pre>
               otherwise. The handler is called on the extension's background thread for each incoming request. Useful
               for exposing a local REST API or webhook receiver from within your extension.
             </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              <strong>Handler Signature:</strong> The handler function receives a single Lua <strong>table</strong> representing the incoming HTTP request, containing the following fields:
+            </p>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px; font-size: 0.9rem;">
+              <li><code>method</code> (string): The HTTP request method (e.g. <code>"GET"</code>, <code>"POST"</code>).</li>
+              <li><code>path</code> (string): The requested path URL string (e.g. <code>"/api/webhook"</code>).</li>
+              <li><code>body</code> (string): The raw request body text.</li>
+              <li><code>headers</code> (table): A Lua dictionary mapping request header keys to header value strings.</li>
+            </ul>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              <strong>Handler Return Format:</strong> The handler can return:
+            </p>
+            <ul style="color: var(--text-secondary); padding-left: 20px; line-height: 1.7; margin-bottom: 16px; font-size: 0.9rem;">
+              <li>A **table** containing:
+                <ul>
+                  <li><code>status</code> (integer, optional): The HTTP response status code (defaults to <code>200</code>).</li>
+                  <li><code>body</code> (string, optional): The response body string.</li>
+                  <li><code>headers</code> (table, optional): Dictionary of response header name-value pairs.</li>
+                </ul>
+              </li>
+              <li>A **string**: Treated directly as the response body with a <code>200 OK</code> status.</li>
+              <li>**Nothing** (or nil): Responds with an empty body and <code>200 OK</code>.</li>
+            </ul>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
     <span class="code-keyword">local</span> ok = HPR.startServer_E(<span class="code-keyword">8080</span>, <span class="code-keyword">function</span>(request)
-        <span class="code-fn">print</span>(<span class="code-string">"Incoming request: "</span> .. request)
+        <span class="code-fn">print</span>(<span class="code-string">"Incoming request method: "</span> .. tostring(request.method))
+        <span class="code-fn">print</span>(<span class="code-string">"Incoming request path: "</span> .. tostring(request.path))
+        <span class="code-fn">print</span>(<span class="code-string">"Incoming request body: "</span> .. tostring(request.body))
+        
+        <span class="code-comment">-- Return custom response structure</span>
+        <span class="code-keyword">return</span> {
+            status = <span class="code-keyword">200</span>,
+            body = <span class="code-string">"{\"status\":\"success\"}"</span>,
+            headers = { [<span class="code-string">"Content-Type"</span>] = <span class="code-string">"application/json"</span> }
+        }
     <span class="code-keyword">end</span>)
     <span class="code-fn">print</span>(<span class="code-string">"Server started: "</span> .. <span class="code-fn">tostring</span>(ok))
 <span class="code-keyword">end</span></pre>
             </div>
           </div>
-
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.httpGet_E(host, path, secure?, headers?)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>,
@@ -890,7 +942,7 @@ HPR.startTracking_E()</pre>
 <span class="code-keyword">local</span> body, status = HPR.httpGet_E(<span class="code-string">"httpbin.org"</span>, <span class="code-string">"/headers"</span>, <span class="code-keyword">true</span>, customHeaders)</pre>
             </div>
           </div>
-
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.httpPost_E(host, path, body, secure?, headers?)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>host: string</code>, <code>path: string</code>,

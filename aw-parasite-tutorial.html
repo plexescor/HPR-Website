@@ -391,7 +391,37 @@
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</span>
 
+<span class="code-keyword">local</span> AW_HOST = <span class="code-string">"127.0.0.1:5600"</span>
+<span class="code-keyword">local</span> AW_BUCKET = <span class="code-keyword">nil</span>
+<span class="code-keyword">local</span> STALE_THRESHOLD_MS = 25000
+
+<span class="code-keyword">local</span> time_since_last_flush = 0
+<span class="code-keyword">local</span> time_since_last_event = 0
+
 <span class="code-keyword">local</span> url_history = {}
+<span class="code-keyword">local</span> past_url_history = {}
+<span class="code-keyword">local</span> is_showing_historical = <span class="code-keyword">false</span>
+
+<span class="code-keyword">local</span> midnightId = 0
+<span class="code-keyword">local</span> pastDbId = 0
+<span class="code-keyword">local</span> liveDbId = 0
+
+<span class="code-keyword">local function</span> <span class="code-fn">extractDomain</span>(url)
+    <span class="code-keyword">local</span> domain = url:match("^%w+://([^/]+)") or url
+    <span class="code-keyword">return</span> domain
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">local function</span> <span class="code-fn">flushToDatabase</span>()
+    <span class="code-keyword">for</span> u, data <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(url_history) <span class="code-keyword">do</span>
+        HPR.dbExecute_E([[
+            insert into aw_parasite_url_usage (url, title, duration_ms)
+            values (?, ?, ?)
+            on conflict(url) do update set
+                title = excluded.title,
+                duration_ms = excluded.duration_ms;
+        ]], { u, data.title, data.duration_ms })
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
     <span class="code-comment">-- Ensure the database table exists</span>
@@ -405,7 +435,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
 
     <span class="code-comment">-- Preload today's records back into memory</span>
     <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
-    <span class="code-keyword">for _, row in ipairs(rows) do</span>
+    <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
         url_history[row.url] = {
             title       = row.title,
             duration_ms = tonumber(row.duration_ms) <span class="code-keyword">or</span> 0
@@ -498,13 +528,13 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
     <span class="code-keyword">local</span> url, title = fetchLatestUrl()
     
     <span class="code-keyword">if</span> url <span class="code-keyword">then</span>
-        time_since_last_event = 0
         <span class="code-keyword">if</span> time_since_last_event &lt; STALE_THRESHOLD_MS <span class="code-keyword">then</span>
             <span class="code-keyword">if</span> <span class="code-keyword">not</span> url_history[url] <span class="code-keyword">then</span>
                 url_history[url] = { title = title, duration_ms = 0 }
             <span class="code-keyword">end</span>
             url_history[url].duration_ms = url_history[url].duration_ms + delta
         <span class="code-keyword">end</span>
+        time_since_last_event = 0
     <span class="code-keyword">else</span>
         time_since_last_event = time_since_last_event + delta
     <span class="code-keyword">end</span>
@@ -536,6 +566,183 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
         time_since_last_flush = 0
     <span class="code-keyword">end</span>
 <span class="code-keyword">end</span></pre>
+        </div>
+
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 8 — Complete Consolidated Script</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          Putting it all together, here is the complete <code>main.lua</code> for your parasitic URL tracking extension. Copy and paste this script directly into HPR's extensions folder:
+        </p>
+
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <span class="code-label">main.lua (Complete)</span>
+          <pre>HPR.authorName    = "Plexescor"
+HPR.extensionName = "AW URL Parasite HPR Extension"
+
+local AW_HOST = "127.0.0.1:5600"
+local AW_BUCKET = nil
+local STALE_THRESHOLD_MS = 25000
+
+local time_since_last_flush = 0
+local time_since_last_event = 0
+
+local url_history = {}
+local past_url_history = {}
+local is_showing_historical = false
+
+local midnightId = 0
+local pastDbId = 0
+local liveDbId = 0
+
+local function extractDomain(url)
+    local domain = url:match("^%w+://([^/]+)") or url
+    return domain
+end
+
+local function discoverBucket()
+    local body, status = HPR.httpGet_E(AW_HOST, "/api/0/buckets/", false)
+    if status ~= 200 then
+        print("[aw_parasite] cannot reach local host server")
+        return nil
+    end
+
+    local buckets = HPR.parseJSON_E(body)
+    if not buckets then return nil end
+
+    for id, _ in pairs(buckets) do
+        if string.find(id, "aw-watcher-web", 1, true) then
+            return id
+        end
+    end
+    return nil
+end
+
+local function fetchLatestUrl()
+    if not AW_BUCKET then
+        AW_BUCKET = discoverBucket()
+        if not AW_BUCKET then return nil, nil end
+    end
+
+    local body, status = HPR.httpGet_E(AW_HOST, "/api/0/buckets/" .. AW_BUCKET .. "/events?limit=1", false)
+    if status ~= 200 then return nil, nil end
+
+    local events = HPR.parseJSON_E(body)
+    if not events or #events == 0 then return nil, nil end
+
+    local latest = events[1]
+    local url    = latest.data and latest.data.url
+    local title  = latest.data and latest.data.title
+
+    if not url or url == "" then return nil, nil end
+    return url, title or url
+end
+
+local function flushToDatabase()
+    for u, data in pairs(url_history) do
+        HPR.dbExecute_E([[
+            insert into aw_parasite_url_usage (url, title, duration_ms)
+            values (?, ?, ?)
+            on conflict(url) do update set
+                title = excluded.title,
+                duration_ms = excluded.duration_ms;
+        ]], { u, data.title, data.duration_ms })
+    end
+end
+
+function init()
+    -- Ensure the database table exists
+    HPR.dbExecute_E([[
+        create table if not exists aw_parasite_url_usage (
+            url         text unique,
+            title       text,
+            duration_ms int
+        );
+    ]])
+
+    -- Preload today's records back into memory
+    local rows = HPR.dbQuery_E("select url, title, duration_ms from aw_parasite_url_usage;")
+    for _, row in ipairs(rows) do
+        url_history[row.url] = {
+            title       = row.title,
+            duration_ms = tonumber(row.duration_ms) or 0
+        }
+    end
+
+    midnightId = HPR.connect_E("MIDNIGHT_ROLLOVER", function()
+        url_history = {}
+    end)
+
+    pastDbId = HPR.connect_E("LOAD_DATABASE_SINGULAR", function()
+        local ok, histRows = pcall(HPR.dbQueryHistorical_E, 
+            "select url, title, duration_ms from aw_parasite_url_usage;")
+        
+        if ok and histRows and #histRows > 0 then
+            past_url_history = {}
+            for _, row in ipairs(histRows) do
+                past_url_history[row.url] = {
+                    title       = row.title,
+                    duration_ms = tonumber(row.duration_ms) or 0
+                }
+            end
+            is_showing_historical = true
+        else
+            past_url_history = {}
+            is_showing_historical = false
+        end
+    end)
+
+    liveDbId = HPR.connect_E("LOAD_LIVE_DATA", function()
+        is_showing_historical = false
+    end)
+
+    return 1000
+end
+
+function onTick(delta)
+    local url, title = fetchLatestUrl()
+    
+    if url then
+        if time_since_last_event < STALE_THRESHOLD_MS then
+            if not url_history[url] then
+                url_history[url] = { title = title, duration_ms = 0 }
+            end
+            url_history[url].duration_ms = url_history[url].duration_ms + delta
+        end
+        time_since_last_event = 0
+    else
+        time_since_last_event = time_since_last_event + delta
+    end
+
+    local source = is_showing_historical and past_url_history or url_history
+    local formatted = {}
+    local total_ms = 0
+
+    for u, data in pairs(source) do
+        total_ms = total_ms + data.duration_ms
+        table.insert(formatted, {
+            url        = extractDomain(u),
+            title      = data.title,
+            duration   = HPR.formatTime_HHMMSS_E(math.floor(data.duration_ms)),
+            duration_i = math.floor(data.duration_ms)
+        })
+    end
+
+    -- Sort descending
+    table.sort(formatted, function(a, b) return a.duration_i > b.duration_i end)
+
+    -- Push values directly to UI properties
+    HPR.setUiProperty_E("awUrls_S", formatted)
+    HPR.setUiProperty_E("trackedTime_Aw_S", math.floor(total_ms))
+
+    time_since_last_flush = time_since_last_flush + delta
+    if time_since_last_flush >= 10000 then
+        pcall(flushToDatabase)
+        time_since_last_flush = 0
+    end
+end
+
+function onExit()
+    pcall(flushToDatabase)
+end</pre>
         </div>
 
         <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>

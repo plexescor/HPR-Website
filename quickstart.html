@@ -274,7 +274,7 @@
 <span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
     <span class="code-fn">print</span>(<span class="code-string">"Shutting down cleanly..."</span>)
     
-    <span class="code-comment">-- CRITICAL: Unregister our event hook to prevent crashes!</span>
+    <span class="code-comment">-- Optional/Best Practice: Unregister event hook (HPR automatically disconnects on exit)</span>
     <span class="code-keyword">if</span> changeSubId <span class="code-keyword">then</span>
         <span class="code-fn">HPR.disconnect_E</span>(<span class="code-string">"WINDOW_CHANGED"</span>, changeSubId)
     <span class="code-keyword">end</span>
@@ -383,7 +383,7 @@
             <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods (like `readCsv_E`, `writeCsv_E`, etc.) are resolved relative to the global <strong>extensions root directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>), writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create it right at the global root extensions directory. To resolve this perfectly, HPR exposes the <code>HPR.getExtensionDir_E()</code> function, which dynamically returns the absolute path to your specific subdirectory so you can write bulletproof path code!
+            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>), writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create it right at the global root extensions directory. To resolve this perfectly, HPR exposes the <code>HPR.getExtensionDir_E()</code> function, which dynamically returns the relative path (from the extensions root) to your specific subdirectory so you can write bulletproof path code!
           </p>
 
           <div
