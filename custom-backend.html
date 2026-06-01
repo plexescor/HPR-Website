@@ -293,8 +293,7 @@
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
             level</strong> of the script (outside of <code>init()</code>).
           Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> (though not required for execution) so that HPR can register your extension's identity
-          on startup and show it in the <strong>Loaded Extensions</strong> manager UI.
+            RECOMMENDED</strong> (though not required for execution). If you place them inside <code>init()</code> or omit them entirely, HPR will still load and run your extension successfully, but it will show up in the <strong>Loaded Extensions</strong> manager UI under a <strong>randomly generated name</strong>.
         </p>
 
         <div class="callout callout--danger fade-in"
