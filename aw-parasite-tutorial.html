@@ -363,9 +363,7 @@
             <code>HPR.extensionName = "Your Extension"</code> at the top level of your script, completely outside of
             <code>init()</code>. HPR queries these fields immediately after loading the Lua file, <em>before</em>
             spawning the dedicated execution thread or running the <code>init()</code> hook. Defining them inside
-            <code>init()</code> will fail to register the extension's identity, meaning it won't display in HPR's Loaded
-            Extensions manager UI. Declaring these at the top level is <strong>not required but EXTREMELY HIGHLY
-              RECOMMENDED</strong>.
+            <code>init()</code> or omitting them entirely means your extension will still load and execute successfully, but it will fall back to being displayed in HPR's Loaded Extensions manager UI under a <strong>randomly generated name</strong>. Declaring these at the top level is <strong>not required but EXTREMELY HIGHLY RECOMMENDED</strong>.
           </p>
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">

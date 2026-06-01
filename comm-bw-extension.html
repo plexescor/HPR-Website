@@ -236,8 +236,7 @@
           Put it all together, and your <code>burnout-monitor.lua</code> looks like this. Note that we define the
           extension identity metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>) at the
           <strong>top level</strong> (outside of <code>init()</code>). This is a best practice that is <strong>EXTREMELY
-            HIGHLY RECOMMENDED</strong> so HPR can register the identity on startup and show it in the Loaded Extensions
-          manager UI.
+            HIGHLY RECOMMENDED</strong>. If they are omitted or placed inside <code>init()</code>, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">burnout-monitor.lua</span>
@@ -434,8 +433,7 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           Just like the watcher, we define the metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>)
           at the <strong>top level</strong> of the script (outside of <code>init()</code>).
           Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> so HPR registers the extension's identity on startup and shows it in the Loaded
-          Extensions manager UI.
+            RECOMMENDED</strong>. If omitted or defined inside <code>init()</code>, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">wellness-officer.lua</span>

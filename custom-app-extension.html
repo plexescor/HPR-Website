@@ -911,8 +911,7 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
             level</strong> (outside of <code>init()</code>).
           Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> (though not required for script execution) so that HPR can register the identity on
-          startup and show it in the Loaded Extensions manager UI.
+            RECOMMENDED</strong> (though not required for script execution). If you place them inside <code>init()</code> or omit them entirely, your extension will still load and run successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
