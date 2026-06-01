@@ -194,7 +194,7 @@
           <h3 style="font-size: 1.3rem; margin-top: 16px; color: var(--accent-green);">Extension Identity</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
             HPR uses global state fields to register extension identities. Defining these properties enables HPR to
-            track your extension details and display them directly in HPR's Loaded Extensions manager.
+            track your extension details and display them cleanly in HPR's Loaded Extensions manager UI. If these are omitted, the extension will still load successfully but will show up under a randomly generated name.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
@@ -212,10 +212,7 @@
                 <strong> CRITICAL: Must be declared at top-level!</strong><br>
                 HPR queries these identity properties immediately after loading the Lua file and <em>before</em>
                 spawning the dedicated execution thread or running <code>init()</code>. Defining them inside
-                <code>init()</code> means the properties won't exist when HPR checks for them, preventing your extension
-                from registering in the C++ backend list and showing up in the <strong>Loaded Extensions</strong>
-                manager UI. Declaring these at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong> (though
-                not strictly required for backend execution).
+                <code>init()</code> or omitting them entirely means HPR will fall back to registering the extension with a <strong>randomly generated name</strong> in the Loaded Extensions manager UI (though the extension will still load and execute normally). Declaring these at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -237,8 +234,7 @@
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
                 <strong> CRITICAL: Declare at top-level!</strong><br>
                 Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script. If placed inside
-                <code>init()</code>, it will fail to register in the Loaded Extensions manager UI. Declaring this at the
-                top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+                <code>init()</code> or omitted, the extension will fall back to being displayed under a <strong>randomly generated name</strong> in the Loaded Extensions manager UI. Declaring this at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
