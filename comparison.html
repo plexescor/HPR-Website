@@ -396,6 +396,23 @@
           </div>
         </div>
 
+        <div class="highlight-box fade-in" style="margin-top: 32px;">
+          <h3 style="color: var(--accent-amber); margin-bottom: 24px;">Sandboxed Lua Extension Engine</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            HPR embeds a concurrency-safe, sandboxed sol2-bound Lua 5.4 VM inside its core. No binary compilation required. Extensions run in isolated background threads with built-in native APIs to safely execute SQLite queries, register Slint UI interactive callbacks, query local or remote REST endpoints via HTTP GET/POST, and subscribe to system-wide signals in real-time.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <h3>Traditional Plugins</h3>
+              <p>Often require compiling binary libraries, installing heavy external runtimes (like Python or Node), or running unisolated processes that can freeze the app or crash your tracker.</p>
+            </div>
+            <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+              <h3 style="color: var(--accent-amber);">HPR Lua Extensions</h3>
+              <p>Thread-safe sandboxing. If an extension crashes, the core continues running unaffected. Clean C++ RAII safety automatically unregisters all EventHub connections upon unloading or reloading.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="feature-grid fade-in" style="margin-top: 32px;">
           <div class="card">
             <div class="card-icon">⚡</div>
