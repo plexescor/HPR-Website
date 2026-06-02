@@ -665,13 +665,13 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getLiveTimeLogPerApp_E()</div>
             <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
             <p class="fn-desc">
-              Returns a table mapping <strong>application names → tracked duration in milliseconds</strong> for the current live session. This is the real-time "how long have I used each app today" data. Override this to merge categories, apply multipliers (want your learning apps to count double?), or return completely custom time data for dashboards.
+              Returns a table mapping <strong>application names → tracked duration in milliseconds</strong> for the current live session. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live application time logs.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> table {appName = milliseconds, ...} or <code>nil</code></span>
             </div>
-            <div class="fn-example-label">Example — Merge apps into categories</div>
+            <div class="fn-example-label">Example — Merge apps into categories for other extensions</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getLiveTimeLogPerApp_E = <span class="code-keyword">function</span>()
     <span class="code-comment">-- Return custom merged categories</span>
@@ -689,13 +689,13 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getLiveTimeLogPerTab_E()</div>
             <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
             <p class="fn-desc">
-              Returns a table mapping <strong>browser tab titles → tracked duration in milliseconds</strong>. Same concept as the app version, but granular to individual tabs/pages. Override this to merge multiple related tabs, filter out tabs you don't care about, or inject custom tab tracking data from an external source.
+              Returns a table mapping <strong>browser tab titles → tracked duration in milliseconds</strong>. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live browser tab time logs.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> table {tabTitle = milliseconds, ...} or <code>nil</code></span>
             </div>
-            <div class="fn-example-label">Example — Filter out boring tabs</div>
+            <div class="fn-example-label">Example — Filter out boring tabs for other extensions</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getLiveTimeLogPerTab_E = <span class="code-keyword">function</span>()
     <span class="code-comment">-- Only report tabs with meaningful time</span>
@@ -712,13 +712,13 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getLiveTimeLogPerProject_E()</div>
             <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
             <p class="fn-desc">
-              Returns a table mapping <strong>project directories → tracked duration in milliseconds</strong>. HPR tracks which project folder your editor is working in. Override this to consolidate related repositories, apply time adjustments, or build a custom project time tracker that pulls data from your build system.
+              Returns a table mapping <strong>project directories → tracked duration in milliseconds</strong>. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live project time logs.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> table {projectName = milliseconds, ...} or <code>nil</code></span>
             </div>
-            <div class="fn-example-label">Example — Consolidate monorepo sub-projects</div>
+            <div class="fn-example-label">Example — Consolidate monorepo sub-projects for other extensions</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getLiveTimeLogPerProject_E = <span class="code-keyword">function</span>()
     <span class="code-keyword">return</span> {
