@@ -298,18 +298,17 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getCurrentWindow_E()</div>
             <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
             <p class="fn-desc">
-              Returns the name of the currently active window/application. Other extensions call <code>HPR.getCurrentWindow_E()</code> to figure out what app the user is in right now. By overriding this, you can <strong>spoof the active app</strong> — make HPR think you're using "Deep Work" when you're actually on YouTube. Great for building focus modes or custom activity categories.
+              Returns the name of the currently active window/application. Other extensions call <code>HPR.getCurrentWindow_E()</code> to figure out what app the user is in right now. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking and data storage. Overriding this will not affect core HPR database logs or UI tracking, but it will ensure that your overridden value is provided to any other extensions querying the active window.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> string (spoofed app name) or <code>nil</code> (real value)</span>
             </div>
-            <div class="fn-example-label">Example — Force "Focus Mode" during work hours</div>
+            <div class="fn-example-label">Example — Spoof active app for other extensions</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getCurrentWindow_E = <span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> hour = <span class="code-fn">tonumber</span>(<span class="code-fn">os.date</span>(<span class="code-string">"%H"</span>))
-    <span class="code-keyword">if</span> hour >= 9 <span class="code-keyword">and</span> hour < 17 <span class="code-keyword">then</span>
-        <span class="code-keyword">return</span> <span class="code-string">"Deep Work Mode"</span>  <span class="code-comment">-- all tracking shows this</span>
+    <span class="code-keyword">if</span> focusModeActive == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"Deep Work Mode"</span>  <span class="code-comment">-- other extensions will see this</span>
     <span class="code-keyword">end</span>
     <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- off-hours: report real app</span>
 <span class="code-keyword">end</span></pre>
@@ -321,16 +320,16 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getCurrentTitle_E()</div>
             <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
             <p class="fn-desc">
-              Returns the title/tab of the active window. For browsers this is the page title, for editors it's the filename, etc. Override this to <strong>spoof what title HPR sees</strong> — useful for privacy (hide sensitive page titles), grouping (collapse all GitHub tabs into one), or custom analytics labels.
+              Returns the title/tab of the active window. Other extensions call <code>HPR.getCurrentTitle_E()</code> to retrieve the focused window's title. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking and data storage. Overriding this will not affect core HPR database logs or UI tracking, but it will ensure that your overridden value is provided to any other extensions querying the active title.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> string (spoofed title) or <code>nil</code> (real value)</span>
             </div>
-            <div class="fn-example-label">Example — Redact sensitive titles</div>
+            <div class="fn-example-label">Example — Redact sensitive titles for other extensions</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getCurrentTitle_E = <span class="code-keyword">function</span>()
-    <span class="code-keyword">return</span> <span class="code-string">"[Redacted]"</span>  <span class="code-comment">-- never log real page titles</span>
+    <span class="code-keyword">return</span> <span class="code-string">"[Redacted]"</span>  <span class="code-comment">-- other extensions see this, but core HPR logs the real title</span>
 <span class="code-keyword">end</span></pre>
             </div>
           </div>
@@ -826,15 +825,14 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> any value to block the pause, or <code>nil</code> to allow</span>
             </div>
-            <div class="fn-example-label">Example — Prevent pausing during work hours</div>
+            <div class="fn-example-label">Example — Prevent pausing if a custom flag is active</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.stopTracking = <span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> hour = <span class="code-fn">tonumber</span>(<span class="code-fn">os.date</span>(<span class="code-string">"%H"</span>))
-    <span class="code-keyword">if</span> hour >= 9 <span class="code-keyword">and</span> hour < 17 <span class="code-keyword">then</span>
-        <span class="code-fn">print</span>(<span class="code-string">"[Override] Can't pause during work hours!"</span>)
+    <span class="code-keyword">if</span> preventPausing == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Override] Pausing is currently blocked!"</span>)
         <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- blocks the pause</span>
     <span class="code-keyword">end</span>
-    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- allow pausing off-hours</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- allow pausing</span>
 <span class="code-keyword">end</span></pre>
             </div>
           </div>
@@ -850,12 +848,11 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> any value to block the resume, or <code>nil</code> to allow</span>
             </div>
-            <div class="fn-example-label">Example — Block tracking on weekends</div>
+            <div class="fn-example-label">Example — Block tracking from resuming if a custom flag is active</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.startTracking = <span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> day = <span class="code-fn">os.date</span>(<span class="code-string">"%A"</span>)
-    <span class="code-keyword">if</span> day == <span class="code-string">"Saturday"</span> <span class="code-keyword">or</span> day == <span class="code-string">"Sunday"</span> <span class="code-keyword">then</span>
-        <span class="code-fn">print</span>(<span class="code-string">"[Override] No tracking on weekends. Relax!"</span>)
+    <span class="code-keyword">if</span> blockResume == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Override] Resuming tracking is blocked."</span>)
         <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- keeps tracking paused</span>
     <span class="code-keyword">end</span>
     <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
@@ -955,15 +952,14 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
               <span><strong>Params:</strong> none</span>
               <span><strong>Returns:</strong> number (milliseconds since epoch) or <code>nil</code></span>
             </div>
-            <div class="fn-example-label">Example — Freeze time for deterministic testing</div>
+            <div class="fn-example-label">Example — Toggle between real and frozen time</div>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.overrides.getTime_MS = <span class="code-keyword">function</span>()
-    <span class="code-comment">-- Freeze time at Jan 1, 2026 00:00:00 UTC</span>
-    <span class="code-keyword">return</span> 1767225600000
-
-    <span class="code-comment">-- Or speed up time by 2x:</span>
-    <span class="code-comment">-- local real = os.time() * 1000</span>
-    <span class="code-comment">-- return real * 2</span>
+    <span class="code-comment">-- Use a flag to toggle between real time and a mock timestamp</span>
+    <span class="code-keyword">if</span> HPR.useMockTime <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> 1767225600000 <span class="code-comment">-- Frozen at Jan 1, 2026</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span> <span class="code-comment">-- Default to system time</span>
 <span class="code-keyword">end</span></pre>
             </div>
           </div>
