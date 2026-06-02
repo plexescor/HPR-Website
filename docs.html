@@ -61,14 +61,15 @@
               Under Active Development
             </div>
             <h1>HPR Extension <span class="text-accent">Documentation</span></h1>
-            <p class="hero-tagline" style="margin: 0 auto 40px auto; max-width: 600px;">
+            <p class="hero-tagline" style="margin: 0 auto 40px auto; max-width: 650px;">
               HPR ships with a built-in Lua scripting engine that lets you extend its behavior without touching a single
-              line of C++. Write a script, drop it in a folder, and HPR loads it automatically.
+              line of C++. Write a script, drop it in a folder, and HPR loads it automatically. The API is designed to be <strong>easy for beginners</strong> — if you can write a simple function, you can build an extension. For advanced users, the <strong>Function Overriding API</strong> lets you intercept and hijack 26 core C++ functions directly from Lua.
             </p>
             <div class="hero-actions" style="justify-content: center;">
-              <a href="#guides" class="btn btn--primary">↓ Read the Docs</a>
-              <a href="quickstart.html" class="btn btn--primary" style="background: var(--accent-amber); color: var(--bg-primary);">QuickStart Guide →</a>
-              <a href="api.html" class="btn btn--ghost">Extension API →</a>
+              <a href="#guides" class="btn btn--primary" style="padding: 8px 18px;">↓ Read the Docs</a>
+              <a href="quickstart.html" class="btn btn--primary" style="background: var(--accent-amber); color: var(--bg-primary); padding: 8px 18px;">QuickStart Guide →</a>
+              <a href="api.html" class="btn btn--primary" style="background: var(--accent-cyan); color: var(--bg-primary); padding: 8px 18px;">Extension API →</a>
+              <a href="overrides.html" class="btn btn--primary" style="background: var(--accent-green); color: var(--bg-primary); padding: 8px 18px;">Function Overriding API →</a>
             </div>
           </div>
         </div>
@@ -82,19 +83,22 @@
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
           HPR extensions are plain <code>.lua</code> script files that you place in a specific folder on your system.
           HPR automatically discovers and loads every <code>.lua</code> file it finds there — including files inside
-          subfolders — every time it starts up. No installation steps, no package managers, no compilers.
+          subfolders — every time it starts up. No installation steps, no package managers, no compilers. <strong>If you've ever written any script in any language, you already have what it takes.</strong>
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
           Inside your script, you have access to a global object called <code>HPR</code>. This object exposes a set of
-          functions that let your script communicate with HPR's internals — reading the currently active window, running
-          shell commands, and registering entirely new window-tracking backends for compositors or desktop environments
+          functions that let your script communicate with HPR's internals — reading the currently active window, querying
+          databases, making HTTP requests, subscribing to system events, and even registering entirely new window-tracking backends for compositors or desktop environments
           that HPR doesn't natively support.
+        </p>
+        <p class="section-desc fade-in" style="margin-bottom: 24px;">
+          <strong>Two levels of power:</strong> The standard <a href="api.html" style="color: var(--accent-green);">Extension API</a> gives you read/write access to HPR's tracking data, UI, events, and networking — perfect for building widgets, dashboards, and integrations. For those who want to go deeper, the <a href="overrides.html" style="color: var(--accent-green);">Function Overriding API</a> lets you intercept and replace 26 core C++ engine functions directly from Lua — rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, and more.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
           Extensions are designed to be small and focused. The most powerful extension currently possible — registering
-          a full custom window detection backend — takes fewer than 30 lines of Lua. You do not need to be an
-          experienced programmer to write one. If you know what terminal command gets the active window on your system,
-          you already know 90% of what you need.
+          a full custom window detection backend — takes fewer than 30 lines of Lua. <strong>You do not need to be an
+          experienced programmer to write one.</strong> If you know what terminal command gets the active window on your system,
+          you already know 90% of what you need. Start with the <a href="quickstart.html" style="color: var(--accent-green);">QuickStart Guide</a> and you'll have your first extension running in under 5 minutes.
         </p>
 
         <div class="feature-grid feature-grid--2">
@@ -139,6 +143,11 @@
             <div class="card-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">🧩</div>
             <h3>Interactive Callback Forwarding</h3>
             <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(239,68,68,0.15); color: #ef4444;">🔀</div>
+            <h3>Function Overriding</h3>
+            <p>Completely intercept and hijack core C++ engine routines directly in Lua via the <code>HPR.overrides</code> table. Override active window checks, spoof databases, intercept HTTP requests, or filter UI properties dynamically on the fly.</p>
           </div>
         </div>
       </div>
@@ -327,7 +336,7 @@
         <span class="section-label fade-in">Guides</span>
         <h2 class="section-title fade-in">Tutorials & Reference</h2>
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
-          Comprehensive guides and references for writing custom HPR extensions.
+          Comprehensive guides and references for writing custom HPR extensions. Start with the QuickStart guide if you're new — the tutorials are ordered from beginner-friendly to advanced.
         </p>
 
         <!-- QuickStart & Mistakes Callout -->
@@ -379,13 +388,19 @@
             <a href="aw-parasite-tutorial.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial
               →</a>
           </div>
+          <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column; border: 1px solid rgba(255, 140, 0, 0.3);">
+            <h3 style="color: var(--accent-green); margin-bottom: 12px;">⚡ Function Overriding API <span style="font-size: 0.65em; font-weight: 400; color: var(--text-tertiary);">Advanced</span></h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+              For advanced users who want maximum control: intercept and override <strong>26 core C++ engine functions</strong> directly from Lua. Rename windows before they hit the database, mock SQL query results, block desktop notifications, spoof system time, hijack HTTP requests, control tracking state, and filter UI updates. Every function documented with a working Lua code example.
+            </p>
+            <a href="overrides.html" class="btn btn--primary" style="margin-top: auto;">View Overrides API →</a>
+          </div>
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Raw Extension API Reference</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Detailed reference for the global <code>HPR</code> table functions, including alias lookup, reverse-alias
-              lookup, and lifecycle tick configuration.
+              Complete reference for all functions in the global <code>HPR</code> table — window queries, database access, HTTP networking, event subscriptions, UI manipulation, alias lookups, and lifecycle configuration. The standard API is beginner-friendly and covers most use cases.
             </p>
-            <a href="api.html" class="btn btn--ghost" style="margin-top: auto;">View API Reference →</a>
+            <a href="api.html" class="btn btn--primary" style="margin-top: auto;">View API Reference →</a>
           </div>
         </div>
       </div>

@@ -197,6 +197,7 @@
         <p class="section-desc fade-in" style="margin-bottom: 12px;">
           Build dynamic widgets, advanced database views, custom logging handlers, and integrations using a secure,
           isolated Lua 5.4 scripting VM. Fully integrated with C++ handles, real-time EventHub messaging, and SQLite.
+          The API is designed to be <strong>beginner-friendly</strong> — if you can write a simple Lua function, you can build an HPR extension. No compilation, no boilerplate, no framework to learn. Drop a <code>.lua</code> file into the extensions folder and you're running.
         </p>
 
         <div class="highlight-box fade-in" style="margin-top: 40px; border-left: 3px solid var(--accent-amber);">
@@ -222,6 +223,13 @@
                 <div class="interpreter-step-text">
                   <h4>Safe SQLite Queries</h4>
                   <p>Interrogate tracking database records and perform calculations directly in sandboxed scripts safely in real-time.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(240, 160, 48, 0.15); color: var(--accent-amber);">4</span>
+                <div class="interpreter-step-text">
+                  <h4>Function Overriding API</h4>
+                  <p>Advanced users can go even deeper — intercept and override 26 core C++ functions directly from Lua. Rename windows, mock databases, block notifications, spoof time, hijack HTTP requests, and more. <a href="overrides.html" style="color: var(--accent-amber);">Read the Override API docs →</a></p>
                 </div>
               </div>
             </div>

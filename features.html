@@ -598,6 +598,7 @@
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
           Build dynamic custom behaviors, widgets, integrations, and automation directly using a highly secure,
           concurrency-safe Lua 5.4 scripting sandbox. No binary compilation required. Zero chance of destabilizing the core.
+          The extension API is <strong>intentionally beginner-friendly</strong> — write a simple Lua function, drop the file into <code>~/.config/HPR/extensions/</code>, and HPR picks it up instantly. No setup wizards, no package managers, no build steps. If you've ever written a script, you can build an extension.
         </p>
 
         <div class="highlight-box fade-in">
@@ -632,8 +633,13 @@
           </div>
           <div class="card">
             <div class="card-icon card-icon--purple">✓</div>
-            <h3>And much more!</h3>
-            <p>The HPR extension API supports a wide range of features and capabilities, making it a powerful tool for customizing and extending the functionality of the application.</p>
+            <h3>HTTP Networking</h3>
+            <p>Make HTTP GET/POST requests directly from Lua to integrate with REST APIs, webhooks, and external services — all while the core stays 100% offline.</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+            <div class="card-icon card-icon--amber">⚡</div>
+            <h3>Function Overriding API</h3>
+            <p>For advanced users: intercept and override 26 core C++ engine functions directly from Lua. Rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, control tracking state, and more. <a href="overrides.html" style="color: var(--accent-amber);">Full override docs →</a></p>
           </div>
         </div>
       </div>
