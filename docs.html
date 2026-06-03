@@ -94,11 +94,14 @@
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
           <strong>Two levels of power:</strong> The standard <a href="api.html" style="color: var(--accent-green);">Extension API</a> gives you read/write access to HPR's tracking data, UI, events, and networking — perfect for building widgets, dashboards, and integrations. For those who want to go deeper, the <a href="overrides.html" style="color: var(--accent-green);">Function Overriding API</a> lets you intercept and replace 26 core C++ engine functions directly from Lua — rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, and more.
         </p>
-        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+        <p class="section-desc fade-in" style="margin-bottom: 24px;">
           Extensions are designed to be small and focused. The most powerful extension currently possible — registering
           a full custom window detection backend — takes fewer than 30 lines of Lua. <strong>You do not need to be an
           experienced programmer to write one.</strong> If you know what terminal command gets the active window on your system,
           you already know 90% of what you need. Start with the <a href="quickstart.html" style="color: var(--accent-green);">QuickStart Guide</a> and you'll have your first extension running in under 5 minutes.
+        </p>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          💡 <strong>Preferring Extension Backends over Native:</strong> If you register a custom window tracking backend for a compositor or desktop environment that is already natively supported by HPR (like Hyprland, GNOME, KDE, Cinnamon, or Windows), your Lua extension's implementation will be preferred and activated instead of the built-in C++ one. This is because HPR searches registered backends in reverse order, giving your newly loaded Lua extension priority.
         </p>
 
         <div class="feature-grid feature-grid--2">
@@ -355,8 +358,8 @@
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
               Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or
-              desktop
-              environment. Covers all 6 required functions with a real working example using Hyprland.
+              desktop.
+              Covers all 7 required functions with a real working example using Hyprland.
             </p>
             <a href="custom-backend.html" class="btn btn--primary" style="margin-top: auto;">Read the tutorial →</a>
           </div>

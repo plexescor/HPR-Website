@@ -286,6 +286,19 @@
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.log_E(name, message)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code> (log category/prefix), <code>message: string</code> (content to log) &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Appends a formatted message to HPR's centralized logger. The log will automatically include the category prefix specified in the <code>name</code> argument, appearing as <code>[name] message</code>. This is highly recommended over standard Lua print statements for structured, traceable debugging output in production environments.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.log_E(<span class="code-string">"MyExtension"</span>, <span class="code-string">"Initialized and active."</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.readCsv_E(path, [key])</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory), <code>key: string|number|boolean</code> (optional) &mdash; 
@@ -523,7 +536,7 @@
               <strong>Returns:</strong> nothing (terminates process)
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Abruptly terminates the HPR process with exit code 1. While we cannot envision why you would deliberately want to force-crash the application like this, the utility is provided for extreme debugging circumstances.
+              Abruptly terminates the HPR process with exit code 1 using the C system call <code>_exit(1)</code> (rather than standard <code>exit(1)</code>). While we cannot envision why you would deliberately want to force-crash the application like this, the utility is provided for extreme debugging circumstances.
               If an optional message argument is supplied, HPR will log that message to both standard output (<code>stdout</code>) and standard error (<code>stderr</code>) before terminating. If no argument is provided, HPR will log a generic notice stating that the application has been intentionally crashed by an extension.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -748,6 +761,121 @@ HPR.startTracking_E()</pre>
             </p>
           </div>
 
+          <!-- ── Process & Limits Management ────────────────────────────────── -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #fb7185;">Process &amp; Limits Management</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            Enables extensions to query active process IDs (PIDs), terminate specific running applications, and dynamically set or get daily usage limits and goals.
+          </p>
+
+          <div class="callout callout--info fade-in" style="margin-bottom: 24px; border-left-color: var(--accent-cyan); background-color: var(--accent-cyan-dim);">
+            <div class="callout-title">💡 Standardizing App Names via getCurrentWindow_E()</div>
+            <p style="line-height: 1.7; font-size: 0.85rem; margin: 0; color: var(--text-secondary);">
+              To ensure full consistency, always use the class name returned by <code>HPR.getCurrentWindow_E()</code> as the input name parameter for functions like <code>getPid_E</code>, <code>setLimit_E</code>, <code>getLimit_E</code>, <code>setGoal_E</code>, and <code>getGoal_E</code>. HPR checks and maps limits/goals against the raw window class names, so query inputs must match the exact string returned by HPR's active tracking loop.
+            </p>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getPid_E(rawName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>rawName: string</code> &mdash; <strong>Returns:</strong>
+              <code>string</code> (PID string or empty string)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Looks up and returns the process ID (PID) associated with the currently tracked active window of the given application class name. Returns an empty string if no window is tracked or if the current active backend does not provide PID information.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> pid = HPR.getPid_E(<span class="code-string">"firefox"</span>)
+<span class="code-keyword">if</span> pid ~= <span class="code-string">""</span> <span class="code-keyword">then</span>
+    <span class="code-fn">print</span>(<span class="code-string">"Firefox PID is: "</span> .. pid)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.killPid_E(pid)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>pid: string</code> &mdash; <strong>Returns:</strong>
+              nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Forcefully terminates the process associated with the given process ID (PID). On Linux systems, this issues a <code>kill -9 &lt;pid&gt;</code> signal, and on Windows it executes <code>taskkill /F /PID &lt;pid&gt;</code>.
+            </p>
+            <div class="callout callout--danger fade-in" style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+              <div class="callout-title">⚠️ Unsafe Force Termination Warning</div>
+              <p style="line-height: 1.6; font-size: 0.85rem; margin: 0; color: var(--text-secondary);">
+                This operation is aggressive and bypasses standard application exit prompts. Any unsaved data in the target application will be lost. Use with care.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> pid = HPR.getPid_E(<span class="code-string">"steam"</span>)
+<span class="code-keyword">if</span> pid ~= <span class="code-string">""</span> <span class="code-keyword">then</span>
+    HPR.killPid_E(pid)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setLimit_E(name, minutes)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code> (app name/alias), <code>minutes: int</code> (daily limit in minutes) &mdash; <strong>Returns:</strong>
+              nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Sets a daily usage limit (in minutes) for the specified application. HPR's <code>LimitsManager</code> periodically checks active tracking durations against this limit. When reached, warning/reached alerts and termination protocols are handled by the system.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.setLimit_E(<span class="code-string">"firefox"</span>, <span class="code-keyword">60</span>) <span class="code-comment">-- Limit Firefox to 1 hour daily</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getLimit_E(name)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code> &mdash; <strong>Returns:</strong>
+              <code>int</code> (limit in minutes, or -1)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Retrieves the active daily usage limit in minutes for the given application class name. Returns <code>-1</code> if no limit has been configured.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> mins = HPR.getLimit_E(<span class="code-string">"firefox"</span>)
+<span class="code-keyword">if</span> mins ~= -<span class="code-keyword">1</span> <span class="code-keyword">then</span>
+    <span class="code-fn">print</span>(<span class="code-string">"Firefox limit: "</span> .. mins .. <span class="code-string">" minutes"</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setGoal_E(name, minutes)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code> (app name/alias), <code>minutes: int</code> (daily goal in minutes) &mdash; <strong>Returns:</strong>
+              nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Sets a daily usage/productivity goal (in minutes) for the specified application. Useful for rewarding focus time or tracking daily routines in developer environments and text editors.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.setGoal_E(<span class="code-string">"code"</span>, <span class="code-keyword">120</span>) <span class="code-comment">-- Set a daily coding goal of 2 hours</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getGoal_E(name)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>name: string</code> &mdash; <strong>Returns:</strong>
+              <code>int</code> (goal in minutes, or -1)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Retrieves the active daily productivity goal in minutes for the given application. Returns <code>-1</code> if no goal has been configured.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> mins = HPR.getGoal_E(<span class="code-string">"code"</span>)
+<span class="code-keyword">if</span> mins ~= -<span class="code-keyword">1</span> <span class="code-keyword">then</span>
+    <span class="code-fn">print</span>(<span class="code-string">"Daily coding goal: "</span> .. mins .. <span class="code-string">" minutes"</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
           <!-- ── Backend Registration ───────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Backend Registration</h3>
 
@@ -755,11 +883,11 @@ HPR.startTracking_E()</pre>
             <div class="api-signature">HPR.registerBackend_E(...)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong>
-              <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle)</code>
+              <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle, getCurrentPid)</code>
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Registers a completely new custom tracking backend dynamically. HPR's backend manager calls the registered
-              functions during startup to inspect compositors and get current window classes/titles. For a detailed
+              functions during startup to inspect compositors and get current window classes, titles, and process IDs. For a detailed
               guide on using this, please consult the <a href="custom-backend.html"
                 style="color: var(--accent-green);">Custom Backend Tutorial</a>.
             </p>
@@ -771,9 +899,19 @@ HPR.startTracking_E()</pre>
         <span class="code-keyword">function</span>() <span class="code-fn">print</span>(<span class="code-string">"Loaded!"</span>) <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-keyword">true</span> <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"browser"</span> <span class="code-keyword">end</span>,
-        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"Home Page"</span> <span class="code-keyword">end</span>
+        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"Home Page"</span> <span class="code-keyword">end</span>,
+        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"1234"</span> <span class="code-keyword">end</span>
     )
 <span class="code-keyword">end</span></pre>
+            </div>
+            <div class="callout callout--info fade-in" style="margin-top: 16px; margin-bottom: 0; border-left-color: var(--accent-cyan); background-color: var(--accent-cyan-dim);">
+              <div class="callout-title">💡 Built-in Override Priority</div>
+              <p style="line-height: 1.7; font-size: 0.85rem; margin: 0;">
+                <strong>Preferring Extension Backends:</strong> If you register a custom window tracking backend for a compositor or desktop environment that HPR already natively supports (like Hyprland, GNOME, KDE, Cinnamon, or Windows), HPR will prioritize and use your extension's implementation instead of its native C++ one.
+              </p>
+              <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;">
+                HPR checks registered backends in <strong>reverse order</strong> of registration. Because Lua extensions load after the native backends are registered, your custom extension backend is positioned last in the registry and will be evaluated first during startup checks.
+              </p>
             </div>
           </div>
 

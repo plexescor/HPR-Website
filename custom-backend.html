@@ -73,9 +73,7 @@
               style="color: var(--accent-green);">Programming in Lua</a> guide first. No C++ knowledge is required — you
             will only write Lua code.
           </p>
-        </div>
-
-        <div class="callout fade-in" style="margin-bottom: 48px;">
+        <div class="callout fade-in" style="margin-bottom: 24px;">
           <div class="callout-title">About the Example</div>
           <p>
             All examples in this tutorial use <b>Hyprland</b> as the demonstration compositor because it has a clean,
@@ -83,6 +81,16 @@
               already natively supported by HPR</b> — we are only using it here as a teaching example. The same pattern
             applies directly to Sway (<code>swaymsg</code>), Niri (<code>niri msg</code>), River
             (<code>riverctl</code>), or anything else that exposes an IPC command.
+          </p>
+        </div>
+
+        <div class="callout fade-in" style="margin-bottom: 48px; border-left-color: #38bdf8; background-color: rgba(56, 189, 248, 0.1);">
+          <div class="callout-title" style="color: #38bdf8;">💡 Overriding Native Backends</div>
+          <p>
+            If you write a Lua extension for a compositor or desktop environment that is <strong>already natively supported</strong> by HPR (such as Hyprland, GNOME, KDE, Cinnamon, or Windows), your extension's implementation will be <strong>preferred and prioritized</strong> over the built-in one!
+          </p>
+          <p style="margin-top: 10px;">
+            Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment and reports that it <code>isUsable</code>, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code!
           </p>
         </div>
 
@@ -122,10 +130,10 @@
 <span class="code-keyword">end</span></pre>
         </div>
 
-        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 6 arguments of <code>registerBackend_E</code>
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 7 arguments of <code>registerBackend_E</code>
         </h2>
         <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
-          The function takes 6 positional arguments in a fixed order. Here is each one explained in detail.
+           The function takes 7 positional arguments in a fixed order. Here is each one explained in detail.
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
@@ -277,11 +285,25 @@
             </p>
             <div class="code-block" style="margin: 0;">
               <pre><span class="code-keyword">function</span>()
+    local result = HPR.runSystemCommand_E(
+        "hyprctl -j activewindow | jq -r '.title'"
+    )
+    return result
+end,  -- argument 6
+
+          <div class="card fade-in" style="padding: 28px;">
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 7 — <code>getCurrentPid</code>
+              (function)</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a string representing the <b>process ID (PID)</b> of the currently focused window. HPR uses this value to correlate active windows with their parent processes for advanced tracking features and terminal workspace context detection.
+            </p>
+            <div class="code-block" style="margin: 0;">
+              <pre><span class="code-keyword">function</span>()
     <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
-        <span class="code-string">"hyprctl -j activewindow | jq -r '.title'"</span>
+        <span class="code-string">"hyprctl -j activewindow | jq -r '.pid'"</span>
     )
     <span class="code-keyword">return</span> result
-<span class="code-keyword">end</span>  <span class="code-comment">-- argument 6</span></pre>
+<span class="code-keyword">end</span>  <span class="code-comment">-- argument 7</span></pre>
             </div>
           </div>
 
@@ -289,7 +311,7 @@
 
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          Putting all six arguments together, here is the complete working Hyprland backend extension.
+          Putting all seven arguments together, here is the complete working Hyprland backend extension.
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
             level</strong> of the script (outside of <code>init()</code>).
           Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
@@ -345,6 +367,13 @@ HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Exten
                 <span class="code-string">"hyprctl -j activewindow | jq -r '.title'"</span>
             )
             <span class="code-keyword">return</span> result
+        <span class="code-keyword">end</span>,
+
+        <span class="code-keyword">function</span>()
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+                <span class="code-string">"hyprctl -j activewindow | jq -r '.pid'"</span>
+            )
+            <span class="code-keyword">return</span> result
         <span class="code-keyword">end</span>
 
     )
@@ -373,7 +402,10 @@ env:find(<span class="code-string">"sway"</span>) ~= <span class="code-keyword">
 HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .app_id // empty'"</span>)
 
 <span class="code-comment">-- getCurrentTitle</span>
-HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .name // empty'"</span>)</pre>
+HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .name // empty'"</span>)
+
+<span class="code-comment">-- getCurrentPid</span>
+HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .pid // empty'"</span>)</pre>
             </div>
           </div>
 
@@ -392,7 +424,10 @@ env:find(<span class="code-string">"niri"</span>) ~= <span class="code-keyword">
 HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.app_id // empty'"</span>)
 
 <span class="code-comment">-- getCurrentTitle</span>
-HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.title // empty'"</span>)</pre>
+HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.title // empty'"</span>)
+
+<span class="code-comment">-- getCurrentPid</span>
+HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.pid // empty'"</span>)</pre>
             </div>
           </div>
         </div>
