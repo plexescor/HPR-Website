@@ -134,7 +134,7 @@
             <p style="margin: 0; font-size: 0.9rem;">
               HPR supports hot reloading extensions without restarting the app! Head to the Extensions tab in the UI where you will find three buttons:
               <br><br>
-              <strong>RESCAN</strong> — Scans your extensions folder for any new .lua files you dropped in and loads them instantly. Also brings back any extensions you previously disabled.
+              <strong>RESCAN</strong> — Scans your extensions folder <strong>recursively</strong> for any new .lua files you dropped in (including inside subfolders) and loads them instantly. Also brings back any extensions you previously disabled.
               <br><br>
               <strong>RELOAD</strong> — Restarts a specific extension from scratch. If you edited an extension's code and want the changes to take effect, hit this.
               <br><br>
@@ -314,6 +314,10 @@
             <a href="aw-parasite-tutorial.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">AW Parasite Extension Tutorial →</a>
             <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Use HPR's HTTP client and JSON parser to import live browser activity.</p>
           </div>
+          <div class="card" style="padding: 20px; width: 100%; margin: 0; align-items: flex-start;">
+            <a href="overrides.html" style="color: var(--accent-green); text-decoration: underline; font-weight: 600; font-family: var(--font-mono); font-size: 1rem; margin-bottom: 4px;">Function Override API →</a>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Intercept and replace 26 core C++ engine functions directly from Lua. For advanced extension developers.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -404,7 +408,7 @@
         </div>
 
         <!-- Mistake 3 -->
-        <div class="card" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
+        <div class="card" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber); margin-bottom: 32px;">
           <h3 style="color: var(--accent-amber); margin-bottom: 8px;">3. Using "localhost" instead of "127.0.0.1"</h3>
           <p style="margin-bottom: 12px; color: var(--text-secondary);">
             <strong>Why it happens:</strong> Modern operating systems use Dual-Stack sockets and prioritize IPv6 by
@@ -440,6 +444,17 @@
 )</pre>
             </div>
           </div>
+        </div>
+
+        <!-- Mistake 4 -->
+        <div class="card" style="padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
+          <h3 style="color: var(--accent-amber); margin-bottom: 8px;">4. Blocking the extension thread</h3>
+          <p style="margin-bottom: 12px; color: var(--text-secondary);">
+            <strong>Why it happens:</strong> Each extension runs on its own dedicated C++ background thread. If your callback or <code>onTick</code> blocks for a long time — for example, a slow HTTP request without a timeout — that extension's tick schedule falls further and further behind. The core tracker and all other extensions keep running fine, but yours will lag.
+          </p>
+          <p style="margin-bottom: 16px; color: var(--text-secondary);">
+            Keep callbacks fast. For HTTP requests, always pass a sensible timeout via the <code>timeout</code> parameter of <code>httpGet_E</code> / <code>httpPost_E</code> so your extension doesn't hang indefinitely waiting on a dead server.
+          </p>
         </div>
 
       </div>

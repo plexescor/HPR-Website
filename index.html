@@ -121,6 +121,11 @@
             <h3>VS Code Project Tracking</h3>
             <p>Tracks which VS Code project you're in — not just that VS Code is open. No extension. No plugin. No marketplace. HPR reads the window title.</p>
           </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(239,68,68,0.12); color: #f87171;">⏱</div>
+            <h3>App Limits &amp; Goals</h3>
+            <p>Set a daily time limit or usage goal on any app. HPR monitors usage in the background, sends a system notification when the limit is crossed, and can force-quit the offending app automatically.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -157,8 +162,8 @@
               <div class="interpreter-step">
                 <span class="interpreter-step-num">3</span>
                 <div class="interpreter-step-text">
-                  <h4>Restart HPR</h4>
-                  <p>Your custom UI loads from disk. No build step. No compilation. Instant.</p>
+                  <h4>Hit "Reload UI"</h4>
+                  <p>A single click in the sidebar reloads your changes instantly. No restart. No recompile. Changes are live in under a second.</p>
                 </div>
               </div>
             </div>
@@ -317,6 +322,38 @@
       </div>
     </section>
 
+    <!-- Historical Range View -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-cyan);">Standout Feature</span>
+        <h2 class="section-title fade-in">Query any day. Any range. Any span.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          HPR stores one SQLite file per day. From the sidebar you can pull up historical data in three modes — and your live tracking is never paused while it loads.
+        </p>
+        <div class="feature-grid fade-in" style="margin-bottom: 32px;">
+          <div class="card">
+            <div class="card-icon card-icon--cyan">📅</div>
+            <h3>Single Day</h3>
+            <p>Pick any specific date from the calendar picker. Loads that day's data asynchronously.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">7</div>
+            <h3>Last N Days</h3>
+            <p>Pull the last 7 days, 30 days, or any number. Data from multiple daily files is merged and aggregated automatically.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">↔</div>
+            <h3>Date Range</h3>
+            <p>Set a start and end date. HPR reads every daily file in that span and streams the combined result back into the UI.</p>
+          </div>
+        </div>
+        <div class="callout fade-in">
+          <div class="callout-title">Non-blocking</div>
+          <p>Historical data loads on a dedicated background thread. Your real-time window tracking continues uninterrupted. The topbar badge updates to show exactly what you're viewing — <code>Historical: last 7 days</code> or <code>Historical: 01-06-26 — 07-06-26</code>.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Screenshots -->
     <section class="section section-border">
       <div class="container">
@@ -377,12 +414,16 @@
         <div class="arch-diagram fade-in">Main Thread          (Slint event loop)
   ├── Window Poller      [50ms  tick  —  CurrentWindowManager]
   ├── UI Bridge          [500ms tick  —  HPR / HPRInterpreter + UiModelManager]
-  └── Database Writer    [10s   tick + event-driven  —  DatabaseManager]
+  ├── Database Writer    [10s   tick + event-driven  —  DatabaseManager]
+  ├── Limits Monitor     [background  —  LimitsManager]
+  └── Extension Threads  [N threads, one per loaded extension — ExtensionManager]
 
 Data Flow:
   OS Window API → getCurrentWindow() → AppState::state → UiModelManager → Slint UI
                                             ↓
-                                     DatabaseManager → SQLite3 (.db per day)</div>
+                                     DatabaseManager → SQLite3 (.db per day)
+
+Historical Loader: spawns ad-hoc thread on date selection → emits result via EventHub</div>
 
         <div class="stats-row fade-in">
           <div class="stat-card">

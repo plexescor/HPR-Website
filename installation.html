@@ -139,6 +139,8 @@
   ├── aliases.csv
   ├── tabAliases.csv
   ├── projectAliases.csv
+  ├── extensions/
+  │   └── your-extension.lua
   └── ui/
       └── app-window.slint
 
@@ -201,6 +203,8 @@
   ├── aliases.csv
   ├── tabAliases.csv
   ├── projectAliases.csv
+  ├── extensions\
+  │   └── your-extension.lua
   └── ui\
       └── app-window.slint
 
@@ -346,6 +350,11 @@ NEXT TO THE HPR BINARY AND THEN RESTART PC</span></pre>
             <h3>Try Interpreted Mode</h3>
             <p>Set <code>use-interpreter,true</code> in config.csv to load the UI from disk. Edit <code>app-window.slint</code> to customize HPR's entire interface.</p>
           </div>
+          <div class="card">
+            <div class="card-icon" style="background: rgba(239,68,68,0.12); color: #f87171;">4</div>
+            <h3>Set App Limits or Goals</h3>
+            <p>Open the sidebar and click the Goals icon to set per-app daily time limits or usage goals. No restart required. Click any app row to expand its settings inline.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -363,7 +372,9 @@ NEXT TO THE HPR BINARY AND THEN RESTART PC</span></pre>
           <pre><span class="code-string">main.cpp</span>              →  startup, config loading, thread orchestration
 <span class="code-string">appState.hpp</span>          →  the shared data model, the center of everything
 <span class="code-string">getCurrentWindow.cpp</span>  →  platform-specific window polling per backend
-<span class="code-string">databaseManager.cpp</span>   →  persistence, WAL, lock file, midnight rollover
+<span class="code-string">databaseManager.cpp</span>   →  persistence, lock file, midnight rollover, historical load
+<span class="code-string">limitsManager.cpp</span>     →  per-app usage limit and goal monitoring, notification dispatch
+<span class="code-string">extensionManager.cpp</span>  →  Lua VM lifecycle, sol2 bindings, hot-reload, RAII subscription tracking
 <span class="code-string">uiModelManager.cpp</span>    →  how C++ state becomes Slint models in both UI modes</pre>
         </div>
         <div class="callout fade-in">

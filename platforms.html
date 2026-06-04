@@ -200,7 +200,7 @@
             </p>
             <div class="callout--amber callout" style="margin-bottom: 24px;">
               <div class="callout-title">⚠ Honest Engineering Note</div>
-              <p>As HPR uses same underlying Kwin scripting approach, its mostly accurate that where kdotool works, HPR also works.<p>
+              <p>HPR uses the same underlying KWin scripting approach as kdotool — so it's accurate to say that wherever kdotool works, HPR also works.</p>
             </div>
           </div>
           <div>
@@ -354,9 +354,19 @@ global.<span class="code-fn">get_window_actors</span>()
             </div>
             <div class="callout" style="margin-bottom: 24px;">
               <div class="callout-title">Cross-Platform Normalization</div>
-              <p><code>validateAndUpdateWindow_Cross</code> runs on every return from every platform getter automatically. New backends inherit all normalization and noise filtering for free.</p>
+              <p><code>validateAndUpdateWindow_Cross</code> runs on every return from every platform getter automatically. It filters known system noise — including <code>plasmashell</code>, <code>searchhost</code>, and KWin JS runtime artifacts (<code>js::</code> prefix outputs) — so they never appear in your tracking data. New backends inherit all of this for free.</p>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform feature parity -->
+    <section class="section section-border">
+      <div class="container">
+        <div class="callout fade-in">
+          <div class="callout-title">Full feature parity across all platforms</div>
+          <p>Every HPR feature — the Lua extension engine, per-app limits and goals, multi-day historical data queries, interpreted UI mode, and the alias system — works identically on Hyprland, GNOME, KDE, Cinnamon, and Windows. There is no platform-specific feature subset.</p>
         </div>
       </div>
     </section>

@@ -94,11 +94,28 @@
             <img src="assets/HPRHome.png" alt="HPR Home — Live tracking view" loading="lazy">
           </div>
           <div>
-            <h3 style="margin-bottom: 16px;">Date Picker</h3>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
-              Click the date picker and pull up any day you have ever run HPR. It loads that day's database
-              asynchronously off a plain SQLite file sitting on your own disk.
+            <h3 style="margin-bottom: 16px;">Historical Data — Three Modes</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Click the calendar icon in the sidebar to open the History Range view. Choose from three loading modes:
             </p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--cyan">1</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Single Day</strong> — pick any date from the calendar picker. Loads that day's <code>.db</code> file asynchronously.</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--amber">7</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Last N Days</strong> — pull last 7, 14, 30 days or any custom count. Multiple daily files are merged automatically.</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--green">↔</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Date Range</strong> — set a start and end date. HPR reads every daily file in that span and aggregates the result.</span>
+              </div>
+            </div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">Non-Blocking Load</div>
+              <p>Historical loading runs on a dedicated background thread. Live tracking is never paused. A "Switch to Live View" button in the data view lets you jump back instantly.</p>
+            </div>
             <h3 style="margin-bottom: 16px;">Timing Integrity</h3>
             <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
               Duration measurement uses <code>std::chrono::steady_clock</code> (monotonic). Display timestamps use
@@ -346,6 +363,78 @@
       </div>
     </section>
 
+    <!-- App Limits & Goals -->
+    <section class="section section-border" id="limits">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Per-App Limits &amp; Goals</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Set a daily time limit or a daily usage goal on any tracked application — directly from the built-in Goals view. HPR monitors usage in the background and fires a system notification the moment you cross a threshold.
+        </p>
+
+        <div class="feature-grid feature-grid--2 fade-in">
+          <div class="card" style="border-left: 3px solid var(--accent-red);">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">&#8987;</div>
+            <h3 style="color: var(--accent-red);">Limits</h3>
+            <p>Cap an app to a maximum number of minutes per day. When usage crosses that threshold HPR sends a system notification — and can optionally force-quit the application automatically. The badge on each row shows exactly how many minutes remain, updated live.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent-green);">
+            <div class="card-icon card-icon--green">&#10003;</div>
+            <h3 style="color: var(--accent-green);">Goals</h3>
+            <p>Set a minimum number of minutes you want to spend in an app each day — for example, 30 minutes in your code editor. HPR tracks your progress and notifies you when you hit the goal.</p>
+          </div>
+        </div>
+
+        <div class="highlight-box fade-in" style="margin-top: 32px;">
+          <div class="two-col">
+            <div>
+              <h3 style="margin-bottom: 20px;">How to configure</h3>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">1</span>
+                <div class="interpreter-step-text">
+                  <h4>Open the Goals view</h4>
+                  <p>Click the Goals icon in the sidebar. Every tracked application appears in the list automatically.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">2</span>
+                <div class="interpreter-step-text">
+                  <h4>Click any app row</h4>
+                  <p>The row expands inline, revealing a minute input with +/− step buttons and three actions: <strong>SET LIMIT</strong>, <strong>SET GOAL</strong>, or <strong>RESET</strong>.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">3</span>
+                <div class="interpreter-step-text">
+                  <h4>HPR handles the rest</h4>
+                  <p>A dedicated background thread monitors usage continuously. Limits show a red accent badge; goals show green. Both display remaining time live.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="callout" style="margin-bottom: 20px;">
+                <div class="callout-title">Zero restart required</div>
+                <p>Limits and goals take effect immediately. No restart. No config file editing. Changes are reflected in the UI the moment you set them.</p>
+              </div>
+              <div class="callout">
+                <div class="callout-title">Override API hook</div>
+                <p>Advanced users can intercept the limit-reached event via the Lua Extension Override API to run custom logic — log it, send it to a webhook, trigger a different notification, or suppress it entirely.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag">App Limits</span>
+          <span class="tag">Daily Goals</span>
+          <span class="tag">System Notifications</span>
+          <span class="tag">Background Monitor</span>
+          <span class="tag">Per-App</span>
+          <span class="tag">Live Remaining Time</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Alias System -->
     <section class="section section-border" id="aliases">
       <div class="container">
@@ -494,6 +583,11 @@
           property bindings.
         </p>
 
+        <div class="callout fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">Ghost Sidebar + Reload UI button</div>
+          <p>The navigation sidebar collapses to a thin 14px sliver at the screen edge — hover to reveal icon buttons for every view. One of those buttons is <strong>Reload UI</strong>: hit it while in interpreted mode and your modified <code>.slint</code> file is re-parsed and the interface re-renders in under a second, without restarting HPR.</p>
+        </div>
+
         <div class="highlight-box fade-in" style="margin-top: 40px;">
           <div class="two-col">
             <div>
@@ -640,6 +734,16 @@
             <div class="card-icon card-icon--amber">⚡</div>
             <h3>Function Overriding API</h3>
             <p>For advanced users: intercept and override 26 core C++ engine functions directly from Lua. Rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, control tracking state, and more. <a href="overrides.html" style="color: var(--accent-amber);">Full override docs →</a></p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↻</div>
+            <h3>Recursive Subdirectory Scan</h3>
+            <p>RESCAN walks the extensions folder recursively. Organize your scripts into subdirectories freely — HPR finds them all. Use <code>HPR.getExtensionDir_E()</code> to get the relative path to your extension's own subfolder for safe file I/O.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🛡️</div>
+            <h3>Per-Extension Isolation</h3>
+            <p>Each loaded extension runs in its own dedicated background thread. If one extension crashes or throws, all others keep running and the core C++ tracker is completely unaffected.</p>
           </div>
         </div>
       </div>

@@ -179,6 +179,20 @@
                 <td><span class="badge badge--red">No</span></td>
                 <td><span class="badge badge--red">No</span></td>
               </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Per-App Limits &amp; Goals</strong></td>
+                <td><span class="badge badge--green">Yes (with notifications)</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--amber">Limits only (premium)</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Multi-Day Historical Queries</strong></td>
+                <td><span class="badge badge--green">Yes (Range / Last N Days)</span></td>
+                <td><span class="badge badge--amber">Web dashboard only</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -198,7 +212,8 @@
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
             <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
             <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
-            <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries. The API is beginner-friendly — drop a <code>.lua</code> file, write a function, and you're running. Supports live hot-reloading of extensions without restarting. Advanced users can go deeper with the <strong>Function Overriding API</strong>, intercepting and replacing 26 core C++ engine functions directly from Lua.</p>
+            <p style="margin-bottom: 12px;"><strong>Per-App Limits &amp; Goals</strong> &mdash; Set a daily usage cap or daily usage goal on any tracked application from a built-in UI. A dedicated background thread monitors usage and fires system notifications when thresholds are crossed. ActivityWatch has no equivalent built-in system.</p>
+            <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries. The API is beginner-friendly &mdash; drop a <code>.lua</code> file, write a function, and you're running. Supports live hot-reloading of extensions without restarting. Advanced users can go deeper with the <strong>Function Overriding API</strong>, intercepting and replacing 26 core C++ engine functions directly from Lua.</p>
             <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime inside <code>app-window.slint</code> without recompiling, and trigger an instant hot-reload of the UI with a single press of the <strong>"Reload UI"</strong> button.</p>
             <p>Browser tab tracking and VS Code project tracking with <strong>no extensions whatsoever</strong> &mdash; not optional, not recommended, literally not needed. HPR reads the window title the OS already exposes. Both support toggleable raw and formatted name views built into the app.</p>
           </div>
@@ -219,7 +234,8 @@
   └── <span class="code-fn">Slint UI</span> (native rendering)
   └── <span class="code-fn">SQLite3</span> (amalgamation, compiled-in)
   └── <span class="code-fn">Sandboxed Lua Engine</span> (extensions)
-  └── <span class="code-fn">4 threads</span>, defined cadences
+  └── <span class="code-fn">LimitsManager</span> (background goals/limits)
+  └── <span class="code-fn">N threads</span>, one per loaded extension
 
 <span class="code-comment">No web server</span>
 <span class="code-comment">No Python</span>
@@ -439,7 +455,7 @@
 
         <div class="feature-grid fade-in" style="margin-top: 32px;">
           <div class="card">
-            <div class="card-icon">⚡</div>
+            <div class="card-icon">&#9889;</div>
             <h3>Browser Tab Tracking — No Extension</h3>
             <p>Chrome, Edge, Firefox, Brave — tracked per-site and per-tab with zero browser extensions. Toggle between <strong>Tab View</strong> (raw OS title) and <strong>Site View</strong> (grouped by domain via <code>tabAliases.csv</code>) inside the app. No hooks. No manifest. No permissions dialog.</p>
           </div>
@@ -467,6 +483,16 @@
             <div class="card-icon card-icon--purple">⚙</div>
             <h3>Hot-Reloading Extensions</h3>
             <p>Unload, reload, or refresh all background Lua scripts dynamically from HPR's Loaded Extensions manager UI. HPR cleanly terminates active Lua execution threads, resolves and destroys Lua VM instances, and restarts them instantly with fresh code modifications.</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(239,68,68,0.3);">
+            <div class="card-icon" style="background: rgba(239,68,68,0.12); color: #f87171;">&#8987;</div>
+            <h3>Per-App Limits &amp; Goals</h3>
+            <p>Set a daily usage cap or daily usage goal for any tracked app directly from the built-in Goals view. HPR's background monitor thread checks usage continuously and fires system notifications at threshold crossing. No third-party tools. No config files to edit. Works out of the box on all platforms.</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(56,189,248,0.3);">
+            <div class="card-icon card-icon--cyan">&#128197;</div>
+            <h3>Multi-Day Historical Aggregation</h3>
+            <p>Select last N days or a specific date range. HPR spawns a background thread, reads multiple daily <code>.db</code> files, merges the data, and streams results back into the UI without interrupting live tracking. The topbar badge shows exactly what you're viewing.</p>
           </div>
         </div>
       </div>
