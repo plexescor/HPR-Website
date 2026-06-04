@@ -492,7 +492,7 @@
           <div class="card" style="border: 1px solid rgba(56,189,248,0.3);">
             <div class="card-icon card-icon--cyan">&#128197;</div>
             <h3>Multi-Day Historical Aggregation</h3>
-            <p>Select last N days or a specific date range. HPR spawns a background thread, reads multiple daily <code>.db</code> files, merges the data, and streams results back into the UI without interrupting live tracking. The topbar badge shows exactly what you're viewing.</p>
+            <p>Select last N days or a specific date range. HPR spawns parallel background query threads (an N-thread approach), reads multiple daily <code>.db</code> files concurrently, merges the data, and streams results back into the UI without interrupting live tracking. It remains fast and avoids the 30s timeouts common in single-threaded alternatives like ActivityWatch.</p>
           </div>
         </div>
       </div>

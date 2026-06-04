@@ -105,16 +105,16 @@
               </div>
               <div style="display: flex; align-items: flex-start; gap: 12px;">
                 <span class="badge badge--amber">7</span>
-                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Last N Days</strong> — pull last 7, 14, 30 days or any custom count. Multiple daily files are merged automatically.</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Last N Days</strong> — pull last 7, 14, 30 days or any custom count. Multiple daily files are merged automatically using a fast, parallel N-thread approach (no 30s timeouts like ActivityWatch).</span>
               </div>
               <div style="display: flex; align-items: flex-start; gap: 12px;">
                 <span class="badge badge--green">↔</span>
-                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Date Range</strong> — set a start and end date. HPR reads every daily file in that span and aggregates the result.</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Date Range</strong> — set a start and end date. HPR reads every daily file in that span concurrently using multiple threads and aggregates the result.</span>
               </div>
             </div>
             <div class="callout" style="margin-bottom: 24px;">
-              <div class="callout-title">Non-Blocking Load</div>
-              <p>Historical loading runs on a dedicated background thread. Live tracking is never paused. A "Switch to Live View" button in the data view lets you jump back instantly.</p>
+              <div class="callout-title">Non-Blocking &amp; Parallel (N-Thread) Load</div>
+              <p>Historical loading runs on dedicated background threads. Live tracking is never paused, and queries run in parallel. This is incredibly fast and avoids the 30-second timeouts common in single-threaded tracking systems like ActivityWatch.</p>
             </div>
             <h3 style="margin-bottom: 16px;">Timing Integrity</h3>
             <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">

@@ -339,7 +339,7 @@
           <div class="card">
             <div class="card-icon card-icon--amber">7</div>
             <h3>Last N Days</h3>
-            <p>Pull the last 7 days, 30 days, or any number. Data from multiple daily files is merged and aggregated automatically.</p>
+            <p>Pull the last 7 days, 30 days, or any number. Data from multiple daily files is merged and aggregated automatically—extremely fast using an N-thread query approach that avoids the 30s timeouts common in other tracking apps like ActivityWatch.</p>
           </div>
           <div class="card">
             <div class="card-icon">↔</div>
@@ -348,8 +348,8 @@
           </div>
         </div>
         <div class="callout fade-in">
-          <div class="callout-title">Non-blocking</div>
-          <p>Historical data loads on a dedicated background thread. Your real-time window tracking continues uninterrupted. The topbar badge updates to show exactly what you're viewing — <code>Historical: last 7 days</code> or <code>Historical: 01-06-26 — 07-06-26</code>.</p>
+          <div class="callout-title">Non-blocking &amp; Parallel</div>
+          <p>Historical data loads on dedicated background threads using an N-thread approach (spawning threads to read files in parallel). Your real-time window tracking continues completely uninterrupted. Data is merged instantly, meaning you won't experience the 30s timeouts or interface freezes typical of single-threaded alternatives like ActivityWatch.</p>
         </div>
       </div>
     </section>
