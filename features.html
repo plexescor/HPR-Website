@@ -938,7 +938,7 @@ Slint's font rendering pipeline.</span></pre>
     <section class="section section-border" id="config">
       <div class="container">
         <span class="section-label fade-in">Configuration</span>
-        <h2 class="section-title fade-in">Two options. That's the full config.</h2>
+        <h2 class="section-title fade-in">Eight options. That's the full config.</h2>
         <p class="section-desc fade-in" style="margin-bottom: 40px;">
           Intentionally small. It will grow alongside the feature set.
         </p>
@@ -949,7 +949,34 @@ Slint's font rendering pipeline.</span></pre>
 <span class="code-keyword">use-interpreter</span>,<span class="code-string">false</span>
 
 <span class="code-comment"># false = CPU renderer, eliminates GPU libs</span>
-<span class="code-keyword">hardware-acceleration</span>,<span class="code-string">true</span></pre>
+<span class="code-keyword">hardware-acceleration</span>,<span class="code-string">true</span>
+
+<span class="code-comment"># false = disable automatic application termination on limit breach</span>
+<span class="code-keyword">kill-apps</span>,<span class="code-string">true</span>
+
+<span class="code-comment"># minimum time interval (ms) between app terminations</span>
+<span class="code-keyword">kill-cooldown</span>,<span class="code-string">2500</span>
+
+<span class="code-comment"># window focus check frequency (ms)</span>
+<span class="code-keyword">poll-interval</span>,<span class="code-string">50</span>
+
+<span class="code-comment"># how often window tracking totals are saved to disk (ms)</span>
+<span class="code-keyword">db-flush-interval</span>,<span class="code-string">10000</span>
+
+<span class="code-comment"># wait time (ms) for Lua extensions to finish onExit before force exit</span>
+<span class="code-keyword">extension-shutdown-timeout</span>,<span class="code-string">300</span>
+
+<span class="code-comment"># wait time (ms) for Lua extensions to finish on reload/unload before detaching</span>
+<span class="code-keyword">extension-reload-timeout</span>,<span class="code-string">450</span>
+
+<span class="code-comment"># tracking loop polling and UI update frequency (ms)</span>
+<span class="code-keyword">ui-poll-interval</span>,<span class="code-string">200</span>
+
+<span class="code-comment"># interval to run the pattern analyzer and update insights on the UI (ms)</span>
+<span class="code-keyword">ui-insight-interval</span>,<span class="code-string">1000</span>
+
+<span class="code-comment"># duration for which active errors are displayed on the UI (ms)</span>
+<span class="code-keyword">ui-error-duration</span>,<span class="code-string">5000</span></pre>
           </div>
           <div class="code-block">
             <span class="code-label">Config Locations</span>
