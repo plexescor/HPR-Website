@@ -126,6 +126,16 @@
             <h3>App Limits &amp; Goals</h3>
             <p>Set a daily time limit or usage goal on any app. HPR monitors usage in the background, sends a system notification when the limit is crossed, and can force-quit the offending app automatically.</p>
           </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(56,189,248,0.12); color: #38bdf8;">🕒</div>
+            <h3>Day Construction Timeline</h3>
+            <p>Maps window switches onto an interactive timeline canvas. Features zoom presets (1h, 3h, 8h, 24h, All Day), adaptive hour steps, hover details, and automatic downtime gap capping.</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="background: rgba(16,185,129,0.12); color: #34d399;">📊</div>
+            <h3>Advanced Pattern Analysis</h3>
+            <p>Goes beyond daily stats. Processes localized historical files via multi-thread DB queries to extract 9 advanced metrics (escapes, dips, morning sessions, and weekend habits).</p>
+          </div>
         </div>
       </div>
     </section>
@@ -354,6 +364,56 @@
       </div>
     </section>
 
+    <!-- Day Construction Timeline Highlight -->
+    <section class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-cyan);">Standout Feature</span>
+        <h2 class="section-title fade-in">Day Construction Timeline.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 12px;">
+          Naive time trackers list your window usage as simple static numbers. HPR reconstructs your transitions chronologically on a beautiful, zoomable timeline canvas, resolving focus gaps automatically.
+        </p>
+
+        <div class="highlight-box fade-in" style="margin-top: 40px; border-left: 3px solid var(--accent-cyan);">
+          <div class="interpreter-grid">
+            <div>
+              <h3 style="margin-bottom: 24px; color: var(--accent-cyan);">Timeline Highlights</h3>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">1</span>
+                <div class="interpreter-step-text">
+                  <h4>Interactive Zoom Presets</h4>
+                  <p>Zoom into <code>1h</code>, <code>3h</code>, or <code>8h</code> slices for microscope analysis, or zoom out to <code>24h</code> and <code>All Day</code> views to see the macro patterns of your day.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">2</span>
+                <div class="interpreter-step-text">
+                  <h4>Continuity Gap Capping</h4>
+                  <p>When HPR is closed or you shutdown your system, HPR caps the last active segment to a maximum of 1 minute upon transitioning to an <code>Unknown</code> state, preventing gaps from visually stretching.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">3</span>
+                <div class="interpreter-step-text">
+                  <h4>Micro-interactions (Hover)</h4>
+                  <p>Simply hover over any block to see the application's details, active duration, and precise start/end range update in real-time in the status panel.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="screenshot-container" style="margin-top: 20px;">
+                <div class="screenshot-titlebar">
+                  <span class="screenshot-dot screenshot-dot--red"></span>
+                  <span class="screenshot-dot screenshot-dot--amber"></span>
+                  <span class="screenshot-dot screenshot-dot--green"></span>
+                </div>
+                <img src="assetsgithub/timeline.png" alt="HPR Day Construction Timeline View" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Screenshots -->
     <section class="section section-border">
       <div class="container">
@@ -362,7 +422,7 @@
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
           Live window tracking, switch history, and the Insights engine — all running locally, zero accounts.
         </p>
-        <div class="feature-grid feature-grid--2 fade-in">
+        <div class="feature-grid fade-in">
           <div>
             <div class="screenshot-container" style="margin-bottom: 12px;">
               <div class="screenshot-titlebar">
@@ -373,6 +433,17 @@
               <img src="assetsgithub/main.png" alt="HPR Home — Time Per App and Switch History" loading="lazy">
             </div>
             <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">Home — Time Per App & Switch History</p>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 12px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assetsgithub/timeline.png" alt="HPR Timeline — Zoomable Day Construction Timeline View" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">Timeline — Day Construction Canvas</p>
           </div>
           <div>
             <div class="screenshot-container" style="margin-bottom: 12px;">

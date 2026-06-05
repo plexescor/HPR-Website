@@ -193,6 +193,20 @@
                 <td><span class="badge badge--red">No</span></td>
                 <td><span class="badge badge--red">No</span></td>
               </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Day Construction Timeline</strong></td>
+                <td><span class="badge badge--green">Yes (Zoom/Scroll, Hover, &amp; Gap Capping)</span></td>
+                <td><span class="badge badge--amber">Static horizontal timeline (often fiddly)</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">Advanced Pattern Analysis</strong></td>
+                <td><span class="badge badge--green">Yes (9 localized offline metrics)</span></td>
+                <td><span class="badge badge--amber">Basic statistics &amp; custom queries</span></td>
+                <td><span class="badge badge--red">No</span></td>
+                <td><span class="badge badge--red">No</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -212,6 +226,8 @@
           <div class="comparison-verdict" style="border-left: 3px solid var(--accent-green);">
             <h3 style="color: var(--accent-green); margin-bottom: 16px;">Where HPR leads</h3>
             <p style="margin-bottom: 12px;">A fraction of the memory footprint. Native Wayland from day one across five desktop environments. No Python runtime. No embedded web server running in the background. Starts instantly.</p>
+            <p style="margin-bottom: 12px;"><strong>Day Construction Timeline</strong> &mdash; Reconstructs your daily transition log chronologically onto an interactive canvas. Unlike ActivityWatch's default horizontal visualization which can feel fiddly to zoom and scale, HPR offers built-in zoom presets (1h, 3h, 8h, 24h, All Day) and adaptive markers. More importantly, HPR's timeline reconstruction engine features continuity gap capping (restricting segment lengths to a maximum of 1 minute when transitioning to an <code>Unknown</code> state), ensuring reboots or system downtime don't visually stretch active applications across focus gaps.</p>
+            <p style="margin-bottom: 12px;"><strong>Advanced Cross-Day Insights</strong> &mdash; Computes 9 advanced offline correlation metrics (Escape Pattern rate, distraction Return Rate, Average Focus Session duration, weekly Focus Dip Hours, morning Deep Work ratios, and Weekend vs Weekday habits) directly on localized daily database files using parallel database queries, rather than relying on heavy client-server web queries.</p>
             <p style="margin-bottom: 12px;"><strong>Per-App Limits &amp; Goals</strong> &mdash; Set a daily usage cap or daily usage goal on any tracked application from a built-in UI. A dedicated background thread monitors usage and fires system notifications when thresholds are crossed. ActivityWatch has no equivalent built-in system.</p>
             <p style="margin-bottom: 12px;"><strong>Sandboxed Lua Extension Engine</strong> &mdash; Dynamic scriptable extension platform using a fast, secure, thread-safe Lua sandbox integrated directly with C++ handles, the EventHub, and SQLite queries. The API is beginner-friendly &mdash; drop a <code>.lua</code> file, write a function, and you're running. Supports live hot-reloading of extensions without restarting. Advanced users can go deeper with the <strong>Function Overriding API</strong>, intercepting and replacing 26 core C++ engine functions directly from Lua.</p>
             <p style="margin-bottom: 12px;">Interpreted UI mode &mdash; edit the entire interface at runtime inside <code>app-window.slint</code> without recompiling, and trigger an instant hot-reload of the UI with a single press of the <strong>"Reload UI"</strong> button.</p>
@@ -497,6 +513,16 @@
             <div class="card-icon card-icon--cyan">&#128197;</div>
             <h3>Multi-Day Historical Aggregation</h3>
             <p>Select last N days or a specific date range. HPR spawns parallel background query threads (an N-thread approach), reads multiple daily <code>.db</code> files concurrently, merges the data, and streams results back into the UI without interrupting live tracking. It remains fast and avoids the 30s timeouts common in single-threaded alternatives like ActivityWatch.</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(56,189,248,0.3);">
+            <div class="card-icon" style="background: rgba(56,189,248,0.12); color: #38bdf8;">🕒</div>
+            <h3>Day Construction Timeline</h3>
+            <p>Maps window transitions chronologically onto a scrollable canvas. Includes zoom presets (1h, 3h, 8h, 24h, All Day), adaptive hour spacing, hover micro-interactions, and continuity gap capping (caps segments to 1 min when entering an <code>Unknown</code> state to ignore downtime).</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(56,189,248,0.3);">
+            <div class="card-icon" style="background: rgba(16,185,129,0.12); color: #34d399;">📊</div>
+            <h3>Advanced Pattern Analysis</h3>
+            <p>Extracts 9 advanced cross-day metrics (escape patterns, return rates, average session length, distracted days, productive days, screen time comparisons, focus dip hours, deep work, and weekend grinds) locally on your SQLite database using concurrent multi-thread reads.</p>
           </div>
         </div>
       </div>

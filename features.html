@@ -303,23 +303,77 @@
       </div>
     </section>
 
+    <!-- Day Construction Timeline -->
+    <section class="section section-border" id="timeline">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-cyan);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Day Construction Timeline</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Reconstruct your daily narrative. HPR maps your active window transitions chronologically onto an interactive, zoomable, and scrollable timeline canvas, giving you visual continuity instead of just isolated numbers.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="feature-grid" style="grid-template-columns: 1fr;">
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Zoom &amp; Scroll Presets</h3>
+                <p>Focus on microscopic details or analyze the entire day. Supports interactive presets to instantly zoom into <code>1h</code>, <code>3h</code>, or <code>8h</code> intervals, or zoom out to <code>24h</code> and <code>All Day</code> spans. The timeline canvas scrollbar lets you slide across the day seamlessly.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Adaptive Hourly Markers</h3>
+                <p>Timeline markers calculate coordinates and adjust automatically. Zoomed viewports (<code>1h</code>, <code>3h</code>, <code>8h</code>) draw markers at every 1-hour interval, while high-span viewports (<code>24h</code>, <code>All Day</code>) space markers every 3 hours (e.g., <code>06:00 AM</code>, <code>09:00 AM</code>) to prevent overlapping labels and maintain design aesthetics.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Continuity Gap Capping</h3>
+                <p>Prevents downtime from polluting your logs. If you close HPR or turn off your computer for 5 hours, a naive timeline would stretch the last active application across the entire downtime. HPR's reconstruction algorithm identifies these focus gaps (transitions to <code>Unknown</code> or shutdown states) and caps the preceding app segment to a maximum of <strong>1 minute</strong>.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-purple);">
+                <h3>Interactive Hover Tooltips</h3>
+                <p>No clicks required. Simply hover your cursor over any timeline block to view its properties instantly. The status panel updates dynamically in real-time, displaying the application's aliased name, exact active duration, and precise start/end time range.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>HPR Tracking</h3>
+                <p>The tracking engine includes HPR itself inside the timeline, giving you visibility into the time you spend managing goals, reviewing insights, or developing extensions.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 16px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assetsgithub/timeline.png" alt="HPR Day Construction Timeline" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
+              Day Construction Timeline — Zoomable &amp; Scrollable
+            </p>
+            <div class="callout fade-in" style="margin-top: 32px;">
+              <div class="callout-title">Fractional Calculations</div>
+              <p>Timelines are calculated using high-precision fractional positions, ensuring that short 1-second switches are scaled and rendered accurately alongside hours-long focus sessions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Insights Engine -->
     <section class="section section-border" id="insights">
       <div class="container">
         <span class="section-label fade-in">Analysis</span>
         <h2 class="section-title fade-in">Pattern Analysis Engine</h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          <code>PatternAnalyzer</code> runs seven analysis passes every 30 seconds, building insights from your raw
-          tracking data.
+          <code>PatternAnalyzer</code> runs seven analysis passes every 30 seconds for real-time daily metrics, and triggers a multi-day correlation pass to extract 9 advanced trend insights.
         </p>
 
         <div class="two-col fade-in">
           <div>
-            <div class="feature-grid" style="grid-template-columns: 1fr;">
+            <h3 style="margin-bottom: 16px; color: var(--text-primary);">Real-Time Daily Metrics</h3>
+            <div class="feature-grid" style="grid-template-columns: 1fr; margin-bottom: 32px;">
               <div class="card" style="border-left: 3px solid var(--accent-green);">
                 <h3>Most Used Application</h3>
-                <p>Direct aggregation over <code>timeLog_PerApp</code>. Shows your dominant application with exact time.
-                </p>
+                <p>Direct aggregation over <code>timeLog_PerApp</code>. Shows your dominant application with exact time.</p>
               </div>
               <div class="card" style="border-left: 3px solid var(--accent-amber);">
                 <h3>Total Tracked Time</h3>
@@ -331,20 +385,55 @@
               </div>
               <div class="card" style="border-left: 3px solid var(--accent-red);">
                 <h3>Most Switched From / To</h3>
-                <p>Top switch pairs from <code>switchHistory</code>. Reveals your most common context-switch patterns.
-                </p>
+                <p>Top switch pairs from <code>switchHistory</code>. Reveals your most common context-switch patterns.</p>
               </div>
               <div class="card" style="border-left: 3px solid var(--accent-amber);">
                 <h3>Longest Focus Session</h3>
-                <p><strong>Chronological Event-Matching Algorithm.</strong> Flattens switch history into a unified
-                  timeline of arrivals/departures, sorted in O(N log N). One pass pairs each arrival with its next
-                  departure. Orphaned arrivals from crashes are overwritten, not ghost-extended.</p>
+                <p><strong>Chronological Event-Matching Algorithm.</strong> Flattens switch history into a unified timeline of arrivals/departures, sorted in O(N log N). One pass pairs each arrival with its next departure, discarding orphan events.</p>
               </div>
               <div class="card" style="border-left: 3px solid var(--accent-green);">
                 <h3>Peak Productive Hour</h3>
-                <p><strong>Sliding Window Heuristic.</strong> A 60–90 minute window slides across the complete timeline,
-                  counting switches at each position. The position with fewest switches = deepest focus. No manual
-                  session marking required.</p>
+                <p><strong>Sliding Window Heuristic.</strong> A 60–90 minute window slides across the complete timeline, counting switches at each position. The position with fewest switches = deepest focus.</p>
+              </div>
+            </div>
+
+            <h3 style="margin-bottom: 16px; color: var(--accent-cyan);">Advanced Cross-Day Patterns</h3>
+            <div class="feature-grid" style="grid-template-columns: 1fr;">
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Escape Pattern</h3>
+                <p>Tracks switches from your primary work application directly to browsers, showing the average daily count of browser escapes.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Return Rate</h3>
+                <p>Measures focus bounce-back by calculating the percentage of times you return to your work application immediately after a browser distraction.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Average Focus Session</h3>
+                <p>Computes the average duration of uninterrupted work sessions before switching windows across the multi-day span.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Most Distracted Day</h3>
+                <p>Pinpoints the day of the week with the highest average number of application switches, isolating weekly distraction patterns.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Productive Days</h3>
+                <p>Counts the days during the current week where your hourly switch frequency remained below the productivity threshold.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Screen Time vs Average</h3>
+                <p>Compares today's cumulative screen time with your N-day average to check if you are overworking or taking it easy.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Focus Dip Hour</h3>
+                <p>Pinpoints the specific hour of the day where application switches spike most consistently across days, identifying energy crashes.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Deep Work Before Noon</h3>
+                <p>Measures the percentage of days where your longest focus sessions start in the morning (before 12:00 PM local time).</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Weekend vs Weekday</h3>
+                <p>Compares average work-app usage on weekdays versus weekends to show how well you separate work from rest.</p>
               </div>
             </div>
           </div>
@@ -357,14 +446,18 @@
               </div>
               <img src="assetsgithub/insights.png" alt="HPR Insights view showing pattern analysis results" loading="lazy">
             </div>
-            <p
-              style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
-              Insights — All seven analysis passes</p>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
+              Insights — All seven analysis passes
+            </p>
 
             <div class="callout fade-in" style="margin-top: 32px;">
+              <div class="callout-title">Database Integration &amp; Parallel Queries</div>
+              <p>When the user enters the Insights view, HPR asynchronously queries the SQLite database using an N-thread concurrent read approach. This avoids dashboard UI freezes while loading many days of historical records.</p>
+            </div>
+            
+            <div class="callout fade-in" style="margin-top: 20px;">
               <div class="callout-title">Noise Filtering</div>
-              <p>Both patterns filter out HPR itself, the Unknown state, and known system noise before running. Insights
-                reflect actual work, not measurement artifacts.</p>
+              <p>Both models filter out HPR itself, the Unknown state, and system noise before running. Insights reflect actual work, not measurement artifacts.</p>
             </div>
           </div>
         </div>
