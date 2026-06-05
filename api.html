@@ -907,7 +907,7 @@ HPR.startTracking_E()</pre>
             <div class="callout callout--info fade-in" style="margin-top: 16px; margin-bottom: 0; border-left-color: var(--accent-cyan); background-color: var(--accent-cyan-dim);">
               <div class="callout-title">💡 Built-in Override Priority</div>
               <p style="line-height: 1.7; font-size: 0.85rem; margin: 0;">
-                <strong>Preferring Extension Backends:</strong> If you register a custom window tracking backend for a compositor or desktop environment that HPR already natively supports (like Hyprland, GNOME, KDE, Cinnamon, or Windows), HPR will prioritize and use your extension's implementation instead of its native C++ one.
+                <strong>Preferring Extension Backends:</strong> If you register a custom window tracking backend for a compositor or desktop environment that HPR already natively supports (like Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), HPR will prioritize and use your extension's implementation instead of its native C++ one.
               </p>
               <p style="line-height: 1.7; font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;">
                 HPR checks registered backends in <strong>reverse order</strong> of registration. Because Lua extensions load after the native backends are registered, your custom extension backend is positioned last in the registry and will be evaluated first during startup checks.

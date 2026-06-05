@@ -54,7 +54,7 @@
         <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Building a Custom Window
           Backend</h1>
         <p class="section-desc fade-in" style="margin-bottom: 32px;">
-          HPR natively supports GNOME, KDE, Cinnamon, Hyprland, and Windows. But the Linux compositor landscape is vast
+          HPR natively supports GNOME, KDE, Cinnamon, Hyprland, niri, and Windows. But the Linux compositor landscape is vast
           — Sway, Niri, River, Wayfire, and many others exist and are actively used. Rather than waiting for official
           support, you can add tracking for any compositor yourself by writing a short Lua extension and dropping it in
           your extensions folder.
@@ -87,7 +87,7 @@
         <div class="callout fade-in" style="margin-bottom: 48px; border-left-color: #38bdf8; background-color: rgba(56, 189, 248, 0.1);">
           <div class="callout-title" style="color: #38bdf8;">💡 Overriding Native Backends</div>
           <p>
-            If you write a Lua extension for a compositor or desktop environment that is <strong>already natively supported</strong> by HPR (such as Hyprland, GNOME, KDE, Cinnamon, or Windows), your extension's implementation will be <strong>preferred and prioritized</strong> over the built-in one!
+            If you write a Lua extension for a compositor or desktop environment that is <strong>already natively supported</strong> by HPR (such as Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), your extension's implementation will be <strong>preferred and prioritized</strong> over the built-in one!
           </p>
           <p style="margin-top: 10px;">
             Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment and reports that it <code>isUsable</code>, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code!

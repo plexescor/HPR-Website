@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="HPR Platform Support — Native support for Hyprland, GNOME, KDE Plasma, Cinnamon, and Windows 10/11. Wayland-first design.">
+  <meta name="description" content="HPR Platform Support — Native support for Hyprland, GNOME, KDE Plasma, Cinnamon, niri, and Windows 10/11. Wayland-first design.">
   <title>Platform Support — HPR</title>
   <link rel="icon" type="image/png" href="assets/logo_256png.png">
   <link rel="stylesheet" href="style.css">
@@ -88,6 +88,12 @@
                 <td><strong style="color: var(--text-primary);">Cinnamon</strong></td>
                 <td><code>org.Cinnamon.Eval</code> D-Bus</td>
                 <td><span class="badge badge--cyan">X11</span> <span class="badge badge--green">Wayland</span></td>
+                <td><span class="badge badge--green">None</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--text-primary);">niri</strong></td>
+                <td><code>niri msg --json focused-window</code> IPC</td>
+                <td><span class="badge badge--green">Wayland</span></td>
                 <td><span class="badge badge--green">None</span></td>
               </tr>
               <tr>
@@ -274,7 +280,41 @@ global.<span class="code-fn">get_window_actors</span>()
           </div>
         </div>
       </div>
+    <!-- niri -->
+    <section class="section--tight" id="niri">
+      <div class="container">
+        <h2 class="section-title fade-in">niri (Wayland)</h2>
+        <div class="two-col fade-in">
+          <div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              The scrollable-tiling Wayland compositor niri is natively supported via its direct command-line IPC interface.
+            </p>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Niri Msg IPC</h3>
+              <p>HPR runs <code>niri msg --json focused-window</code> every 50ms and parses the JSON response natively in C++ to query the active application's <code>app_id</code> and window <code>title</code>.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">Wayland Native</span>
+              <span class="tag">niri IPC</span>
+              <span class="tag">Zero Setup</span>
+            </div>
+          </div>
+          <div>
+            <div class="code-block" style="margin-bottom: 16px;">
+              <span class="code-label">IPC Command</span>
+              <pre><span class="code-comment">// Platform: niri</span>
+<span class="code-comment">// Works natively on Wayland</span>
+<span class="code-comment">// Runs every 50ms:</span>
+
+<span class="code-fn">niri</span> msg --json focused-window
+<span class="code-comment">// parses "app_id", "title" and "pid"</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
 
     <hr class="divider" style="max-width: var(--max-width); margin-left: auto; margin-right: auto;">
 
@@ -344,6 +384,8 @@ global.<span class="code-fn">get_window_actors</span>()
     <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_KDE</span>();
   <span class="code-keyword">else if</span> (platform.contains(<span class="code-string">"Cinnamon"</span>))
     <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_Cinnamon</span>();
+  <span class="code-keyword">else if</span> (platform.contains(<span class="code-string">"niri"</span>))
+    <span class="code-keyword">return</span> <span class="code-fn">getCurrentWindow_niri</span>();
   <span class="code-comment">// Windows handled at compile time</span>
 }</pre>
           </div>
@@ -366,7 +408,7 @@ global.<span class="code-fn">get_window_actors</span>()
       <div class="container">
         <div class="callout fade-in">
           <div class="callout-title">Full feature parity across all platforms</div>
-          <p>Every HPR feature — the Lua extension engine, per-app limits and goals, multi-day historical data queries, interpreted UI mode, and the alias system — works identically on Hyprland, GNOME, KDE, Cinnamon, and Windows. There is no platform-specific feature subset.</p>
+          <p>Every HPR feature — the Lua extension engine, per-app limits and goals, multi-day historical data queries, interpreted UI mode, and the alias system — works identically on Hyprland, GNOME, KDE, Cinnamon, niri, and Windows. There is no platform-specific feature subset.</p>
         </div>
       </div>
     </section>
@@ -376,7 +418,7 @@ global.<span class="code-fn">get_window_actors</span>()
       <div class="container">
         <h2 class="fade-in" style="margin-bottom: 16px;">Your platform is supported.</h2>
         <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
-          HPR runs natively on Hyprland, GNOME, KDE Plasma, Cinnamon, and Windows. No compatibility layers.
+          HPR runs natively on Hyprland, GNOME, KDE Plasma, Cinnamon, niri, and Windows. No compatibility layers.
         </p>
         <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
           <a href="installation.html" class="btn btn--primary">Install HPR →</a>
