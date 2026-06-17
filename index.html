@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="HPR — Human Pattern Recorder. A compiled, offline, zero-account activity tracker. Watches your active window. Builds your history. Never phones home.">
+  <meta name="description" content="HPR — Human Pattern Recorder. A compiled, offline, zero-account activity tracker. Watches your active window. Builds your history. Never phones home by default.">
   <title>HPR — Human Pattern Recorder</title>
   <link rel="icon" type="image/png" href="assets/logo_256png.png">
   <link rel="stylesheet" href="style.css">
@@ -50,7 +50,7 @@
             <h1>Know where<br>your time <span class="text-accent">actually</span> went.</h1>
             <p class="hero-tagline">
               A compiled C++23 binary that watches your active window, every 50ms, all day. 
-              One string. Written locally. No accounts. No telemetry. 100% offline core.
+              One string. Written locally. No accounts. No telemetry (unless opted-in). 100% offline core by default.
             </p>
             <div class="hero-stats">
               <div class="hero-stat">
@@ -62,8 +62,8 @@
                 <span class="hero-stat-label">RAM (Windows)</span>
               </div>
               <div class="hero-stat">
-                <span class="hero-stat-value">0</span>
-                <span class="hero-stat-label">Network Calls</span>
+                <span class="hero-stat-value">0<small style="font-size: 0.8rem; font-weight: 500; color: var(--text-tertiary); vertical-align: super;">*</small></span>
+                <span class="hero-stat-label">Network Calls<br><small style="font-size: 0.75rem; font-weight: normal; color: var(--text-tertiary); text-transform: none;">*0 by default</small></span>
               </div>
               <div class="hero-stat">
                 <span class="hero-stat-value">50ms</span>
@@ -327,7 +327,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span class="badge badge--red">✕</span>
-                  <span style="font-size: 0.9rem; color: var(--text-secondary);">100% offline core</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">100% offline core by default</span>
                 </div>
               </div>
             </div>
@@ -340,13 +340,13 @@
             <div class="code-block fade-in">
               <span class="code-label">Privacy</span>
               <pre><span class="code-string">No accounts.</span>
-<span class="code-string">No telemetry.</span>
-<span class="code-string">No analytics.</span>
-<span class="code-string">100% offline core.</span>
+<span class="code-string">No telemetry (unless opted-in).</span>
+<span class="code-string">No analytics (unless opted-in).</span>
+<span class="code-string">100% offline core by default.</span>
 
 <span class="code-comment">// HPR *does* have networking code inside the binary,</span>
-<span class="code-comment">// but no core HPR utility uses it AT ALL.</span>
-<span class="code-comment">// the networking code is solely for lua extension API</span>
+<span class="code-comment">// by default it is only used for opt-in anonymous telemetry</span>
+<span class="code-comment">// and the Lua extension API.</span>
             </div>
           </div>
         </div>

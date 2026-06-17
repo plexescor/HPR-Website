@@ -837,7 +837,7 @@
           <div class="card">
             <div class="card-icon card-icon--purple">✓</div>
             <h3>HTTP Networking</h3>
-            <p>Make HTTP GET/POST requests directly from Lua to integrate with REST APIs, webhooks, and external services — all while the core stays 100% offline.</p>
+            <p>Make HTTP GET/POST requests directly from Lua to integrate with REST APIs, webhooks, and external services — all while the core remains offline by default.</p>
           </div>
           <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
             <div class="card-icon card-icon--amber">⚡</div>
@@ -942,7 +942,7 @@ Slint's font rendering pipeline.</span></pre>
     <section class="section section-border" id="privacy">
       <div class="container">
         <span class="section-label fade-in">Privacy</span>
-        <h2 class="section-title fade-in">Zero network. Zero accounts.</h2>
+        <h2 class="section-title fade-in">Zero network by default. Zero accounts.</h2>
         <p class="section-desc fade-in" style="margin-bottom: 40px;">
           Your data is a folder on your disk. Deleting it means deleting that folder. No server to request deletion
           from.
@@ -955,14 +955,13 @@ Slint's font rendering pipeline.</span></pre>
           </div>
           <div class="card">
             <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
-            <h3>No Telemetry</h3>
-            <p>No analytics. No crash reports. No usage metrics. No phone-home of any kind.</p>
+            <h3>No Telemetry (Opt-in)</h3>
+            <p>No analytics, crash reports, or phone-home of any kind by default. If explicitly opted-in, HPR reports only two anonymous numbers: unique installation count and weekly active frequency.</p>
           </div>
           <div class="card">
             <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
-            <h3>No Network</h3>
-            <p>HPR's Core at runtime touches no network, no DNS, nothing. The binary does have network code inside but its solely for
-              <code>lua extensions</code> so they have wide range of capabilities.</p>
+            <h3>No Network by Default</h3>
+            <p>HPR's Core at runtime touches no network by default. The binary does have network code inside solely to power the opt-in anonymous telemetry and <code>lua extensions</code>.</p>
           </div>
         </div>
       </div>
