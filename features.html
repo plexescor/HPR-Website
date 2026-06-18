@@ -961,7 +961,7 @@ Slint's font rendering pipeline.</span></pre>
           <div class="card">
             <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
             <h3>No Network by Default</h3>
-            <p>HPR's Core at runtime touches no network by default. The binary does have network code inside solely to power the opt-in anonymous telemetry and <code>lua extensions</code>.</p>
+            <p>HPR's Core runs offline. The binary has network code to power the optional anonymous telemetry, the developer's YouTube Now Playing status stream, and Lua extensions. In details, the developer's client uploads what the developer is currently watching on YouTube to a Firebase Realtime Database, and normal users' clients read from this database to display that status in the About view (which can be disabled via the <strong>Allow Network Activity</strong> toggle in the Settings panel).</p>
           </div>
         </div>
       </div>
@@ -1054,7 +1054,7 @@ Slint's font rendering pipeline.</span></pre>
     <section class="section section-border" id="config">
       <div class="container">
         <span class="section-label fade-in">Configuration</span>
-        <h2 class="section-title fade-in">Eight options. That's the full config.</h2>
+        <h2 class="section-title fade-in">Simple options. That's the full config.</h2>
         <p class="section-desc fade-in" style="margin-bottom: 40px;">
           Intentionally small. It will grow alongside the feature set.
         </p>
@@ -1092,7 +1092,10 @@ Slint's font rendering pipeline.</span></pre>
 <span class="code-keyword">ui-insight-interval</span>,<span class="code-string">1000</span>
 
 <span class="code-comment"># duration for which active errors are displayed on the UI (ms)</span>
-<span class="code-keyword">ui-error-duration</span>,<span class="code-string">5000</span></pre>
+<span class="code-keyword">ui-error-duration</span>,<span class="code-string">5000</span>
+
+<span class="code-comment"># false = disable all outgoing network HTTP activity</span>
+<span class="code-keyword">allow-network-activity</span>,<span class="code-string">true</span></pre>
           </div>
           <div class="code-block">
             <span class="code-label">Config Locations</span>
