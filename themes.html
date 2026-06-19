@@ -240,53 +240,13 @@ version,0.9.2</pre>
       </div>
     </section>
 
-    <!-- The C++ Slint Contract -->
+    <!-- The UI Contract Warning -->
     <section id="contract" class="section section-border anchor">
       <div class="container">
-        <span class="section-label fade-in">Critical Rules</span>
-        <h2 class="section-title fade-in">The C++ / Slint Contract</h2>
-        <p class="section-desc fade-in" style="margin-bottom: 32px;">
-          HPR's compiled C++ engine communicates with the dynamic Slint UI by mapping specific properties and callbacks by name. If you delete or rename these, the backend will fail to bind them and your interface will break. 
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px;">
-          
-          <div class="contract-item fade-in">
-            <span class="contract-name">MainWindow Component</span>
-            <span class="contract-desc">The main root component in your Slint file must be exported and named exactly <code>MainWindow</code>. This is what the C++ engine searches for to instantiate the window.</span>
-          </div>
-
-          <div class="contract-item fade-in">
-            <span class="contract-name">active-view Property</span>
-            <span class="contract-desc">Tracks which sidebar section is currently open (e.g. <code>"HOME"</code>, <code>"THEMES"</code>). When the user navigates away from the themes tab, C++ reads this property and unloads large theme screenshot assets from RAM automatically to keep memory clean.</span>
-          </div>
-
-          <div class="contract-item fade-in">
-            <span class="contract-name">useThemesEnabled_S / themesAvailable_S</span>
-            <span class="contract-desc">Booleans pushed by the engine to tell the UI whether the theme dropdown and settings toggle should be active.</span>
-          </div>
-
-          <div class="contract-item fade-in">
-            <span class="contract-name">refreshThemes() Callback</span>
-            <span class="contract-desc">Must be bound to your "Rescan" button. Tells the C++ backend to scan your themes directory and refresh the dropdown options.</span>
-          </div>
-
-          <div class="contract-item fade-in">
-            <span class="contract-name">themeSelected(string) Callback</span>
-            <span class="contract-desc">Must be triggered when a theme is selected in the list/dropdown. Tells the C++ engine to reload the preview image list in the background for that theme.</span>
-          </div>
-
-          <div class="contract-item fade-in">
-            <span class="contract-name">themeApply(string) Callback</span>
-            <span class="contract-desc">Must be triggered when the user clicks "Apply". Instructs the backend to store the new theme choice in <code>config.csv</code> and hot-reload the UI engine path.</span>
-          </div>
-
-        </div>
-
-        <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim);">
-          <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">💡 Tip: Restore Default UI</div>
+        <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim); margin: 0;">
+          <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">⚠️ Do Not Break C++ Bindings</div>
           <p style="margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--text-secondary);">
-            If a theme breaks or throws binding warnings, select the **default** theme option in the UI. HPR will reset the interpreter path and reload the safe reference UI files from <code>ui/app-window.slint</code>.
+            HPR's C++ backend communicates with the Slint interface by looking for specific component, callback, and property names (such as <code>MainWindow</code>, <code>useThemesEnabled_S</code>, <code>themeSelected</code>, and <code>themeApply</code>). <strong>Do not rename or delete these bindings in your Slint file.</strong> If your custom layout breaks, select the <strong>default</strong> option in the HPR dropdown to reset.
           </p>
         </div>
       </div>
