@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPR Theme Guide — Build custom themes and completely rewrite the HPR interface using Slint. No C++ rebuilds required.">
+  <title>HPR — Custom Themes & UI Hacking</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #38bdf8;
+      --accent-green-dim: rgba(56, 189, 248, 0.12);
+      --accent-amber: #f59e0b;
+      --accent-amber-dim: rgba(245, 158, 11, 0.10);
+      --accent-purple: #a78bfa;
+      --accent-purple-dim: rgba(167, 139, 250, 0.10);
+      --accent-cyan: #22d3ee;
+      --accent-cyan-dim: rgba(34, 211, 238, 0.10);
+    }
+
+    .hero-badge-dot {
+      background: #38bdf8;
+    }
+
+    .step-card {
+      border-left: 3px solid var(--accent-green);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .contract-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .contract-name {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .contract-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="themes.html" class="active">Themes</a></li>
+        <li><a href="docs.html">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="hero grid-bg">
+      <div class="container">
+        <div class="hero-grid" style="grid-template-columns: 1fr;">
+          <div class="hero-text" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              UI Hacking Guide
+            </div>
+            <h1>Hack the HPR <span class="text-accent">User Interface</span></h1>
+            <p class="hero-tagline" style="margin: 0 auto 40px auto; max-width: 650px;">
+              HPR doesn't just let you swap colors. By loading Slint layouts dynamically at runtime, you can completely restructure the UI, build custom panels, and tweak animations without compiling a single line of C++.
+            </p>
+            <div class="hero-actions" style="justify-content: center;">
+              <a href="#quickstart" class="btn btn--primary" style="padding: 8px 18px;">Get Started &rarr;</a>
+              <a href="#structure" class="btn btn--primary" style="background: var(--accent-amber); color: var(--bg-primary); padding: 8px 18px;">Folder Layout</a>
+              <a href="#contract" class="btn btn--primary" style="background: var(--accent-purple); color: var(--bg-primary); padding: 8px 18px;">The UI Contract</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works under the hood -->
+    <section id="how-it-works" class="section section-border">
+      <div class="container">
+        <span class="section-label fade-in">Architecture</span>
+        <h2 class="section-title fade-in">How the Theme System Works</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          Normally, HPR compiles its user interface directly into the executable for absolute minimum memory usage. However, by enabling <strong>Interpreter Mode</strong>, HPR bypasses the compiled-in interface. Instead, the C++ backend spins up Slint's runtime compiler, parses layout files from your config directory, and mounts them live. 
+        </p>
+
+        <div class="callout callout--amber fade-in" style="margin-bottom: 40px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <div class="callout-title" style="color: var(--accent-amber); font-weight: 700;">💡 The Performance Trade-Off</div>
+          <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem; line-height: 1.65;">
+            Dynamic compilation has a memory cost. When running in Interpreter Mode, HPR's private RAM usage climbs from its ultra-light compiled footprint of **~12MB** up to **~110MB (a 20-50% increase)**. This is due to Slint's AST parsing tables, bytecode interpreter, and decoded preview image buffers sitting in memory. It's totally fine for daily use, but it's good to keep in mind!
+          </p>
+        </div>
+
+        <div class="feature-grid feature-grid--2">
+          <div class="card fade-in">
+            <div class="card-icon" style="color: var(--accent-green); background: var(--accent-green-dim);">⚙️</div>
+            <h3>1. Turn on Interpreter Mode</h3>
+            <p style="margin-bottom: 12px;">Open HPR's global configuration file and enable interpreter loading:</p>
+            <div class="code-block" style="margin: 0;">
+              <span class="code-label">config.csv</span>
+              <pre>use-interpreter,true</pre>
+            </div>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon" style="color: var(--accent-purple); background: var(--accent-purple-dim);">📂</div>
+            <h3>2. Locate your themes folder</h3>
+            <p style="margin-bottom: 12px;">HPR scans a dedicated <code>themes</code> subdirectory inside your config root:</p>
+            <div class="code-block" style="margin: 0;">
+              <span class="code-label">Paths</span>
+              <pre><strong>Windows:</strong> %APPDATA%\HPR\HPR_Config\themes\
+<strong>Linux:</strong>   ~/.config/HPR/themes/</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Guide -->
+    <section id="quickstart" class="section section-border anchor">
+      <div class="container">
+        <span class="section-label fade-in">Walkthrough</span>
+        <h2 class="section-title fade-in">Creating Your First Theme</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Let's build a custom theme called <code>neon-cyber</code> from scratch. Follow these steps:
+        </p>
+
+        <div class="step-card fade-in">
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-green);">Step 1:</span> Set up the folder</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+            Go to your HPR <code>themes/</code> directory and create a new folder named exactly after your theme: <code>neon-cyber</code>.
+          </p>
+        </div>
+
+        <div class="step-card fade-in" style="border-left-color: var(--accent-amber);">
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-amber);">Step 2:</span> Declare Metadata</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            Inside <code>neon-cyber/</code>, create a file called <code>metadata.csv</code>. This file registers your theme name and matches it with the HPR engine version. Key-value pairs are separated by a comma:
+          </p>
+          <div class="code-block" style="margin: 0;">
+            <span class="code-label">themes/neon-cyber/metadata.csv</span>
+            <pre><span class="code-comment"># Comments start with #</span>
+name,Neon Cyber
+version,0.9.2</pre>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 12px; line-height: 1.6;">
+            💡 <strong>Version Checks:</strong> If your theme's version doesn't match the current HPR binary version, the engine will still load it, but it will render a warning badge in the Themes tab alerting you that it might be out of date.
+          </p>
+        </div>
+
+        <div class="step-card fade-in" style="border-left-color: var(--accent-purple);">
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-purple);">Step 3:</span> Write the Layout</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            Create <code>app-window.slint</code> inside your theme folder. This file represents your entire user interface layout. Instead of writing it from blank paper, <strong>always copy HPR's reference files first</strong> so you have the correct structure:
+          </p>
+          <div class="callout" style="margin-bottom: 0; border-left: 3px solid var(--accent-cyan); background: var(--accent-cyan-dim);">
+            <p style="margin: 0; font-size: 0.92rem; line-height: 1.65;">
+              HPR writes clean default layout files to <code>ui-REFERENCEONLY/</code> in your application directory on every launch. Copy <code>app-window.slint</code> and its dependencies (like <code>card.slint</code>, <code>palette.slint</code>, etc.) directly into your <code>neon-cyber/</code> directory. Now you can edit styles, modify layouts, or re-arrange buttons!
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card fade-in" style="border-left-color: var(--accent-cyan);">
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-cyan);">Step 4:</span> Bundle Previews (Optional)</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR shows scrollable screenshots of your design inside the theme chooser tab before users click Apply. You can place up to 9 screenshots named <code>1.png</code>, <code>2.png</code>, ..., <code>9.png</code> in your theme folder.
+          </p>
+          <div class="callout callout--amber" style="margin: 0; border-left-width: 2px;">
+            <p style="margin: 0; font-size: 0.88rem; line-height: 1.6;">
+              <strong>⚠️ The Chain Rule:</strong> HPR scans preview files sequentially. If you skip a number, HPR stops loading pictures immediately. For example, if your folder has <code>1.png</code>, <code>2.png</code>, and <code>4.png</code>, HPR will only display <code>1</code> and <code>2</code> because it hit a wall at <code>3.png</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="step-card fade-in">
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-green);">Step 5:</span> Load it!</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
+            Launch HPR, head to the Themes section, click <strong>RESCAN</strong> to let the engine pick up your folder, select your theme in the dropdown, and hit <strong>APPLY</strong>. The interface will instantly reload with your modifications!
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Theme Directory Structure -->
+    <section id="structure" class="section section-border anchor">
+      <div class="container">
+        <span class="section-label fade-in">Hierarchy</span>
+        <h2 class="section-title fade-in">Directory Blueprint</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          Here is how HPR expects your files to be structured inside the configuration directory:
+        </p>
+
+        <div class="code-block fade-in">
+          <span class="code-label">File Structure</span>
+          <pre>themes/
+    neon-cyber/
+        metadata.csv      <span class="code-comment"># Registered details</span>
+        app-window.slint  <span class="code-comment"># Root interface entry point</span>
+        card.slint        <span class="code-comment"># Layout dependencies (copied from reference)</span>
+        palette.slint     <span class="code-comment"># Colors and scale configurations</span>
+        1.png             <span class="code-comment"># Preview slide 1</span>
+        2.png             <span class="code-comment"># Preview slide 2</span>
+    retro-glass/
+        metadata.csv
+        app-window.slint
+        ...</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- The C++ Slint Contract -->
+    <section id="contract" class="section section-border anchor">
+      <div class="container">
+        <span class="section-label fade-in">Critical Rules</span>
+        <h2 class="section-title fade-in">The C++ / Slint Contract</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          HPR's compiled C++ engine communicates with the dynamic Slint UI by mapping specific properties and callbacks by name. If you delete or rename these, the backend will fail to bind them and your interface will break. 
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px;">
+          
+          <div class="contract-item fade-in">
+            <span class="contract-name">MainWindow Component</span>
+            <span class="contract-desc">The main root component in your Slint file must be exported and named exactly <code>MainWindow</code>. This is what the C++ engine searches for to instantiate the window.</span>
+          </div>
+
+          <div class="contract-item fade-in">
+            <span class="contract-name">active-view Property</span>
+            <span class="contract-desc">Tracks which sidebar section is currently open (e.g. <code>"HOME"</code>, <code>"THEMES"</code>). When the user navigates away from the themes tab, C++ reads this property and unloads large theme screenshot assets from RAM automatically to keep memory clean.</span>
+          </div>
+
+          <div class="contract-item fade-in">
+            <span class="contract-name">useThemesEnabled_S / themesAvailable_S</span>
+            <span class="contract-desc">Booleans pushed by the engine to tell the UI whether the theme dropdown and settings toggle should be active.</span>
+          </div>
+
+          <div class="contract-item fade-in">
+            <span class="contract-name">refreshThemes() Callback</span>
+            <span class="contract-desc">Must be bound to your "Rescan" button. Tells the C++ backend to scan your themes directory and refresh the dropdown options.</span>
+          </div>
+
+          <div class="contract-item fade-in">
+            <span class="contract-name">themeSelected(string) Callback</span>
+            <span class="contract-desc">Must be triggered when a theme is selected in the list/dropdown. Tells the C++ engine to reload the preview image list in the background for that theme.</span>
+          </div>
+
+          <div class="contract-item fade-in">
+            <span class="contract-name">themeApply(string) Callback</span>
+            <span class="contract-desc">Must be triggered when the user clicks "Apply". Instructs the backend to store the new theme choice in <code>config.csv</code> and hot-reload the UI engine path.</span>
+          </div>
+
+        </div>
+
+        <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim);">
+          <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">💡 Tip: Restore Default UI</div>
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--text-secondary);">
+            If a theme breaks or throws binding warnings, select the **default** theme option in the UI. HPR will reset the interpreter path and reload the safe reference UI files from <code>ui/app-window.slint</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>
