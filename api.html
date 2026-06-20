@@ -528,7 +528,7 @@
               <strong>Parameters:</strong> <code>propertyName: string</code>, <code>width: int</code>, <code>height: int</code>, <code>rawRGBABytes: string</code> &mdash; <strong>Returns:</strong> nothing
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Sets a Slint UI property of type <code>&lt;image&gt;</code> dynamically using a 32-bit RGBA raw pixel byte string. Note that this is <strong>NOT GPU accelerated</strong> and is rendered entirely on the CPU. And yes you can do what you are thinking you little guys!
+              Sets a Slint UI property of type <code>&lt;image&gt;</code> dynamically using a 32-bit RGBA raw pixel byte string. Note that this is <strong>NOT GPU accelerated</strong> and is rendered entirely on the CPU. And yes you can do what you are thinking(doom) you little guys!
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Example: Render a 320x200 Red screen</span>
@@ -539,6 +539,19 @@
 <span class="code-keyword">end</span>
 <span class="code-keyword">local</span> buffer = <span class="code-fn">table.concat</span>(bytes)
 HPR.setUiImage_E(<span class="code-string">"miscImage_S"</span>, width, height, buffer)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">Keyboard Input (MISC_KEY_PRESSED)</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              When the Miscellaneous Image Panel is visible and focused by the user, you can capture keyboard key-presses via the <code>"MISC_KEY_PRESSED"</code> event subscription. This allows extensions to receive what key the user pressed inside the panel.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Example: Connect a listener to capture keyboard inputs in the panel</span>
+HPR.connect_E(<span class="code-string">"MISC_KEY_PRESSED"</span>, <span class="code-keyword">function</span>(key)
+    <span class="code-fn">print</span>(<span class="code-string">"User pressed key inside Miscellaneous Panel: "</span> .. key)
+<span class="code-keyword">end</span>)</pre>
             </div>
           </div>
 
@@ -978,12 +991,13 @@ HPR.startTracking_E()</pre>
              <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
                <strong>Built-in system event names:</strong><br>
                <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
-               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code><br>
+               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code>, <code>MISC_KEY_PRESSED</code><br>
                <em>Note on <code>LOAD_DATABASE_SINGULAR</code>:</em> Emitted when the user starts loading a past day's SQLite database file.<br>
                <em>Note on <code>HISTORY_LOADED_SINGULAR</code>:</em> Emitted when the query or load of a past day's historical database has successfully completed and all historical stats are ready.<br>
                <em>Note on <code>LOAD_LIVE_DATA</code>:</em> Emitted when the user switches view from historical databases back to the real-time active daily logs.<br>
                <em>Note on <code>WINDOW_CHANGED</code>:</em> Passes a Lua table payload containing <code>data.fromWindow</code> (previous window class name string) and <code>data.toWindow</code> (focused window class name string).<br>
                <em>Note on <code>UI_READY</code>:</em> Emitted once when the Slint UI is 100% initialized and running. Extensions can subscribe to this signal to safely begin UI operations or initialize background window polling.<br>
+               <em>Note on <code>MISC_KEY_PRESSED</code>:</em> Emitted when the user presses a keyboard key while focusing the Miscellaneous Image Panel. Passes the string representation of the pressed key directly (e.g. <code>"a"</code>, <code>"Enter"</code>).<br>
                Any other string is treated as a dynamic custom event shared between extensions.
              </div>
              <div class="code-block" style="margin: 0; width: 100%;">
