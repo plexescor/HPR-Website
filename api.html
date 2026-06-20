@@ -545,7 +545,7 @@ HPR.setUiImage_E(<span class="code-string">"miscImage_S"</span>, width, height, 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">Keyboard Input (MISC_KEY_PRESSED)</div>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              When the Miscellaneous Image Panel is visible and focused by the user, you can capture keyboard key-presses via the <code>"MISC_KEY_PRESSED"</code> event subscription. This allows extensions to receive what key the user pressed inside the panel.
+              When the Miscellaneous Image Panel is visible and focused by the user, you can capture keyboard key-presses via the <code>"MISC_KEY_PRESSED"</code> event subscription. This allows extensions to receive what key the user pressed inside the panel. Special keys are automatically mapped to easy-to-use strings: <code>"up"</code>, <code>"down"</code>, <code>"left"</code>, <code>"right"</code>, and <code>"space"</code>.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- Example: Connect a listener to capture keyboard inputs in the panel</span>
