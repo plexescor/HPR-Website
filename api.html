@@ -300,6 +300,20 @@
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.getSystemConfig_E(key)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>key: string</code> &mdash; <strong>Returns:</strong> <code>string</code>
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Retrieves the raw string value of a system configuration setting from HPR. Returns an empty string <code>""</code> if the key does not exist.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> hwAccel = HPR.getSystemConfig_E(<span class="code-string">"hardware-acceleration"</span>)
+<span class="code-fn">print</span>(<span class="code-string">"Hardware Accel: "</span> .. hwAccel) <span class="code-comment">-- e.g. "true" or "false"</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
             <div class="api-signature">HPR.readCsv_E(path, [key])</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>path: string</code> (path relative to the root of the extensions directory, not the individual extension subdirectory), <code>key: string|number|boolean</code> (optional) &mdash; 
@@ -505,6 +519,26 @@
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre>HPR.showUi_E()</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setUiImage_E(propertyName, width, height, rawRGBABytes)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>propertyName: string</code>, <code>width: int</code>, <code>height: int</code>, <code>rawRGBABytes: string</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Sets a Slint UI property of type <code>&lt;image&gt;</code> dynamically using a 32-bit RGBA raw pixel byte string. Note that this is <strong>NOT GPU accelerated</strong> and is rendered entirely on the CPU.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Example: Render a 320x200 Red screen</span>
+<span class="code-keyword">local</span> width, height = <span class="code-keyword">320</span>, <span class="code-keyword">200</span>
+<span class="code-keyword">local</span> bytes = {}
+<span class="code-keyword">for</span> i = <span class="code-keyword">1</span>, width * height <span class="code-keyword">do</span>
+    bytes[#bytes + <span class="code-keyword">1</span>] = <span class="code-fn">string.char</span>(<span class="code-keyword">255</span>, <span class="code-keyword">0</span>, <span class="code-keyword">0</span>, <span class="code-keyword">255</span>) <span class="code-comment">-- R, G, B, A</span>
+<span class="code-keyword">end</span>
+<span class="code-keyword">local</span> buffer = <span class="code-fn">table.concat</span>(bytes)
+HPR.setUiImage_E(<span class="code-string">"miscImage_S"</span>, width, height, buffer)</pre>
             </div>
           </div>
 
