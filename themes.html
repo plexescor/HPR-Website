@@ -156,37 +156,18 @@
           Let's build a custom theme called <code>neon-cyber</code> from scratch. Follow these steps:
         </p>
 
-        <div class="step-card fade-in">
-          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-green);">Step 1:</span> Set up the folder</h3>
-          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-            Go to your HPR <code>themes/</code> directory and create a new folder named exactly after your theme: <code>neon-cyber</code>.
-          </p>
-        </div>
-
-        <div class="step-card fade-in" style="border-left-color: var(--accent-amber);">
-          <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-amber);">Step 2:</span> Declare Metadata</h3>
-          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            Inside <code>neon-cyber/</code>, create a file called <code>metadata.csv</code>. This file registers your theme name and matches it with the HPR engine version. Key-value pairs are separated by a comma:
-          </p>
-          <div class="code-block" style="margin: 0;">
-            <span class="code-label">themes/neon-cyber/metadata.csv</span>
-            <pre><span class="code-comment"># Comments start with #</span>
-name,Neon Cyber
-version,0.9.2</pre>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 12px; line-height: 1.6;">
-            💡 <strong>Version Checks:</strong> If your theme's version doesn't match the current HPR binary version, the engine will still load it, but it will render a warning badge in the Themes tab alerting you that it might be out of date.
-          </p>
-        </div>
-
         <div class="step-card fade-in" style="border-left-color: var(--accent-purple);">
           <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-purple);">Step 3:</span> Write the Layout</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            Create <code>app-window.slint</code> inside your theme folder. This file represents your entire user interface layout. Instead of writing it from blank paper, <strong>always copy HPR's reference files first</strong> so you have the correct structure:
+            The HPR user interface is built using <a href="https://docs.slint.dev/latest/docs/slint/" target="_blank" rel="noopener" style="color: var(--accent-green); text-decoration: underline;">Slint</a>. To write or modify themes, you will need a basic understanding of Slint UI design. You can download the <a href="assets/boilerplate-theme.zip" download style="color: var(--accent-green); font-weight: 700; text-decoration: underline;">Minimal Boilerplate Theme</a> to use as a starting template.
           </p>
           <div class="callout" style="margin-bottom: 0; border-left: 3px solid var(--accent-cyan); background: var(--accent-cyan-dim);">
-            <p style="margin: 0; font-size: 0.92rem; line-height: 1.65;">
-              HPR writes clean default layout files to <code>ui-REFERENCEONLY/</code> in your application directory on every launch. Copy <code>app-window.slint</code> and its dependencies (like <code>card.slint</code>, <code>palette.slint</code>, etc.) directly into your <code>neon-cyber/</code> directory. Now you can edit styles, modify layouts, or re-arrange buttons!
+            <p style="margin: 0; font-size: 0.92rem; line-height: 1.65; color: var(--text-secondary);">
+              <strong>Minimal Layout Content:</strong> Your theme folder only needs three files to work:
+              <br>&bull; <code>metadata.csv</code> (contains the theme name and version)
+              <br>&bull; <code>types.slint</code> (defines the data models - must be kept exactly as it is to ensure proper data communication)
+              <br>&bull; <code>app-window.slint</code> (the main layout entry point - this filename is mandatory)
+              <br>You are completely free to add other helper <code>.slint</code> files, custom components, or assets of your choice, or remove unused elements, as long as the mandatory files are present.
             </p>
           </div>
         </div>
@@ -227,15 +208,10 @@ version,0.9.2</pre>
           <pre>themes/
     neon-cyber/
         metadata.csv      <span class="code-comment"># Registered details</span>
-        app-window.slint  <span class="code-comment"># Root interface entry point</span>
-        card.slint        <span class="code-comment"># Layout dependencies (copied from reference)</span>
-        palette.slint     <span class="code-comment"># Colors and scale configurations</span>
-        1.png             <span class="code-comment"># Preview slide 1</span>
-        2.png             <span class="code-comment"># Preview slide 2</span>
-    retro-glass/
-        metadata.csv
-        app-window.slint
-        ...</pre>
+        app-window.slint  <span class="code-comment"># Main layout entry point (mandatory name)</span>
+        types.slint       <span class="code-comment"># Data models contract (keep exactly as-is)</span>
+        1.png             <span class="code-comment"># Preview slide 1 (optional)</span>
+        2.png             <span class="code-comment"># Preview slide 2 (optional)</span></pre>
         </div>
       </div>
     </section>
@@ -243,11 +219,473 @@ version,0.9.2</pre>
     <!-- The UI Contract Warning -->
     <section id="contract" class="section section-border anchor">
       <div class="container">
-        <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim); margin: 0;">
+        <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim); margin: 0; margin-bottom: 32px;">
           <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">⚠️ Do Not Break C++ Bindings</div>
           <p style="margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--text-secondary);">
-            HPR's C++ backend communicates with the Slint interface by looking for specific component, callback, and property names (such as <code>MainWindow</code>, <code>useThemesEnabled_S</code>, <code>themeSelected</code>, and <code>themeApply</code>). <strong>Do not rename or delete these bindings in your Slint file.</strong> If your custom layout breaks, select the <strong>default</strong> option in the HPR dropdown to reset.
+            HPR's C++ backend communicates with the Slint interface by looking for specific component, callback, and property names inside the <code>MainWindow</code> component. <strong>Do not rename or delete these bindings in your Slint file.</strong> However, after declaring these required properties and callbacks to satisfy the contract, <strong>you have FULL FREEDOM with no limits</strong> to build any layout, visual style, or logic of your choice!
           </p>
+        </div>
+
+        <h3 style="color: var(--text-primary); margin-bottom: 16px;">Required Callbacks</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+          Declare these callbacks inside <code>MainWindow</code> to allow the UI to communicate actions back to the C++ backend:
+        </p>
+        <div style="overflow-x: auto; margin-bottom: 32px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.05);">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <th style="padding: 12px 16px; color: var(--text-primary);">Callback Signature</th>
+                <th style="padding: 12px 16px; color: var(--text-primary);">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback start_drag()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Handles custom window dragging when title bar is disabled.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback minimize_window()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Minimizes the application window to tray.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback close_window()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Closes the application window (hides to tray).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback loadHistoricalData_Singular(string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Loads database log for a single day ("DD-MM-YY").</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback loadHistoricalData_Number(int, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Loads database logs for the last N days.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback loadHistoricalData_Range(string, string, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Loads database logs for a range of dates.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback loadInsights()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Tells backend to process/update cross-day insights.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback loadLiveData()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Reloads real-time/live tracking database.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback tabViewClicked()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Switches browser view to tab mode.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback siteViewClicked()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Switches browser view to site mode.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback rawViewClicked()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Switches VS Code project view to raw.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback filterViewClicked()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Switches VS Code project view to aliased.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback refreshExtensions()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Rescans the extension directories.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback disableExtension(string, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Disables extension (author, name).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback reloadExtension(string, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Reloads/restarts extension (author, name).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback reloadUi()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Forces the interpreted UI to compile and reload.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback openReleases()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Opens the GitHub releases page in a browser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback openIssues()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Opens the GitHub issues page in a browser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback setConfig(string, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Modifies HPR global configuration (key, value).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback openUrl(string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Opens any specified URL in the default browser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback sendFeedback(string, string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Submits feedback request (email, message).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback openKofi()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Opens support donation page in browser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback setLimit(string, int)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sets daily usage limit (app name, minutes).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback setGoal(string, int)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sets daily usage goal (app name, minutes).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback themeSelected(string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sets theme preview index/selection.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback themeApply(string)</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Applies theme and restarts interpreter.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">callback refreshThemes()</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Rescans available themes directory.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="color: var(--text-primary); margin-bottom: 16px;">Required Properties</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+          Declare these properties inside <code>MainWindow</code> to receive real-time data from the C++ process:
+        </p>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.05);">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <th style="padding: 12px 16px; color: var(--text-primary);">Property Name & Type</th>
+                <th style="padding: 12px 16px; color: var(--text-primary);">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;bool&gt; is-sending-feedback</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">True if backend is sending feedback email.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;bool&gt; showFeedbackResultPrompt</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">True when result of feedback sending is ready.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;bool&gt; feedbackSuccess</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Status of feedback submission request.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;string&gt; feedbackErrorMsg</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Error message returned from feedback server.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;string&gt; feedbackEmail</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Feedback author email value.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;string&gt; feedbackMessage</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Feedback text message content.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;float&gt; trackedTime_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Total active tracked time today (seconds).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;float&gt; trackedTime_Tab_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Total browser tab activity tracked today (seconds).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; windowName_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Active focused window title string.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[TimeLog]&gt; timePerApp_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Array of application time logs.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[SwitchHistory]&gt; switchHistory_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Chronological app focus history records.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[TimeLog_Tab]&gt; timePerTab_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Array of browser tab tracking logs.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[TimeLog_Project]&gt; timePerProject_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Array of VS Code project tracking logs.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[LoadedExtension_S]&gt; loadedExtensions_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Loaded Lua extension details list.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;float&gt; trackedTime_Project_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Total VS Code project time today (seconds).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[AppGoalData]&gt; rawApps_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">App limits and goals parameters list.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[TimelineBlock]&gt; timelineBlocks_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Aggregated blocks data for daily timeline.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;int&gt; timelinePresetHours</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Hour span preset chosen for timeline viewport.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;int&gt; timelineStartHour</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Starting hour boundary of timeline display range.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;int&gt; timelineEndHour</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Ending hour boundary of timeline display range.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[TimelineMarker]&gt; timelineMarkers_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Labels and locations of timeline axis markers.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;float&gt; timelineZoomFactor</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Horizontal zoom multiplier for timeline container.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; themeMode_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Theme configuration string.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; autostart_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Whether launch on login is enabled.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; headless_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Run without main UI visible (tray-only).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; telemetry_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Anonymous analytics upload opt-in.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; no-title-bar-enabled</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Custom titlebar/frameless window flag.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;float&gt; cornerRoundness_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Corner radius multiplier for custom titlebar mode.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; showTelemetryPrompt_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Shows the initial privacy settings dialog.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;float&gt; uiScale_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Overall UI scale factor.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in-out property &lt;bool&gt; isDarkMode</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Current theme dark/light toggle state.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; killApps_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Allow force closing apps that exceed set limits.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hardwareAccel_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Enables hardware/GPU rendering.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; allowCustomBackends_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Allows custom tracking extensions.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; allowNetworkActivity_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Blocks or allows internet access for HPR process.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; allowSidebarCustomization_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Allows custom layouts of application sidebar.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarReload_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Reload UI.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarLimits_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Goals/limits.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarHistory_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: History search.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarTimeline_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Timeline.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarTab_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Tab/website list.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarProject_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Projects logs.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarInsights_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Insights panel.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarLive_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Live usage.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarExtensions_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Extensions.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarKofi_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Support link.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarFeedback_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Feedback forms.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarAbout_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: About page.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; hideSidebarThemes_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Sidebar button toggle: Themes chooser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; themesAvailable_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">True if themes folder contains custom directories.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[string]&gt; themesList_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Names of available custom themes.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;[image]&gt; themePreviewImages_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Screenshots preview image cache list.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;int&gt; themePreviewImageCount_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Number of preview images loaded for the theme.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; hprVersion_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">HPR application version.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; themeVersion_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Version of current theme metadata.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; useThemesEnabled_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">True when interpreted UI is active in HPR config.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; currentTheme_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Name of selected theme directory in the Themes tab.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; activeTheme_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Name of theme currently active in backend memory.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; nowPlayingTitle_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Currently playing developer media title string.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; nowPlayingUrl_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Currently playing developer media source URL.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; mostUsedApp_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: name of most used application today.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; totalTrackedTime_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: total active focus time today formatted.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; totalSwitches_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: total count of focus switches today.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; mostSwitchedFrom_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: app most frequently switched away from.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; mostSwitchedTo_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: app most frequently switched into.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; longestFocus_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: longest single focus block today formatted.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; peakHour_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: hour range with lowest switch density.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; escapePattern_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: average escapes from primary work app to browser.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; returnRate_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: rate of recovery bounce back to work app (%).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; avgFocusSession_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: average duration of uninterrupted focus.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; mostDistractedDay_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: weekday with highest switch frequency.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; productiveDays_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: count of focus days in current week.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; screenTimeVsAvg_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: percent screentime difference vs average.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; focusDipHour_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: hour with highest switch rate globally.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; deepWorkBeforeNoon_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: rate of early focus session triggers (%).</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; weekendVsWeekday_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Insights: weekend vs weekday work percentage gap.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; cpuUsage</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Diagnostics: current HPR process CPU utilization percentage.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; ramUsage</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Diagnostics: current HPR process RAM usage description.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; loadedExtensions</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Diagnostics: number of extensions active.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; activeThreads</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Diagnostics: count of active HPR internal threads.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
