@@ -556,6 +556,19 @@ HPR.connect_E(<span class="code-string">"MISC_KEY_PRESSED"</span>, <span class="
           </div>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">Keyboard Input Release (MISC_KEY_RELEASED)</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Captures key-release events when the user focuses the Miscellaneous Image Panel. By combining pressed and released signals, extensions can construct precise input states—such as continuous held traversal, single discrete triggers, or release events. This enables fluid, concurrent multi-key interactions (e.g. diagonal movement vector combinations or complex rendering environment exploration).
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- Example: Connect a listener to capture keyboard releases in the panel</span>
+HPR.connect_E(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="code-keyword">function</span>(key)
+    <span class="code-fn">print</span>(<span class="code-string">"User released key inside Miscellaneous Panel: "</span> .. key)
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.hideUi_E()</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> nothing</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
@@ -991,13 +1004,14 @@ HPR.startTracking_E()</pre>
              <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.7;">
                <strong>Built-in system event names:</strong><br>
                <code>LOAD_DATABASE_SINGULAR</code>, <code>HISTORY_LOADED_SINGULAR</code>, <code>LOAD_LIVE_DATA</code>,
-               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code>, <code>MISC_KEY_PRESSED</code><br>
+               <code>APP_ERROR</code>, <code>MIDNIGHT_ROLLOVER</code>, <code>WINDOW_CHANGED</code>, <code>UI_READY</code>, <code>MISC_KEY_PRESSED</code>, <code>MISC_KEY_RELEASED</code><br>
                <em>Note on <code>LOAD_DATABASE_SINGULAR</code>:</em> Emitted when the user starts loading a past day's SQLite database file.<br>
                <em>Note on <code>HISTORY_LOADED_SINGULAR</code>:</em> Emitted when the query or load of a past day's historical database has successfully completed and all historical stats are ready.<br>
                <em>Note on <code>LOAD_LIVE_DATA</code>:</em> Emitted when the user switches view from historical databases back to the real-time active daily logs.<br>
                <em>Note on <code>WINDOW_CHANGED</code>:</em> Passes a Lua table payload containing <code>data.fromWindow</code> (previous window class name string) and <code>data.toWindow</code> (focused window class name string).<br>
                <em>Note on <code>UI_READY</code>:</em> Emitted once when the Slint UI is 100% initialized and running. Extensions can subscribe to this signal to safely begin UI operations or initialize background window polling.<br>
                <em>Note on <code>MISC_KEY_PRESSED</code>:</em> Emitted when the user presses a keyboard key while focusing the Miscellaneous Image Panel. Passes the string representation of the pressed key directly (e.g. <code>"a"</code>, <code>"Enter"</code>).<br>
+               <em>Note on <code>MISC_KEY_RELEASED</code>:</em> Emitted when the user releases a keyboard key while focusing the Miscellaneous Image Panel. Passes the string representation of the released key directly.<br>
                Any other string is treated as a dynamic custom event shared between extensions.
              </div>
              <div class="code-block" style="margin: 0; width: 100%;">
