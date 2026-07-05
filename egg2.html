@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benchmark Race — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    .race-track {
+      background: var(--bg-card);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .progress-bg {
+      width: 100%;
+      height: 32px;
+      background: var(--bg-dark);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .log-line {
+      font-family: monospace;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    #raceResults p {
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="hero" style="padding-bottom: 48px;">
+      <div class="container" style="text-align: center;">
+        <span class="section-label">Live Benchmark</span>
+        <h1>Cold Boot Performance</h1>
+        <p class="hero-tagline">
+          Startup time: 40ms vs 3000ms
+        </p>
+        <div style="margin-top: 40px;">
+          <button id="raceBtn" class="btn" style="font-size: 24px; padding: 16px 48px; border-radius: 32px; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); transition: all 0.2s ease;">RACE (Start)</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-border">
+      <div class="container" style="max-width: 800px; margin: 0 auto; text-align: left;">
+        
+        <!-- HPR Track -->
+        <div class="race-track">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 24px; color: var(--accent-green);">HPR</h3>
+            <span id="hprStatus" style="font-family: monospace; font-size: 16px; color: var(--text-secondary);">0%</span>
+          </div>
+          <div class="progress-bg">
+            <div id="hprBar" class="progress-fill" style="background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green);"></div>
+          </div>
+          <div id="hprLogs" class="log-line">&nbsp;</div>
+        </div>
+
+        <!-- AW Track -->
+        <div class="race-track">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 24px; color: #e74c3c;">ActivityWatch</h3>
+            <span id="awStatus" style="font-family: monospace; font-size: 16px; color: var(--text-secondary);">0%</span>
+          </div>
+          <div class="progress-bg">
+            <div id="awBar" class="progress-fill" style="background: #e74c3c; box-shadow: 0 0 10px #e74c3c;"></div>
+          </div>
+          <div id="awLogs" class="log-line">&nbsp;</div>
+        </div>
+
+        <!-- Results -->
+        <div id="raceResults" style="text-align: center; margin-top: 64px; opacity: 0; transform: translateY(20px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 20px;">
+          <p><strong>HPR</strong> ✅ <span style="color: var(--accent-green);">40ms</span> — ready</p>
+          <p><strong>ActivityWatch</strong> 💀 <span style="color: #e74c3c;">3000ms</span> — please open localhost:5600 in your browser</p>
+          
+          <div style="margin-top: 64px; padding-top: 32px; border-top: 1px dashed var(--border-color);">
+            <p style="font-style: italic; color: var(--text-secondary); font-size: 16px;">
+              "these numbers are real. I tested them. the grandmother approves."
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    document.getElementById('raceBtn').addEventListener('click', function() {
+      const btn = this;
+      if (btn.disabled) return;
+      
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.transform = 'scale(0.95)';
+      
+      const hprBar = document.getElementById('hprBar');
+      const hprStatus = document.getElementById('hprStatus');
+      const hprLogs = document.getElementById('hprLogs');
+      
+      const awBar = document.getElementById('awBar');
+      const awStatus = document.getElementById('awStatus');
+      const awLogs = document.getElementById('awLogs');
+      
+      const results = document.getElementById('raceResults');
+      
+      // Reset State
+      hprBar.style.transition = 'none';
+      awBar.style.transition = 'none';
+      hprBar.style.width = '0%';
+      awBar.style.width = '0%';
+      
+      hprStatus.textContent = 'Booting...';
+      hprStatus.style.color = 'var(--text-secondary)';
+      hprLogs.innerHTML = '&nbsp;';
+      
+      awStatus.textContent = 'Booting...';
+      awStatus.style.color = 'var(--text-secondary)';
+      awLogs.innerHTML = '&nbsp;';
+      
+      results.style.opacity = '0';
+      results.style.transform = 'translateY(20px)';
+      
+      // Attempt AudioContext (may be blocked by browser policy until interaction)
+      let audioCtx = null;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch(e) {
+        console.warn('AudioContext not supported or blocked');
+      }
+
+      function playSound(type, freq1, freq2, dur) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+          if (freq2) {
+            osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + dur);
+          }
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + dur);
+        } catch(e) {}
+      }
+
+      // Small delay before race starts
+      setTimeout(() => {
+        // HPR Snap!
+        hprBar.style.transition = 'width 0.04s cubic-bezier(0.4, 0, 0.2, 1)';
+        hprBar.style.width = '100%';
+        
+        setTimeout(() => {
+          hprStatus.textContent = '100% (40ms)';
+          hprStatus.style.color = 'var(--accent-green)';
+          hprLogs.innerHTML = 'ready.';
+          playSound('square', 880, null, 0.1);
+        }, 40);
+
+        // AW Crawl
+        awBar.style.transition = 'width 3s linear';
+        awBar.style.width = '100%';
+
+        const awStages = [
+          { time: 0, text: 'loading python runtime...' },
+          { time: 500, text: 'starting aw-server-rust...' },
+          { time: 1000, text: 'starting aw-watcher-window...' },
+          { time: 1500, text: 'starting aw-watcher-afk...' },
+          { time: 2000, text: 'starting aw-qt...' },
+          { time: 2800, text: 'connecting to server...' },
+          { time: 3000, text: 'done.' }
+        ];
+
+        let startTime = Date.now();
+        const totalDuration = 3000;
+
+        const interval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          
+          if (elapsed >= totalDuration) {
+            clearInterval(interval);
+            awStatus.textContent = '100% (~3000ms)';
+            awStatus.style.color = '#e74c3c';
+            awLogs.innerHTML = 'please open localhost:5600 in your browser';
+            
+            // Show results
+            results.style.opacity = '1';
+            results.style.transform = 'translateY(0)';
+            
+            playSound('sawtooth', 150, 40, 0.5);
+            
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.transform = 'scale(1)';
+            btn.textContent = 'RACE AGAIN';
+            
+          } else {
+            const currentStage = [...awStages].reverse().find(s => elapsed >= s.time);
+            if (currentStage) {
+              const spinnerHTML = `<span class="spinner">↻</span> `;
+              awLogs.innerHTML = spinnerHTML + currentStage.text;
+              
+              const percent = Math.min(99, Math.floor((elapsed / totalDuration) * 100));
+              awStatus.textContent = percent + '%';
+            }
+          }
+        }, 50);
+
+      }, 100);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how HPR extensions communicate in real-time using the Event Hub.">
+  <title>HPR — Communication Between Extensions</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="section">
+      <div class="container">
+        <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
+
+        <span class="section-label fade-in">Tutorial</span>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Communication Between
+          Extensions</h1>
+
+        <p class="section-desc fade-in" style="margin-bottom: 24px;">
+          HPR runs every single extension inside its own isolated Lua Virtual Machine and on its own background OS
+          thread.
+          This design keeps HPR fast and extremely crash-resilient—if one extension errors out or gets stuck in a loop,
+          the rest of your tracker runs completely unaffected.
+        </p>
+
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          But isolation doesn't mean silence. HPR provides a powerful built-in <strong>Event Hub</strong> that allows
+          extensions to talk to each other safely. In this comprehensive tutorial, we are going to build a <strong>Focus
+            Shield & Burnout Detector</strong>. By splitting the logic across two different extensions, you'll learn how
+          to decouple your tracking logic from your system actions.
+        </p>
+
+        <div class="callout fade-in" style="margin-bottom: 48px;">
+          <div class="callout-title">The "Radio Station" Analogy</div>
+          <p>
+            Think of the Event Hub like a network of local radio stations.
+          </p>
+          <p style="margin-top: 8px;">
+            One extension acts as the <strong>Transmitter (Publisher)</strong>. It tunes into a named frequency (like
+            <code>"BURNOUT_WARNING"</code>) and broadcasts data packets into the ether. It does not know or care who is
+            listening. It just transmits.
+          </p>
+          <p style="margin-top: 8px;">
+            Another extension acts as the <strong>Receiver (Subscriber)</strong>. It hooks up an antenna to the exact
+            same named frequency. Whenever a signal is received, it runs a function to handle the data. It has no idea
+            who sent it. It just reacts.
+          </p>
+        </div>
+
+        <h2 style="margin-bottom: 16px; font-size: 1.6rem;">What We Are Building</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          To prove how powerful this concept is, we are going to build an automated burnout prevention system, split
+          into two completely separate scripts:
+        </p>
+        <ul style="color: var(--text-secondary); margin-bottom: 48px; line-height: 1.8; padding-left: 20px;">
+          <li><strong>The Watcher (<code>burnout-monitor.lua</code>)</strong>: This script will quietly run in the
+            background, querying the database and watching your active window. If it detects you've been coding for way
+            too long without a break, it will broadcast a signal to the Event Hub.</li>
+          <li><strong>The Enforcer (<code>wellness-officer.lua</code>)</strong>: This script will listen for that
+            specific signal. When it hears the warning, it will take action—popping up a native OS notification on your
+            desktop.</li>
+        </ul>
+
+        <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>
+
+        <h2 style="margin-bottom: 24px; font-size: 2rem;">Part 1: Building the Watcher</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
+          Let's start with the watcher. Create a new file called <code>burnout-monitor.lua</code> in your extensions
+          directory.
+        </p>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 1: Setting up our state</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          First, we need some basic variables to keep track of how long we've been focused, and a list of apps we
+          consider "productive". By using a Lua table with boolean values, we can easily check if the current active app
+          is in our list. We also set up a <code>debug_timer</code> so we can test the extension without waiting hours.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre><span class="code-keyword">local</span> focused_time = 0
+<span class="code-keyword">local</span> debug_timer = 0
+
+<span class="code-comment">-- Apps we consider "deep work"</span>
+<span class="code-keyword">local</span> productive_apps = {
+    [<span class="code-string">"code"</span>] = <span class="code-keyword">true</span>,      <span class="code-comment">-- VS Code</span>
+    [<span class="code-string">"kitty"</span>] = <span class="code-keyword">true</span>,     <span class="code-comment">-- Terminal</span>
+    [<span class="code-string">"terminal"</span>] = <span class="code-keyword">true</span>,
+    [<span class="code-string">"neovim"</span>] = <span class="code-keyword">true</span>
+}</pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 2: Restoring history from the Database</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          What happens if you restart HPR in the middle of a 3-hour coding session? Your extension would reload,
+          <code>focused_time</code> would reset to 0, and you'd lose your tracked burnout state.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          To fix this, we use the <code>init()</code> function to query HPR's main database. We can ask SQLite exactly
+          how much time has been logged for our productive apps today, and add that to our initial state!
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-comment">-- Query the built-in app_usage table</span>
+    <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"SELECT name, duration FROM app_usage;"</span>)
+    <span class="code-keyword">local</span> restored_time = 0
+    
+    <span class="code-comment">-- Loop through the results from the database</span>
+    <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
+        <span class="code-keyword">local</span> appName = string.lower(row.name or <span class="code-string">""</span>)
+        
+        <span class="code-comment">-- If it's a productive app, add its duration (in milliseconds)</span>
+        <span class="code-keyword">if</span> productive_apps[appName] <span class="code-keyword">then</span>
+            restored_time = restored_time + (tonumber(row.duration) or 0)
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Set our starting time</span>
+    focused_time = restored_time
+    <span class="code-fn">print</span>(<span class="code-string">"[Burnout Monitor] Active work session loaded"</span>)
+    
+    <span class="code-keyword">return</span> 1000 <span class="code-comment">-- Tell HPR to run our onTick function once every second (1000ms)</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 3: Tracking focus in real-time</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Now we need the actual tracker. In our <code>onTick(delta)</code> function, we'll check the active window. The
+          <code>delta</code> variable gives us the exact milliseconds since the last tick.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          If you are looking at a productive app, we increase the timer. If you are looking at something else (like
+          Spotify or a web browser on Twitter), we slowly decay the timer, simulating a break.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-keyword">local</span> activeWindow = HPR.getCurrentWindow_E()
+    
+    <span class="code-keyword">if</span> activeWindow <span class="code-keyword">then</span>
+        <span class="code-keyword">local</span> appName = string.lower(activeWindow)
+        
+        <span class="code-keyword">if</span> productive_apps[appName] <span class="code-keyword">then</span>
+            <span class="code-comment">-- Add elapsed milliseconds to our focus timer</span>
+            focused_time = focused_time + delta
+        <span class="code-keyword">else</span>
+            <span class="code-comment">-- If we aren't working, slowly lower the burnout level</span>
+            <span class="code-comment">-- math.max prevents the timer from going below zero!</span>
+            focused_time = math.max(0, focused_time - (delta * 0.5))
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+    
+    <span class="code-comment">-- Step 4 logic goes here...</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 4: Emitting the Signal</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Here is where the magic happens. Still inside <code>onTick</code>, we check if <code>focused_time</code> has
+          crossed our threshold. For this tutorial, let's say 2 hours straight (which is 7,200,000 milliseconds).
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          If it has, we use <code>HPR.emit_E</code>. The first argument is our custom frequency name (a string). The
+          second argument is a Lua table containing the payload we want to send over the airwaves.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          We also add a debug signal that broadcasts every 5 seconds, so you don't have to wait 2 hours to see if your
+          extensions are talking to each other!
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre>    <span class="code-keyword">if</span> burnout_cooldown > 0 <span class="code-keyword">then</span>
+        burnout_cooldown = burnout_cooldown - delta
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- 2 hours = 1000ms * 60s * 60m * 2</span>
+    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">and</span> burnout_cooldown <= 0 <span class="code-keyword">then</span>
+        
+        <span class="code-comment">-- Broadcast the event!</span>
+        HPR.emit_E(<span class="code-string">"BURNOUT_WARNING"</span>, {
+            active_app = activeWindow or <span class="code-string">"Unknown"</span>,
+            duration_seconds = math.floor(focused_time / 1000),
+            intensity = <span class="code-string">"HIGH"</span>
+        })
+        burnout_cooldown = 300000 <span class="code-comment">-- 5 minutes cooldown</span>
+        
+    <span class="code-keyword">end</span>
+    
+    <span class="code-comment">-- Send a test signal every 5 seconds to verify communication is working</span>
+    debug_timer = debug_timer + delta
+    <span class="code-keyword">if</span> debug_timer >= 5000 <span class="code-keyword">then</span>
+        HPR.emit_E(<span class="code-string">"TEST_COMMUNICATION"</span>, {
+            message = <span class="code-string">"Hello from the Watcher!"</span>,
+            current_focus_seconds = math.floor(focused_time / 1000)
+        })
+        debug_timer = 0
+    <span class="code-keyword">end</span></pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">The Complete Watcher Code</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          Put it all together, and your <code>burnout-monitor.lua</code> looks like this. Note that we define the
+          extension identity metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>) at the
+          <strong>top level</strong> (outside of <code>init()</code>). This is a best practice that is <strong>EXTREMELY
+            HIGHLY RECOMMENDED</strong>. If they are omitted or placed inside <code>init()</code>, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 64px;">
+          <span class="code-label">burnout-monitor.lua</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level (highly recommended for UI registration!)</span>
+HPR.authorName    = <span class="code-string">"Plexescor"</span>
+HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</span>
+
+<span class="code-keyword">local</span> focused_time = 0
+<span class="code-keyword">local</span> debug_timer = 0
+<span class="code-keyword">local</span> burnout_cooldown = 0
+<span class="code-keyword">local</span> productive_apps = {
+    [<span class="code-string">"code"</span>] = <span class="code-keyword">true</span>,
+    [<span class="code-string">"kitty"</span>] = <span class="code-keyword">true</span>,
+    [<span class="code-string">"terminal"</span>] = <span class="code-keyword">true</span>,
+    [<span class="code-string">"neovim"</span>] = <span class="code-keyword">true</span>
+}
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"SELECT name, duration FROM app_usage;"</span>)
+    <span class="code-keyword">local</span> restored_time = 0
+    
+    <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
+        <span class="code-keyword">local</span> appName = string.lower(row.name or <span class="code-string">""</span>)
+        <span class="code-keyword">if</span> productive_apps[appName] <span class="code-keyword">then</span>
+            restored_time = restored_time + (tonumber(row.duration) or 0)
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+
+    focused_time = restored_time
+    <span class="code-fn">print</span>(<span class="code-string">"[Burnout Monitor] Active work session loaded"</span>)
+    <span class="code-keyword">return</span> 1000
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-keyword">local</span> activeWindow = HPR.getCurrentWindow_E()
+    
+    <span class="code-keyword">if</span> activeWindow <span class="code-keyword">then</span>
+        <span class="code-keyword">local</span> appName = string.lower(activeWindow)
+        <span class="code-keyword">if</span> productive_apps[appName] <span class="code-keyword">then</span>
+            focused_time = focused_time + delta
+        <span class="code-keyword">else</span>
+            focused_time = math.max(0, focused_time - (delta * 0.5))
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">if</span> burnout_cooldown > 0 <span class="code-keyword">then</span>
+        burnout_cooldown = burnout_cooldown - delta
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">if</span> focused_time >= 7200000 <span class="code-keyword">and</span> burnout_cooldown <= 0 <span class="code-keyword">then</span>
+        HPR.emit_E(<span class="code-string">"BURNOUT_WARNING"</span>, {
+            active_app = activeWindow or <span class="code-string">"Unknown"</span>,
+            duration_seconds = math.floor(focused_time / 1000),
+            intensity = <span class="code-string">"HIGH"</span>
+        })
+        burnout_cooldown = 300000
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Send a test signal every 5 seconds to verify communication is working</span>
+    debug_timer = debug_timer + delta
+    <span class="code-keyword">if</span> debug_timer >= 5000 <span class="code-keyword">then</span>
+        HPR.emit_E(<span class="code-string">"TEST_COMMUNICATION"</span>, {
+            message = <span class="code-string">"Hello from the Watcher!"</span>,
+            current_focus_seconds = math.floor(focused_time / 1000)
+        })
+        debug_timer = 0
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+
+        <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>
+
+
+        <h2 style="margin-bottom: 24px; font-size: 2rem;">Part 2: Building the Enforcer</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
+          Now we need the extension that listens for that warning and does something about it. Create a new file called
+          <code>wellness-officer.lua</code>.
+        </p>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 5: Tuning in to the Broadcast</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          To receive events, we use <code>HPR.connect_E</code> inside our <code>init()</code> function.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          This function takes two arguments: the name of the event to listen for, and an anonymous function (a callback)
+          that will run whenever the event is received. The callback receives the exact data payload we emitted from the
+          Watcher! We will connect to both the burnout warning and our new debug ping.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          <strong>Crucially, <code>HPR.connect_E</code> returns an ID number.</strong> We must store this ID in a
+          variable at the top of our script so we can disconnect later.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre><span class="code-comment">-- Store our subscription IDs here</span>
+<span class="code-keyword">local</span> burnoutListenerId = 0
+<span class="code-keyword">local</span> testListenerId = 0
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    <span class="code-comment">-- Tune the antenna to our frequency</span>
+    burnoutListenerId = HPR.connect_E(<span class="code-string">"BURNOUT_WARNING"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-keyword">local</span> duration_mins = math.floor(data.duration_seconds / 60)
+        <span class="code-comment">-- Step 6 logic goes here...</span>
+    <span class="code-keyword">end</span>)
+
+    <span class="code-comment">-- Listen for the 5-second debug test ping to verify communication is working</span>
+    testListenerId = HPR.connect_E(<span class="code-string">"TEST_COMMUNICATION"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-fn">print</span>(<span class="code-string">"[Wellness Officer] Received ping! Message: "</span> .. data.message .. <span class="code-string">" | Focus: "</span> .. data.current_focus_seconds .. <span class="code-string">"s"</span>)
+    <span class="code-keyword">end</span>)
+
+    <span class="code-keyword">return</span> 2000 <span class="code-comment">-- This script is event-driven, so it can tick very slowly</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 6: Executing Native OS Notifications</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          Inside our callback function, we'll actually annoy the user into taking a break. We'll use the native
+          <code>HPR.showNotification_E</code> function to pop a desktop notification. If you have custom UI files, this is also
+          where you would call <code>HPR.setUiProperty_E</code> to push values to your Slint interface.
+        </p>
+        
+        <div class="callout callout--amber fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">Cross-Platform Native Notifications</div>
+          <p>
+            The <code>HPR.showNotification_E</code> function is fully cross-platform out of the box!
+            On Linux, it uses D-Bus directly via <code>libdbus-1</code> internally. On Windows, it integrates
+            directly with the native Windows Action Center using the beautiful <code>WinToast</code> API.
+          </p>
+          <p style="margin-top: 8px;">
+            This means you don't have to write any raw terminal execution commands or worry about OS-specific branching inside your Lua scripts!
+          </p>
+        </div>
+
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre>    <span class="code-comment">-- Inside the connect_E callback:</span>
+
+    <span class="code-comment">-- Trigger a native OS notification (Cross-platform!)</span>
+    <span class="code-keyword">local</span> notify_msg = string.format(
+        <span class="code-string">"You have been working on %s for %d minutes straight."</span>, 
+        data.active_app, duration_mins
+    )
+    HPR.showNotification_E(<span class="code-string">"Take a Break!"</span>, notify_msg)
+
+    <span class="code-comment">-- Do UI stuff here if you have relevant Slint files</span>
+    <span class="code-comment">-- HPR.setUiProperty_E("myWarningBanner", "Take a break!")</span>
+</pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">Step 7: The Critical Teardown</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          We aren't done yet. This last step is the most important part of the entire tutorial.
+        </p>
+
+        <div class="callout callout--green fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">💡 HPR's Automatic RAII Cleanup</div>
+          <p>
+            When you call <code>HPR.connect_E()</code>, the underlying C++ engine keeps track of your subscription. 
+          </p>
+          <p style="margin-top: 8px;">
+            To ensure zero crashes and segfaults on shutdown or reload, HPR features <strong>automatic RAII connection tracking</strong>. If your extension is reloaded or stopped, HPR automatically and safely unregisters every Event Hub connection it created, preventing use-after-free conditions entirely.
+          </p>
+        </div>
+
+        <div class="callout callout--danger fade-in"
+          style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+          <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+            <strong> Watcher-Enforcer Warning: Strict 200ms exit grace period!</strong><br>
+            While HPR automatically unregisters Event Hub connections, if you decide to write custom database saving or resource cleanup inside your <code>onExit()</code> handler, it must complete fast! HPR
+            gives each extension thread a strict <strong>200 milliseconds</strong> grace period to execute <code>onExit()</code> on
+            exit. If one extension (e.g., Wellness Officer) takes longer than 200ms, HPR will immediately detach its
+            extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with
+            <code>_exit(0)</code> to prevent background hangs. Keep all exit teardowns extremely lightweight.
+          </p>
+        </div>
+
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          While HPR automatically cleans up all event listeners when the extension is shut down, you can still provide an <code>onExit()</code> function to perform custom cleanups or manual disconnections:
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 48px;">
+          <pre><span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-comment">-- Optional/Best Practice: Disconnect listener hooks (HPR automatically cleans up on exit)</span>
+    <span class="code-keyword">if</span> burnoutListenerId ~= 0 <span class="code-keyword">then</span>
+        HPR.disconnect_E(<span class="code-string">"BURNOUT_WARNING"</span>, burnoutListenerId)
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">if</span> testListenerId ~= 0 <span class="code-keyword">then</span>
+        HPR.disconnect_E(<span class="code-string">"TEST_COMMUNICATION"</span>, testListenerId)
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">The Complete Enforcer Code</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          The final <code>wellness-officer.lua</code> is incredibly short, but incredibly powerful.
+          Just like the watcher, we define the metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>)
+          at the <strong>top level</strong> of the script (outside of <code>init()</code>).
+          Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
+            RECOMMENDED</strong>. If omitted or defined inside <code>init()</code>, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+        </p>
+        <div class="code-block fade-in" style="margin-bottom: 64px;">
+          <span class="code-label">wellness-officer.lua</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level (highly recommended for UI registration!)</span>
+HPR.authorName    = <span class="code-string">"Plexescor"</span>
+HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</span>
+
+<span class="code-keyword">local</span> burnoutListenerId = 0
+<span class="code-keyword">local</span> testListenerId = 0
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+
+    burnoutListenerId = HPR.connect_E(<span class="code-string">"BURNOUT_WARNING"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-keyword">local</span> duration_mins = math.floor(data.duration_seconds / 60)
+        
+        <span class="code-keyword">local</span> notify_msg = string.format(
+            <span class="code-string">"You have been working on %s for %d minutes straight."</span>, 
+            data.active_app, duration_mins
+        )
+        HPR.showNotification_E(<span class="code-string">"Take a Break!"</span>, notify_msg)
+
+        <span class="code-comment">-- Do UI stuff here if you have relevant Slint files</span>
+        <span class="code-comment">-- HPR.setUiProperty_E("myWarningBanner", "Take a break!")</span>
+    <span class="code-keyword">end</span>)
+
+    <span class="code-comment">-- Listen for the 5-second debug test ping to verify communication is working</span>
+    testListenerId = HPR.connect_E(<span class="code-string">"TEST_COMMUNICATION"</span>, <span class="code-keyword">function</span>(data)
+        <span class="code-fn">print</span>(<span class="code-string">"[Wellness Officer] Received ping! Message: "</span> .. data.message .. <span class="code-string">" | Focus: "</span> .. data.current_focus_seconds .. <span class="code-string">"s"</span>)
+    <span class="code-keyword">end</span>)
+
+    <span class="code-keyword">return</span> 2000
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
+    <span class="code-comment">-- Empty, because everything is event-driven!</span>
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
+    <span class="code-keyword">if</span> burnoutListenerId ~= 0 <span class="code-keyword">then</span>
+        HPR.disconnect_E(<span class="code-string">"BURNOUT_WARNING"</span>, burnoutListenerId)
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">if</span> testListenerId ~= 0 <span class="code-keyword">then</span>
+        HPR.disconnect_E(<span class="code-string">"TEST_COMMUNICATION"</span>, testListenerId)
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span></pre>
+        </div>
+
+        <div class="divider" style="margin-bottom: 48px; border-bottom: 1px solid var(--border-color);"></div>
+
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Why This Architecture Matters</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          You might be wondering: <em>"Why didn't we just put the notification command straight into the watcher
+            script?"</em>
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+          By routing communication through the Event Hub, you achieve a professional software engineering practice
+          called <strong>Separation of Concerns</strong>:
+        </p>
+        <div class="feature-grid feature-grid--2" style="margin-bottom: 48px;">
+          <div class="card fade-in">
+            <div class="card-icon">🏗️</div>
+            <h3>Pure Data Tracking</h3>
+            <p>The <code>burnout-monitor</code> only worries about state logic, database queries, and math. It has
+              absolutely zero knowledge of OS notifications, sound effects, or Slint UI components. It's clean and
+              platform-agnostic.</p>
+          </div>
+          <div class="card fade-in">
+            <div class="card-icon card-icon--amber">🔌</div>
+            <h3>Hot-Swappable Features</h3>
+            <p>If you decide to build a custom smart-lights extension tomorrow that turns your room red when you
+              overwork, you just have it subscribe to <code>"BURNOUT_WARNING"</code> as well! You do not need to edit a
+              single line of your database watcher.</p>
+          </div>
+        </div>
+
+        <div class="callout fade-in">
+          <div class="callout-title">Next Steps</div>
+          <p>
+            Explore the full global table functions inside the <a href="api.html"
+              style="color: var(--accent-green);">Raw Extension API Reference</a> to discover more system variables and
+            custom hook callbacks!
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>

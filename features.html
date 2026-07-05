@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="HPR Features — Real-time window tracking, Pattern Analysis engine, Browser tab tracking, Interpreted UI mode, Alias system, and more.">
+  <title>Features — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html" class="active">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="themes.html">Themes</a></li>
+        <li><a href="docs.html">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <!-- Header -->
+    <section class="hero" style="padding-bottom: 64px;">
+      <div class="container">
+        <span class="section-label">Features</span>
+        <h1>Everything HPR does.</h1>
+        <p class="hero-tagline">
+          Every feature, every detail. No premium tiers. No feature gating. Everything is free and open source.
+        </p>
+      </div>
+    </section>
+
+    <!-- Core Tracking -->
+    <section class="section section-border" id="tracking">
+      <div class="container">
+        <span class="section-label fade-in">Core</span>
+        <h2 class="section-title fade-in">Real-Time Window Tracking</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR watches which window is in focus every 50 milliseconds. It builds a running log of exactly where your time
+          went — not where you think it went.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <h3>50ms Polling</h3>
+            <p>Polls the active window every 50 milliseconds. Every switch detected, every transition logged. Uses
+              <code>std::chrono::steady_clock</code> for monotonic, NTP-immune timing.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">◕</div>
+            <h3>Live Time Accumulation</h3>
+            <p>Total time per application updates in real time, displayed as <code>2h 14m 30s (25%)</code>. Percentage
+              breakdown gives instant visibility into time distribution.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↔</div>
+            <h3>Switch History</h3>
+            <p>Every transition between applications is timestamped and logged. Full chronological history shows from →
+              to with exact times.</p>
+          </div>
+        </div>
+
+        <div class="two-col fade-in" style="margin-top: 48px;">
+          <div class="screenshot-container">
+            <div class="screenshot-titlebar">
+              <span class="screenshot-dot screenshot-dot--red"></span>
+              <span class="screenshot-dot screenshot-dot--amber"></span>
+              <span class="screenshot-dot screenshot-dot--green"></span>
+            </div>
+            <img src="assetsgithub/main.png" alt="HPR Home — Live tracking view" loading="lazy">
+          </div>
+          <div>
+            <h3 style="margin-bottom: 16px;">Historical Data — Three Modes</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Click the calendar icon in the sidebar to open the History Range view. Choose from three loading modes:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--cyan">1</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Single Day</strong> — pick any date from the calendar picker. Loads that day's <code>.db</code> file asynchronously.</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--amber">7</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Last N Days</strong> — pull last 7, 14, 30 days or any custom count. Multiple daily files are merged automatically using a fast, parallel N-thread approach (no 30s timeouts like ActivityWatch).</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span class="badge badge--green">↔</span>
+                <span style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Date Range</strong> — set a start and end date. HPR reads every daily file in that span concurrently using multiple threads and aggregates the result.</span>
+              </div>
+            </div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">Non-Blocking &amp; Parallel (N-Thread) Load</div>
+              <p>Historical loading runs on dedicated background threads. Live tracking is never paused, and queries run in parallel. This is incredibly fast and avoids the 30-second timeouts common in single-threaded tracking systems like ActivityWatch.</p>
+            </div>
+            <div class="screenshot-container" style="margin-bottom: 24px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assetsgithub/history.png" alt="HPR History Range View" loading="lazy">
+            </div>
+            <h3 style="margin-bottom: 16px;">Timing Integrity</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+              Duration measurement uses <code>std::chrono::steady_clock</code> (monotonic). Display timestamps use
+              <code>system_clock</code>. This separation is enforced — using system_clock for duration is a classic bug
+              that corrupts totals when NTP fires or DST changes mid-session.
+            </p>
+            <h3 style="margin-bottom: 16px;">Window Normalization</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;">
+              Raw window titles from the OS are inconsistent and noisy. <code>validateAndUpdateWindow_Cross</code> runs
+              a cross-platform normalization pass on every poll, filtering out system noise like
+              <code>plasmashell</code>, <code>searchhost</code>, and KWin JS runtime artifacts.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Browser Tab Tracking -->
+    <section class="section section-border" id="browser-tabs">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Browser Tab Tracking <span
+            style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Chrome, Edge, Firefox, Brave — HPR tracks which tab is active by reading the window title the OS already
+          exposes. No browser extension. No manifest. No permissions dialog. No marketplace install. It has always been
+          there.
+        </p>
+
+        <div class="feature-grid feature-grid--2 fade-in">
+          <div class="card">
+            <div class="card-icon card-icon--amber">T</div>
+            <h3>Tab View <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">(Raw)</span>
+            </h3>
+            <p>Shows unaliased, unprocessed tab titles exactly as the OS reports them. Differentiate between specific
+              pages — time across two different YouTube videos, individual GitHub issues, separate docs.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">S</div>
+            <h3>Site View <span
+                style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">(Formatted)</span></h3>
+            <p>Applies rules from <code>tabAliases.csv</code> to group tabs by website. All YouTube tabs collapse into
+              "YouTube". All GitHub pages collapse into "GitHub". Toggle between the two views inside the app with a
+              single click.</p>
+          </div>
+        </div>
+
+        <div class="highlight-box fade-in" style="margin-top: 32px;">
+          <div class="two-col">
+            <div>
+              <h3 style="margin-bottom: 16px;">Tab View vs Site View</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mode</th>
+                      <th>Shows</th>
+                      <th>Use when</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Tab View</strong></td>
+                      <td>Raw title string from OS</td>
+                      <td>You want granular per-page breakdown</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Site View</strong></td>
+                      <td>Aliased name from <code>tabAliases.csv</code></td>
+                      <td>You want time grouped by website</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <div class="callout">
+                <div class="callout-title">No Extension Needed</div>
+                <p>Every supported browser puts the active tab name in its window title. HPR reads that string on every
+                  50ms poll. The data has always been there — no browser API, no content script, no manifest.json, no
+                  user permission required.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag">Chrome</span>
+          <span class="tag">Edge</span>
+          <span class="tag">Firefox</span>
+          <span class="tag">Brave</span>
+          <span class="tag">No Extension</span>
+          <span class="tag">Tab View</span>
+          <span class="tag">Site View</span>
+          <span class="tag">tabAliases.csv</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VS Code Project Tracking -->
+    <section class="section section-border" id="vscode">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">VS Code Project Tracking <span
+            style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          HPR tracks which VS Code project you are in, not just that VS Code is open. No VS Code extension. No plugin.
+          No marketplace install. HPR reads the window title the OS already exposes.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>How it works</h3>
+              <p style="margin-bottom: 12px;">VS Code puts the active project name in its window title as
+                <code>filename - project - Visual Studio Code</code>. HPR reads that title on every poll tick and parses
+                it:</p>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre><span class="code-comment"># VS Code title format:</span>
+<span class="code-string">filename - project - Visual Studio Code</span>
+
+<span class="code-comment"># HPR strips trailing suffix, then</span>
+<span class="code-comment"># splits on last " - " separator</span>
+<span class="code-comment"># (spaces around dash, safe split point)</span>
+<span class="code-fn">result</span> = project_name</pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Project View — Raw &amp; Formatted</h3>
+              <p style="margin-bottom: 12px;">A dedicated Project View tab shows time broken down by project. Toggle
+                between two modes inside the app:</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mode</th>
+                      <th>Shows</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Raw View</strong></td>
+                      <td>Unprocessed full window title substring as received from the OS</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Formatted View</strong></td>
+                      <td>Categorizes projects via <code>projectAliases.csv</code> (e.g., mapping
+                        <code>rust-app-v2</code> to <code>Client Bob</code>)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Works on Every Platform</h3>
+              <p>Hyprland, GNOME, KDE Plasma 6+, Cinnamon, and Windows. Every backend already has a window title getter and VS
+                Code puts the project name in the title on all of them. No platform-specific setup.</p>
+            </div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">No Extension Needed</div>
+              <p>Zero VS Code plugins. Zero marketplace installs. Zero configuration inside VS Code. HPR reads the
+                single string the OS already exposes as the window title. The project name has been there the whole
+                time.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="tag">VS Code</span>
+              <span class="tag">No Extension</span>
+              <span class="tag">Raw View</span>
+              <span class="tag">Formatted View</span>
+              <span class="tag">projectAliases.csv</span>
+              <span class="tag">All Platforms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Day Construction Timeline -->
+    <section class="section section-border" id="timeline">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-cyan);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Day Construction Timeline</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Reconstruct your daily narrative. HPR maps your active window transitions chronologically onto an interactive, zoomable, and scrollable timeline canvas, giving you visual continuity instead of just isolated numbers.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="feature-grid" style="grid-template-columns: 1fr;">
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Zoom &amp; Scroll Presets</h3>
+                <p>Focus on microscopic details or analyze the entire day. Supports interactive presets to instantly zoom into <code>1h</code>, <code>3h</code>, or <code>8h</code> intervals, or zoom out to <code>24h</code> and <code>All Day</code> spans. The timeline canvas scrollbar lets you slide across the day seamlessly.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Adaptive Hourly Markers</h3>
+                <p>Timeline markers calculate coordinates and adjust automatically. Zoomed viewports (<code>1h</code>, <code>3h</code>, <code>8h</code>) draw markers at every 1-hour interval, while high-span viewports (<code>24h</code>, <code>All Day</code>) space markers every 3 hours (e.g., <code>06:00 AM</code>, <code>09:00 AM</code>) to prevent overlapping labels and maintain design aesthetics.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Continuity Gap Capping</h3>
+                <p>Prevents downtime from polluting your logs. If you close HPR or turn off your computer for 5 hours, a naive timeline would stretch the last active application across the entire downtime. HPR's reconstruction algorithm identifies these focus gaps (transitions to <code>Unknown</code> or shutdown states) and caps the preceding app segment to a maximum of <strong>1 minute</strong>.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-purple);">
+                <h3>Interactive Hover Tooltips</h3>
+                <p>No clicks required. Simply hover your cursor over any timeline block to view its properties instantly. The status panel updates dynamically in real-time, displaying the application's aliased name, exact active duration, and precise start/end time range.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>HPR Tracking</h3>
+                <p>The tracking engine includes HPR itself inside the timeline, giving you visibility into the time you spend managing goals, reviewing insights, or developing extensions.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 16px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assetsgithub/timeline.png" alt="HPR Day Construction Timeline" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
+              Day Construction Timeline — Zoomable &amp; Scrollable
+            </p>
+            <div class="callout fade-in" style="margin-top: 32px;">
+              <div class="callout-title">Fractional Calculations</div>
+              <p>Timelines are calculated using high-precision fractional positions, ensuring that short 1-second switches are scaled and rendered accurately alongside hours-long focus sessions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Insights Engine -->
+    <section class="section section-border" id="insights">
+      <div class="container">
+        <span class="section-label fade-in">Analysis</span>
+        <h2 class="section-title fade-in">Pattern Analysis Engine</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          <code>PatternAnalyzer</code> runs seven analysis passes every 30 seconds for real-time daily metrics, and triggers a multi-day correlation pass to extract 9 advanced trend insights.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <h3 style="margin-bottom: 16px; color: var(--text-primary);">Real-Time Daily Metrics</h3>
+            <div class="feature-grid" style="grid-template-columns: 1fr; margin-bottom: 32px;">
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Most Used Application</h3>
+                <p>Direct aggregation over <code>timeLog_PerApp</code>. Shows your dominant application with exact time.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Total Tracked Time</h3>
+                <p>Sum of all application usage for the day. Your actual screen time, not an estimate.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Total App Switches</h3>
+                <p>Count of every transition between applications. A signal of how fragmented your day was.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-red);">
+                <h3>Most Switched From / To</h3>
+                <p>Top switch pairs from <code>switchHistory</code>. Reveals your most common context-switch patterns.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-amber);">
+                <h3>Longest Focus Session</h3>
+                <p><strong>Chronological Event-Matching Algorithm.</strong> Flattens switch history into a unified timeline of arrivals/departures, sorted in O(N log N). One pass pairs each arrival with its next departure, discarding orphan events.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-green);">
+                <h3>Peak Productive Hour</h3>
+                <p><strong>Sliding Window Heuristic.</strong> A 60–90 minute window slides across the complete timeline, counting switches at each position. The position with fewest switches = deepest focus.</p>
+              </div>
+            </div>
+
+            <h3 style="margin-bottom: 16px; color: var(--accent-cyan);">Advanced Cross-Day Patterns</h3>
+            <div class="feature-grid" style="grid-template-columns: 1fr;">
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Escape Pattern</h3>
+                <p>Tracks switches from your primary work application directly to browsers, showing the average daily count of browser escapes.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Return Rate</h3>
+                <p>Measures focus bounce-back by calculating the percentage of times you return to your work application immediately after a browser distraction.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Average Focus Session</h3>
+                <p>Computes the average duration of uninterrupted work sessions before switching windows across the multi-day span.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Most Distracted Day</h3>
+                <p>Pinpoints the day of the week with the highest average number of application switches, isolating weekly distraction patterns.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Productive Days</h3>
+                <p>Counts the days during the current week where your hourly switch frequency remained below the productivity threshold.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Screen Time vs Average</h3>
+                <p>Compares today's cumulative screen time with your N-day average to check if you are overworking or taking it easy.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Focus Dip Hour</h3>
+                <p>Pinpoints the specific hour of the day where application switches spike most consistently across days, identifying energy crashes.</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Deep Work Before Noon</h3>
+                <p>Measures the percentage of days where your longest focus sessions start in the morning (before 12:00 PM local time).</p>
+              </div>
+              <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+                <h3>Weekend vs Weekday</h3>
+                <p>Compares average work-app usage on weekdays versus weekends to show how well you separate work from rest.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="screenshot-container" style="margin-bottom: 16px;">
+              <div class="screenshot-titlebar">
+                <span class="screenshot-dot screenshot-dot--red"></span>
+                <span class="screenshot-dot screenshot-dot--amber"></span>
+                <span class="screenshot-dot screenshot-dot--green"></span>
+              </div>
+              <img src="assetsgithub/insights.png" alt="HPR Insights view showing pattern analysis results" loading="lazy">
+            </div>
+            <p style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
+              Insights — All seven analysis passes
+            </p>
+
+            <div class="callout fade-in" style="margin-top: 32px;">
+              <div class="callout-title">Database Integration &amp; Parallel Queries</div>
+              <p>When the user enters the Insights view, HPR asynchronously queries the SQLite database using an N-thread concurrent read approach. This avoids dashboard UI freezes while loading many days of historical records.</p>
+            </div>
+            
+            <div class="callout fade-in" style="margin-top: 20px;">
+              <div class="callout-title">Noise Filtering</div>
+              <p>Both models filter out HPR itself, the Unknown state, and system noise before running. Insights reflect actual work, not measurement artifacts.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- App Limits & Goals -->
+    <section class="section section-border" id="limits">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
+        <h2 class="section-title fade-in">Per-App Limits &amp; Goals</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Set a daily time limit or a daily usage goal on any tracked application — directly from the built-in Goals view. HPR monitors usage in the background and fires a system notification the moment you cross a threshold.
+        </p>
+
+        <div class="feature-grid feature-grid--2 fade-in">
+          <div class="card" style="border-left: 3px solid var(--accent-red);">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">&#8987;</div>
+            <h3 style="color: var(--accent-red);">Limits</h3>
+            <p>Cap an app to a maximum number of minutes per day. When usage crosses that threshold HPR sends a system notification — and can optionally force-quit the application automatically. The badge on each row shows exactly how many minutes remain, updated live.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent-green);">
+            <div class="card-icon card-icon--green">&#10003;</div>
+            <h3 style="color: var(--accent-green);">Goals</h3>
+            <p>Set a minimum number of minutes you want to spend in an app each day — for example, 30 minutes in your code editor. HPR tracks your progress and notifies you when you hit the goal.</p>
+          </div>
+        </div>
+
+        <div class="highlight-box fade-in" style="margin-top: 32px;">
+          <div class="two-col">
+            <div>
+              <h3 style="margin-bottom: 20px;">How to configure</h3>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">1</span>
+                <div class="interpreter-step-text">
+                  <h4>Open the Goals view</h4>
+                  <p>Click the Goals icon in the sidebar. Every tracked application appears in the list automatically.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">2</span>
+                <div class="interpreter-step-text">
+                  <h4>Click any app row</h4>
+                  <p>The row expands inline, revealing a minute input with +/− step buttons and three actions: <strong>SET LIMIT</strong>, <strong>SET GOAL</strong>, or <strong>RESET</strong>.</p>
+                </div>
+              </div>
+              <div class="interpreter-step">
+                <span class="interpreter-step-num">3</span>
+                <div class="interpreter-step-text">
+                  <h4>HPR handles the rest</h4>
+                  <p>A dedicated background thread monitors usage continuously. Limits show a red accent badge; goals show green. Both display remaining time live.</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="screenshot-container" style="margin-bottom: 20px;">
+                <div class="screenshot-titlebar">
+                  <span class="screenshot-dot screenshot-dot--red"></span>
+                  <span class="screenshot-dot screenshot-dot--amber"></span>
+                  <span class="screenshot-dot screenshot-dot--green"></span>
+                </div>
+                <img src="assetsgithub/limits.png" alt="HPR App Limits and Goals" loading="lazy">
+              </div>
+              <div class="callout" style="margin-bottom: 20px;">
+                <div class="callout-title">Zero restart required</div>
+                <p>Limits and goals take effect immediately. No restart. No config file editing. Changes are reflected in the UI the moment you set them.</p>
+              </div>
+              <div class="callout">
+                <div class="callout-title">Override API hook</div>
+                <p>Advanced users can intercept the limit-reached event via the Lua Extension Override API to run custom logic — log it, send it to a webhook, trigger a different notification, or suppress it entirely.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag">App Limits</span>
+          <span class="tag">Daily Goals</span>
+          <span class="tag">System Notifications</span>
+          <span class="tag">Background Monitor</span>
+          <span class="tag">Per-App</span>
+          <span class="tag">Live Remaining Time</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alias System -->
+    <section class="section section-border" id="aliases">
+      <div class="container">
+        <span class="section-label fade-in">Normalization</span>
+        <h2 class="section-title fade-in">Alias System</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Raw window titles are inconsistent. <code>Visual Studio Code</code> on one machine, <code>code</code> on
+          another, <code>code.exe</code> on Windows. Aliases collapse all of them into one label.
+        </p>
+
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon">≡</div>
+            <h3>Application Aliases</h3>
+            <p><code>aliases.csv</code> — maps raw window names to display names. <code>code</code> catches
+              <code>vscode</code>, <code>code-oss</code>, <code>code.exe</code>. <code>terminal</code> catches
+              <code>kitty</code>, <code>alacritty</code>, <code>konsole</code>, <code>wezterm</code>.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--amber">⊞</div>
+            <h3>Tab Aliases</h3>
+            <p><code>tabAliases.csv</code> — collapses specific URLs and page titles into website names. All YouTube
+              tabs become "YouTube". All GitHub pages become "GitHub".</p>
+          </div>
+          <div class="card">
+            <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">VS</div>
+            <h3>Project Aliases</h3>
+            <p><code>projectAliases.csv</code> — categorizes your VS Code projects (e.g., mapping
+              <code>rust-app-v2</code> to <code>Client Bob</code>). The default template is located in
+              <code>~/.config/HPR/</code>.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↻</div>
+            <h3>Hot Reload</h3>
+            <p>Save the alias file, HPR picks it up within the next UI tick. No restart required. Cached via
+              <code>unordered_map</code> — O(1) lookups after first resolution.</p>
+          </div>
+        </div>
+
+        <div class="two-col fade-in" style="margin-top: 40px;">
+          <div class="code-block">
+            <span class="code-label">aliases.csv</span>
+            <pre><span class="code-comment"># raw substring,Display Name</span>
+<span class="code-string">code</span>,Visual Studio Code
+<span class="code-string">kitty</span>,Terminal
+<span class="code-string">alacritty</span>,Terminal
+<span class="code-string">konsole</span>,Terminal
+<span class="code-string">wezterm</span>,Terminal
+<span class="code-string">firefox</span>,Firefox
+<span class="code-string">chromium</span>,Chrome</pre>
+          </div>
+          <div>
+            <div class="callout" style="margin-bottom: 24px;">
+              <div class="callout-title">Late-Binding Design</div>
+              <p>The database stores raw OS strings exactly as received. Aliases are resolved at display time only.
+                Renaming an alias retroactively updates every historical entry for that application with zero migration
+                work.</p>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Format</span>
+              <pre><span class="code-comment"># One line per alias</span>
+<span class="code-keyword">raw substring</span>,<span class="code-string">Display Name</span>
+
+<span class="code-comment"># Lines starting with # are comments</span>
+<span class="code-comment"># Matching is substring-based</span>
+<span class="code-comment"># First match wins</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Storage -->
+    <section class="section section-border" id="storage">
+      <div class="container">
+        <span class="section-label fade-in">Storage</span>
+        <h2 class="section-title fade-in">Plain SQLite. One file per day.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Your data is a folder on your disk. Removing it means deleting that folder. No server. No account. No support
+          ticket.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="code-block" style="margin-bottom: 24px;">
+              <span class="code-label">Data Directory</span>
+              <pre><span class="code-comment">~/.local/share/HPR/HPR_DB/          (Linux)</span>
+<span class="code-comment">%APPDATA%\HPR\HPR_DB\               (Windows)</span>
+
+    05-26/
+        <span class="code-string">01-05-26.db</span>
+        <span class="code-string">02-05-26.db</span>
+        ...
+
+<span class="code-comment">A normal day: 30 to 100 KB</span>
+<span class="code-comment">A full year: under 50 MB</span></pre>
+            </div>
+
+            <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">30–100 KB</div>
+                <div class="stat-card-label">Per Day</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-value" style="font-size: 1.5rem;">&lt;50 MB</div>
+                <div class="stat-card-label">Per Year</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Write Strategy</h3>
+              <p style="margin-bottom: 16px;"><code>app_usage</code> — <code>INSERT OR REPLACE</code> on unique app
+                name. One row per app, always current.</p>
+              <p style="margin-bottom: 16px;"><code>switch_history</code> — <code>INSERT OR IGNORE</code> on unique
+                timestamp. Dumps full history every flush, SQLite drops duplicates.</p>
+              <p>WAL mode with passive checkpoint after every write. Added after real WAL corruption on Btrfs + LUKS
+                during development.</p>
+            </div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Single-Instance Lock</h3>
+              <p><strong>Windows:</strong> <code>CreateFileA</code> with <code>FILE_FLAG_DELETE_ON_CLOSE</code>.
+                Auto-deletes on crash.</p>
+              <p style="margin-top: 8px;"><strong>Linux:</strong> <code>flock(LOCK_EX | LOCK_NB)</code>. Kernel releases
+                on process death.</p>
+            </div>
+            <div class="callout">
+              <div class="callout-title">Seamless Midnight Rotation</div>
+              <p>At exactly midnight, HPR automatically commits a final WAL checkpoint, clears all tracked data from
+                RAM, and creates a fresh <code>DD-MM-YY.db</code> for the new day — with no restart required. You never
+                lose data between days and never need to think about it.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interpreted Mode Deep Dive -->
+    <section class="section section-border" id="interpreter">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">★ Standout Feature</span>
+        <h2 class="section-title fade-in">Interpreted UI Mode</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 16px;">
+          This is not a theme engine. This is not CSS variables. HPR loads the entire UI definition from disk at runtime
+          using Slint's interpreter. You have full access to the Slint language — layouts, animations, components,
+          property bindings.
+        </p>
+
+        <div class="callout fade-in" style="margin-bottom: 24px;">
+          <div class="callout-title">Ghost Sidebar + Reload UI button</div>
+          <p>The navigation sidebar collapses to a thin 14px sliver at the screen edge — hover to reveal icon buttons for every view. One of those buttons is <strong>Reload UI</strong>: hit it while in interpreted mode and your modified <code>.slint</code> file is re-parsed and the interface re-renders in under a second, without restarting HPR.</p>
+        </div>
+
+        <div class="highlight-box fade-in" style="margin-top: 40px;">
+          <div class="two-col">
+            <div>
+              <h3 style="color: var(--accent-amber); margin-bottom: 24px;">Compiled vs. Interpreted</h3>
+              <div class="table-wrap" style="margin-bottom: 24px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Aspect</th>
+                      <th>Compiled</th>
+                      <th>Interpreted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Class</td>
+                      <td><code>HPR</code></td>
+                      <td><code>HPRInterpreter</code></td>
+                    </tr>
+                    <tr>
+                      <td>Mechanism</td>
+                      <td>Slint generates C++ at build time</td>
+                      <td>Slint loads .slint from config dir at runtime</td>
+                    </tr>
+                    <tr>
+                      <td>Performance</td>
+                      <td>Maximum</td>
+                      <td>Negligible difference</td>
+                    </tr>
+                    <tr>
+                      <td>Customizable</td>
+                      <td>No</td>
+                      <td>Full UI control</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="callout--amber callout">
+                <div class="callout-title">⚠ Contract</div>
+                <p>Structs, properties, and callbacks are referenced by name from C++. Renaming them breaks the
+                  connection silently. Read <code>READ_ME_BEFORE_MODIFYING_UI.txt</code> before editing.</p>
+              </div>
+            </div>
+            <div>
+              <h3 style="margin-bottom: 24px;">What you can change</h3>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Colors and color schemes</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Component layouts and
+                    positioning</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Animations and transitions</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Component structure</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Typography and fonts</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="badge badge--green">✓</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Add new visual components</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                  <span class="badge badge--red">✕</span>
+                  <span style="font-size: 0.9rem; color: var(--text-secondary);">Rename
+                    structs/properties/callbacks</span>
+                </div>
+              </div>
+
+              <div class="code-block" style="margin-top: 24px;">
+                <span class="code-label">config.csv</span>
+                <pre><span class="code-comment">// Enable runtime UI loading</span>
+<span class="code-keyword">use-interpreter</span>,<span class="code-string">true</span>
+
+<span class="code-comment">// Your UI files</span>
+<span class="code-fn">~/.config/HPR/ui/app-window.slint</span>
+
+<span class="code-comment">// Reference copy for diffing</span>
+<span class="code-fn">~/.config/HPR/ui-REFERENCEONLY/</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sandboxed Lua Extension Engine -->
+    <section class="section section-border" id="extensions">
+      <div class="container">
+        <span class="section-label fade-in" style="color: var(--accent-amber);">★ Standout Feature</span>
+        <h2 class="section-title fade-in">Sandboxed Lua Extension Engine</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Build dynamic custom behaviors, widgets, integrations, and automation directly using a highly secure,
+          concurrency-safe Lua 5.4 scripting sandbox. No binary compilation required. Zero chance of destabilizing the core.
+          The extension API is <strong>intentionally beginner-friendly</strong> — write a simple Lua function, drop the file into <code>~/.config/HPR/extensions/</code>, and HPR picks it up instantly. No setup wizards, no package managers, no build steps. If you've ever written a script, you can build an extension.
+        </p>
+
+        <div class="highlight-box fade-in">
+          <h3 style="color: var(--accent-amber); margin-bottom: 24px;">The Extension Architecture</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            HPR embeds a sandboxed sol2-bound Lua VM inside its extension manager. Scripts run with safe limits,
+            isolated variables, and restricted OS API wrappers, allowing robust third-party expansion without
+            compromising core tracking thread execution.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <h3>Interactive UI Callbacks</h3>
+              <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
+            </div>
+            <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+              <h3 style="color: var(--accent-amber);">C++ RAII Auto-Disconnection</h3>
+              <p>Forget manual cleanup. All EventHub event subscriptions are bound to C++ connection tracking handles. When an extension is unloaded or reloaded, subscriptions are cleanly disconnected automatically.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-grid fade-in" style="margin-top: 32px;">
+          <div class="card">
+            <div class="card-icon card-icon--green">✓</div>
+            <h3>Embedded SQLite Access</h3>
+            <p>Execute fast, safe database queries directly from your extension. Interrogate tracking history, fetch active categories, and calculate stats inside your scripts.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">✓</div>
+            <h3>EventHub Messaging</h3>
+            <p>Subscribe to application events, lock states, time changes, and idle periods in real-time. Publish custom signals to drive modular widgets.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--purple">✓</div>
+            <h3>HTTP Networking</h3>
+            <p>Make HTTP GET/POST requests directly from Lua to integrate with REST APIs, webhooks, and external services — all while the core remains offline by default.</p>
+          </div>
+          <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
+            <div class="card-icon card-icon--amber">⚡</div>
+            <h3>Function Overriding API</h3>
+            <p>For advanced users: intercept and override 26 core C++ engine functions directly from Lua. Rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, control tracking state, and more. <a href="overrides.html" style="color: var(--accent-amber);">Full override docs →</a></p>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon--cyan">↻</div>
+            <h3>Recursive Subdirectory Scan</h3>
+            <p>RESCAN walks the extensions folder recursively. Organize your scripts into subdirectories freely — HPR finds them all. Use <code>HPR.getExtensionDir_E()</code> to get the relative path to your extension's own subfolder for safe file I/O.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🛡️</div>
+            <h3>Per-Extension Isolation</h3>
+            <p>Each loaded extension runs in its own dedicated background thread. If one extension crashes or throws, all others keep running and the core C++ tracker is completely unaffected.</p>
+          </div>
+        </div>
+        <div class="screenshot-container fade-in" style="margin-top: 32px; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <div class="screenshot-titlebar">
+            <span class="screenshot-dot screenshot-dot--red"></span>
+            <span class="screenshot-dot screenshot-dot--amber"></span>
+            <span class="screenshot-dot screenshot-dot--green"></span>
+          </div>
+          <img src="assetsgithub/extensions.png" alt="HPR Extensions view showing extension logs and runtime details" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section class="section section-border" id="performance">
+      <div class="container">
+        <span class="section-label fade-in">Performance</span>
+        <h2 class="section-title fade-in">The numbers.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          Cachegrind, Callgrind, and real-world measurements. HPR's own code doesn't appear in the hot path.
+        </p>
+
+        <div class="stats-row fade-in">
+          <div class="stat-card">
+            <div class="stat-card-value">~13 MB</div>
+            <div class="stat-card-label">RAM (Windows)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">~26 MB</div>
+            <div class="stat-card-label">Private (Linux)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">1–3%</div>
+            <div class="stat-card-label">CPU Usage</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value">~4-5 MB</div>
+            <div class="stat-card-label">Binary Size</div>
+          </div>
+        </div>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Linux Memory Explained</h3>
+              <p>BTOP/htop report ~47 MB. The actual private memory (heap + stack + data) is ~26 MB. The remaining ~25
+                MB is shared GPU library pages from Mesa/LLVM loaded by Slint's OpenGL renderer. These pages are shared
+                with every GPU-accelerated process on your system.</p>
+              <div class="code-block" style="margin-top: 16px;">
+                <pre><span class="code-comment"># Verify yourself:</span>
+<span class="code-fn">cat</span> /proc/$(<span class="code-fn">pgrep</span> HPR)/status | \
+  <span class="code-fn">grep</span> -E <span class="code-string">"RssAnon|RssFile|VmRSS"</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Disable GPU Overhead</h3>
+              <p>Set <code>hardware-acceleration,false</code> in config.csv. Mesa never loads. libLLVM never loads. RSS
+                drops to ~26 MB. UI is visually identical — CPU renderer only costs slightly more during redraws at
+                500ms intervals.</p>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Cachegrind (15s sample)</h3>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre>L1 instruction miss rate:      <span class="code-string">0.20%</span>
+Last-level instruction miss:   <span class="code-string">0.01%</span>
+L1 data miss rate:             <span class="code-string">2.6%</span>
+Last-level data miss rate:     <span class="code-string">0.2%</span>
+Overall last-level miss rate:  <span class="code-string">~0.0%</span>
+
+<span class="code-comment">2.6% L1 data miss is entirely
+Slint's font rendering pipeline.</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Callgrind (60s sample)</h3>
+              <p>4.46 billion instructions over 60 seconds. HPR's own C++ backend did not appear in the top 15 hottest
+                functions. Everything was Slint, FreeType, fontconfig, or parley doing text work.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section section-border" id="privacy">
+      <div class="container">
+        <span class="section-label fade-in">Privacy</span>
+        <h2 class="section-title fade-in">Zero network by default. Zero accounts.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Your data is a folder on your disk. Deleting it means deleting that folder. No server to request deletion
+          from.
+        </p>
+        <div class="feature-grid fade-in">
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Accounts</h3>
+            <p>No signup. No login. No email. No password. Launch the binary and it works.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Telemetry (Opt-in)</h3>
+            <p>No analytics, crash reports, or phone-home of any kind by default. If explicitly opted-in, HPR reports only two anonymous numbers: unique installation count and weekly active frequency.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon" style="background: var(--accent-red-dim); color: var(--accent-red);">✕</div>
+            <h3>No Network by Default</h3>
+            <p>HPR's Core runs offline. The binary has network code to power the optional anonymous telemetry, the developer's YouTube Now Playing status stream, and Lua extensions. In details, the developer's client uploads what the developer is currently watching on YouTube to a Firebase Realtime Database, and normal users' clients read from this database to display that status in the About view (which can be disabled via the <strong>Allow Network Activity</strong> toggle in the Settings panel).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Tray -->
+    <section class="section section-border" id="tray">
+      <div class="container">
+        <span class="section-label fade-in">System Tray</span>
+        <h2 class="section-title fade-in">Lives in your tray. Stays out of your way.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          HPR keeps running when you close the window. The only way to actually quit it is through the tray icon.
+        </p>
+        <div class="two-col fade-in">
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Windows</h3>
+              <div class="table-wrap" style="margin-top: 12px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Action</th>
+                      <th>Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Left click</td>
+                      <td>Does nothing</td>
+                    </tr>
+                    <tr>
+                      <td>Right click</td>
+                      <td>Context menu → <strong>Show HPR</strong> / <strong>Quit</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Close window</td>
+                      <td>Hides to tray (does not quit)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Linux (Waybar · KDE 6+ · Cinnamon)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Registered as
+                <code>org.kde.StatusNotifierItem</code> on the session D-Bus. Same protocol used by Discord, Steam, and
+                every modern app.</p>
+              <div class="table-wrap" style="margin-top: 12px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Action</th>
+                      <th>Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Left / Right click</td>
+                      <td>Open HPR</td>
+                    </tr>
+                    <tr>
+                      <td>Middle click</td>
+                      <td>Quit HPR</td>
+                    </tr>
+                    <tr>
+                      <td>Hover</td>
+                      <td>Shows tooltip with hint text</td>
+                    </tr>
+                    <tr>
+                      <td>Close window</td>
+                      <td>Hides to tray (does not quit)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="callout">
+              <div class="callout-title">No Libraries</div>
+              <p>Pure D-Bus over <code>libdbus-1</code>. No GTK. No Qt. Works with Waybar on Hyprland, KDE Plasma 6+'s system
+                tray, and Cinnamon's panel out of the box with zero configuration.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Config -->
+    <section class="section section-border" id="config">
+      <div class="container">
+        <span class="section-label fade-in">Configuration</span>
+        <h2 class="section-title fade-in">Simple options. That's the full config.</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 40px;">
+          Intentionally small. It will grow alongside the feature set.
+        </p>
+        <div class="two-col fade-in">
+          <div class="code-block">
+            <span class="code-label">config.csv</span>
+            <pre><span class="code-comment"># true = load UI from config dir at runtime</span>
+<span class="code-keyword">use-interpreter</span>,<span class="code-string">false</span>
+
+<span class="code-comment"># false = CPU renderer, eliminates GPU libs</span>
+<span class="code-keyword">hardware-acceleration</span>,<span class="code-string">true</span>
+
+<span class="code-comment"># false = disable automatic application termination on limit breach</span>
+<span class="code-keyword">kill-apps</span>,<span class="code-string">true</span>
+
+<span class="code-comment"># minimum time interval (ms) between app terminations</span>
+<span class="code-keyword">kill-cooldown</span>,<span class="code-string">2500</span>
+
+<span class="code-comment"># window focus check frequency (ms)</span>
+<span class="code-keyword">poll-interval</span>,<span class="code-string">50</span>
+
+<span class="code-comment"># how often window tracking totals are saved to disk (ms)</span>
+<span class="code-keyword">db-flush-interval</span>,<span class="code-string">10000</span>
+
+<span class="code-comment"># wait time (ms) for Lua extensions to finish onExit before force exit</span>
+<span class="code-keyword">extension-shutdown-timeout</span>,<span class="code-string">300</span>
+
+<span class="code-comment"># wait time (ms) for Lua extensions to finish on reload/unload before detaching</span>
+<span class="code-keyword">extension-reload-timeout</span>,<span class="code-string">450</span>
+
+<span class="code-comment"># tracking loop polling and UI update frequency (ms)</span>
+<span class="code-keyword">ui-update-interval</span>,<span class="code-string">200</span>
+
+<span class="code-comment"># interval to run the pattern analyzer and update insights on the UI (ms)</span>
+<span class="code-keyword">ui-insight-interval</span>,<span class="code-string">1000</span>
+
+<span class="code-comment"># duration for which active errors are displayed on the UI (ms)</span>
+<span class="code-keyword">ui-error-duration</span>,<span class="code-string">5000</span>
+
+<span class="code-comment"># false = disable all outgoing network HTTP activity</span>
+<span class="code-keyword">allow-network-activity</span>,<span class="code-string">true</span></pre>
+          </div>
+          <div class="code-block">
+            <span class="code-label">Config Locations</span>
+            <pre><span class="code-comment">Linux:</span>
+<span class="code-fn">~/.config/HPR/config.csv</span>
+
+<span class="code-comment">Windows:</span>
+<span class="code-fn">%APPDATA%\HPR\HPR_Config\config.csv</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event System -->
+    <section class="section section-border" id="events">
+      <div class="container">
+        <span class="section-label fade-in">Architecture</span>
+        <h2 class="section-title fade-in">Event System & Thread Management</h2>
+        <p class="section-desc fade-in" style="margin-bottom: 48px;">
+          The UI and database layers have no direct references. They communicate through <code>EventHub</code>, a
+          centralized in-process pub/sub bus with typed payloads.
+        </p>
+
+        <div class="two-col fade-in">
+          <div>
+            <div class="code-block" style="margin-bottom: 24px;">
+              <span class="code-label">EventHub API</span>
+              <pre><span class="code-comment">// Subscribe</span>
+<span class="code-fn">EventHub::connect</span>(
+  Event::<span class="code-keyword">HISTORY_LOADED_SINGULAR</span>,
+  [this](EventData data) { ... }
+);
+
+<span class="code-comment">// Publish</span>
+<span class="code-fn">EventHub::emit</span>(
+  Event::<span class="code-keyword">LOAD_DATABASE_SINGULAR</span>,
+  DatabaseDate_Singular{requestedDate}
+);
+
+<span class="code-comment">// Cleanup</span>
+<span class="code-fn">EventHub::disconnect</span>(
+  Event::<span class="code-keyword">HISTORY_LOADED_SINGULAR</span>, id
+);</pre>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>Thread Lifecycle Contract</h3>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre>Constructor → allocate, do NOT start
+<span class="code-fn">run()</span>       → spawn the thread
+thread body → check <span class="code-keyword">atomic&lt;bool&gt;</span> running
+destructor  → set running=false, <span class="code-fn">join()</span></pre>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Model Sync</h3>
+              <p>Surgical in-place update rather than clear + repopulate. Clearing causes layout panics during
+                resize/maximize. The <code>syncModel</code> lambda overlaps existing rows, erases excess, and appends
+                new ones.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-border" style="text-align: center;">
+      <div class="container">
+        <h2 class="fade-in" style="margin-bottom: 16px;">Ready to know where your time goes?</h2>
+        <p class="section-desc fade-in" style="margin: 0 auto 40px; text-align: center;">
+          Three commands on Linux. One installer on Windows. Running in seconds.
+        </p>
+        <div class="fade-in" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <a href="installation.html" class="btn btn--primary">Install HPR →</a>
+          <a href="https://github.com/plexescor/HPR" class="btn btn--ghost" target="_blank" rel="noopener">View
+            Source</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+
+</html>

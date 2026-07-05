@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="HPR Function Overriding API Reference. Learn how to intercept and override C++ engine functions directly in Lua.">
+  <title>HPR — Function Overriding API</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --accent-green: #ff8c00;
+      --accent-green-dim: rgba(255, 140, 0, 0.12);
+      --accent-amber: #e05252;
+      --accent-amber-dim: rgba(224, 82, 82, 0.10);
+      --accent-cyan: #56c8d8;
+      --accent-cyan-dim: rgba(86, 200, 216, 0.10);
+      --accent-purple: #a78bfa;
+      --accent-purple-dim: rgba(167, 139, 250, 0.10);
+      --accent-lime: #84cc16;
+      --accent-lime-dim: rgba(132, 204, 22, 0.10);
+    }
+
+    .hero-badge-dot {
+      background: #ff8c00;
+    }
+
+    .fn-card {
+      border-left: 3px solid var(--accent-green);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      padding: 28px;
+      width: 100%;
+    }
+
+    .fn-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .fn-card--window { border-left-color: var(--accent-green); }
+    .fn-card--alias { border-left-color: var(--accent-amber); }
+    .fn-card--db { border-left-color: var(--accent-cyan); }
+    .fn-card--network { border-left-color: var(--accent-purple); }
+    .fn-card--tracking { border-left-color: var(--accent-lime); }
+    .fn-card--ui { border-left-color: #f472b6; }
+    .fn-card--utility { border-left-color: #fbbf24; }
+
+    .fn-signature {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .fn-source {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-bottom: 14px;
+      opacity: 0.7;
+    }
+
+    .fn-desc {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-size: 0.92rem;
+    }
+
+    .fn-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+    }
+
+    .fn-meta span {
+      color: var(--text-secondary);
+    }
+
+    .fn-meta strong {
+      color: var(--text-primary);
+    }
+
+    .fn-example-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-green);
+      margin-bottom: 8px;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0 32px 0;
+    }
+
+    .section-divider h2 {
+      font-size: 1.5rem;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-primary);
+    }
+
+    .section-divider-emoji {
+      font-size: 1.4rem;
+    }
+
+    .fn-card .code-block {
+      margin: 0;
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    .fn-count-badge {
+      display: inline-block;
+      background: var(--accent-green-dim);
+      color: var(--accent-green);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 99px;
+      margin-left: 12px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/logo_256png.png" alt="HPR" class="nav-brand-logo">
+        <span class="nav-brand-text">HPR</span>
+        <span class="nav-brand-sub">Human Pattern Recorder</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="installation.html">Install</a></li>
+        <li><a href="platforms.html">Platforms</a></li>
+        <li><a href="comparison.html">vs ActivityWatch</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+      </ul>
+      <a href="https://github.com/plexescor/HPR" class="nav-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Source
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <section class="section">
+      <div class="container">
+        <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
+
+        <!-- Developer Warning Banner -->
+        <div class="callout callout--amber fade-in" style="margin-bottom: 32px; border-left-color: var(--accent-red); background-color: var(--accent-red-dim);">
+          <div class="callout-title" style="color: var(--accent-red); font-size: 0.85rem; font-weight: 700;">⚠️ Heads Up — Advanced Territory</div>
+          <p style="line-height: 1.7; font-size: 0.95rem; margin: 0; color: var(--text-secondary);">
+            This API is for developers with <strong>some</strong> C++ and Lua knowledge who want to push HPR beyond its defaults. You'll be reaching directly into the engine's guts — overriding how windows are named, how databases are queried, how notifications fire, and more. It's powerful stuff, and it's totally fine if you're still learning. Just know that overrides bypass normal safety checks, so double-check your return types and test things out before shipping.
+          </p>
+        </div>
+
+        <!-- Naming Convention Banner -->
+        <div class="callout callout--info fade-in" style="margin-bottom: 32px; border-left-width: 2px; padding: 16px 20px;">
+          <p style="font-size: 0.85rem; line-height: 1.6; margin: 0; color: var(--text-secondary);">
+            <strong>💡 Naming Convention Tip:</strong> Functions exposed <em>to</em> Lua via the standard API use an <code>_E</code> suffix (e.g., <code>getCurrentWindow_E</code>). Most override hooks target native C++ functions and do <strong>not</strong> have the <code>_E</code> suffix (e.g., <code>showNotification</code>, <code>getAlias</code>). However, some overrides targeting C++ extension helpers <strong>do</strong> keep their <code>_E</code> suffix (e.g., <code>getCurrentWindow_E</code>, <code>getLiveTimeLogPerApp_E</code>). Always double-check the exact key name.
+          </p>
+        </div>
+
+        <span class="section-label fade-in">Advanced API</span>
+        <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 24px;">Function Overriding API</h1>
+        <p class="section-desc fade-in" style="margin-bottom: 32px;">
+          The Function Overriding API lets your Lua extensions intercept and completely hijack core C++ functions inside the HPR engine. Define functions inside the <code>HPR.overrides</code> table in your <code>init()</code>, and the engine will call <em>your</em> code instead of (or before) the built-in C++ implementation. You control what goes in and what comes out.
+        </p>
+
+        <!-- ============================================================ -->
+        <!-- HOW IT WORKS                                                 -->
+        <!-- ============================================================ -->
+        <h2 style="margin-bottom: 24px; font-size: 1.8rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">How It Works</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          When an overridable C++ routine runs, it checks if any loaded extension has a matching key in the <code>HPR.overrides</code> table. If found, C++ serializes its parameters into a bridge type (<code>CppValue</code>), hands them off to your Lua function, and uses whatever you return to short-circuit the native path.
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
+          <strong>Return <code>nil</code></strong> from your override to let C++ continue normally (pass-through). <strong>Return any value</strong> to replace the C++ result entirely.
+        </p>
+
+        <div class="card fade-in" style="padding: 28px; width: 100%; margin-bottom: 48px; border-left: 3px solid var(--accent-amber);">
+          <div class="fn-signature">Boilerplate Template</div>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; font-size: 0.92rem;">
+            Every override extension starts the same way. Register your overrides inside <code>init()</code>:
+          </p>
+          <div class="code-block" style="margin: 0; width: 100%;">
+            <pre>HPR.authorName = <span class="code-string">"YourName"</span>
+HPR.extensionName = <span class="code-string">"MyOverrides"</span>
+
+<span class="code-keyword">function</span> <span class="code-fn">init</span>()
+    HPR.overrides = {}
+    
+    <span class="code-comment">-- Register your overrides here...</span>
+    HPR.overrides.someFunction = <span class="code-keyword">function</span>(arg1, arg2)
+        <span class="code-comment">-- Your logic</span>
+        <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- nil = let C++ handle it</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">return</span> 1000
+<span class="code-keyword">end</span></pre>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- WINDOW & TITLE OVERRIDES                                      -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🪟</span>
+          <h2>Window & Title</h2>
+          <span class="fn-count-badge">4 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 1. validateAndUpdateWindow_Cross -->
+          <div class="card fn-card fn-card--window fade-in" id="validateAndUpdateWindow_Cross">
+            <div class="fn-signature">validateAndUpdateWindow_Cross(windowName)</div>
+            <div class="fn-source">C++ → <code>src/window/validateAndUpdateWindow.cpp</code></div>
+            <p class="fn-desc">
+              This is the <strong>gatekeeper</strong> of window titles. Every single window title passes through this function before it gets processed, stored in the database, or shown in the UI. HPR normally strips junk like "explorer.exe", "shellhost", etc. — but with this override, <em>you</em> decide what gets through and what gets renamed. Want to rename "code" to "VS Code"? Want to silently drop tracking for certain apps? This is your hook.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>windowName</code> (string) — the raw window/app name</span>
+              <span><strong>Returns:</strong> string (modified title) or <code>nil</code> (pass-through)</span>
+            </div>
+            <div class="fn-example-label">Example — Rename apps &amp; block tracking for specific windows</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.validateAndUpdateWindow_Cross = <span class="code-keyword">function</span>(windowName)
+    <span class="code-comment">-- Rename "code" to something nicer</span>
+    <span class="code-keyword">if</span> windowName == <span class="code-string">"code"</span> <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"VS Code"</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Block tracking for private browsing</span>
+    <span class="code-keyword">if</span> windowName:<span class="code-fn">find</span>(<span class="code-string">"Incognito"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">""</span>  <span class="code-comment">-- empty string = HPR ignores it</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- everything else: let C++ handle it normally</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 2. showNotification -->
+          <div class="card fn-card fn-card--window fade-in" id="showNotification">
+            <div class="fn-signature">showNotification(title, message)</div>
+            <div class="fn-source">C++ → <code>src/window/windowUtilities.cpp</code></div>
+            <p class="fn-desc">
+              HPR sends desktop notifications through DBus (Linux) or WinToast (Windows) for events like tracking milestones, errors, etc. This override lets you <strong>intercept, modify, or completely suppress</strong> those notifications. Annoyed by a specific notification? Kill it. Want to log them instead of showing popups? Easy. Return any truthy value to block the native notification from firing.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>title</code> (string), <code>message</code> (string)</span>
+              <span><strong>Returns:</strong> any truthy value to suppress, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Suppress noisy notifications, log the rest</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.showNotification = <span class="code-keyword">function</span>(title, msg)
+    <span class="code-comment">-- Silence all milestone notifications</span>
+    <span class="code-keyword">if</span> title:<span class="code-fn">find</span>(<span class="code-string">"Milestone"</span>) <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Suppressed] "</span> .. title .. <span class="code-string">": "</span> .. msg)
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- blocks the desktop popup</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Let all other notifications through</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 3. getCurrentWindow_E -->
+          <div class="card fn-card fn-card--window fade-in" id="getCurrentWindow_E">
+            <div class="fn-signature">getCurrentWindow_E()</div>
+            <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
+            <p class="fn-desc">
+              Returns the name of the currently active window/application. Other extensions call <code>HPR.getCurrentWindow_E()</code> to figure out what app the user is in right now. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking and data storage. Overriding this will not affect core HPR database logs or UI tracking, but it will ensure that your overridden value is provided to any other extensions querying the active window.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> string (spoofed app name) or <code>nil</code> (real value)</span>
+            </div>
+            <div class="fn-example-label">Example — Spoof active app for other extensions</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getCurrentWindow_E = <span class="code-keyword">function</span>()
+    <span class="code-keyword">if</span> focusModeActive == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"Deep Work Mode"</span>  <span class="code-comment">-- other extensions will see this</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- off-hours: report real app</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 4. getCurrentTitle_E -->
+          <div class="card fn-card fn-card--window fade-in" id="getCurrentTitle_E">
+            <div class="fn-signature">getCurrentTitle_E()</div>
+            <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
+            <p class="fn-desc">
+              Returns the title/tab of the active window. Other extensions call <code>HPR.getCurrentTitle_E()</code> to retrieve the focused window's title. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking and data storage. Overriding this will not affect core HPR database logs or UI tracking, but it will ensure that your overridden value is provided to any other extensions querying the active title.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> string (spoofed title) or <code>nil</code> (real value)</span>
+            </div>
+            <div class="fn-example-label">Example — Redact sensitive titles for other extensions</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getCurrentTitle_E = <span class="code-keyword">function</span>()
+    <span class="code-keyword">return</span> <span class="code-string">"[Redacted]"</span>  <span class="code-comment">-- other extensions see this, but core HPR logs the real title</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ALIAS OVERRIDES                                               -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🏷️</span>
+          <h2>Alias Resolution</h2>
+          <span class="fn-count-badge">6 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 5. getAlias -->
+          <div class="card fn-card fn-card--alias fade-in" id="getAlias">
+            <div class="fn-signature">getAlias(rawName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              HPR uses an alias system to turn ugly process names like "firefox-esr" into pretty display names like "Firefox". This function is called every time HPR needs the display name for an <strong>application</strong>. Override it to create dynamic aliases — aliases that change based on time of day, or aliases that pull from an external config. Way more flexible than the static alias file.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>rawName</code> (string) — the raw process/app name</span>
+              <span><strong>Returns:</strong> string (custom alias) or <code>nil</code> (use built-in alias file)</span>
+            </div>
+            <div class="fn-example-label">Example — Dynamic app aliases</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getAlias = <span class="code-keyword">function</span>(rawName)
+    <span class="code-keyword">local</span> aliases = {
+        [<span class="code-string">"firefox-esr"</span>] = <span class="code-string">"Firefox"</span>,
+        [<span class="code-string">"chromium-browser"</span>] = <span class="code-string">"Chromium"</span>,
+        [<span class="code-string">"code"</span>] = <span class="code-string">"VS Code"</span>,
+        [<span class="code-string">"alacritty"</span>] = <span class="code-string">"Terminal"</span>,
+    }
+    <span class="code-keyword">return</span> aliases[rawName]  <span class="code-comment">-- nil if not in our table = C++ handles it</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 6. getAlias_Tab -->
+          <div class="card fn-card fn-card--alias fade-in" id="getAlias_Tab">
+            <div class="fn-signature">getAlias_Tab(rawName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              Same idea as <code>getAlias</code>, but for <strong>browser tab titles</strong>. HPR tracks individual tabs as separate entries, and this hook lets you rename them on the fly. Combine "YouTube - Video 1" and "YouTube - Video 2" into just "YouTube" to declutter your stats, or tag categories like "Social" for all social media tabs.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>rawName</code> (string) — the raw tab title</span>
+              <span><strong>Returns:</strong> string (custom alias) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Group all YouTube tabs together</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getAlias_Tab = <span class="code-keyword">function</span>(rawName)
+    <span class="code-keyword">if</span> rawName:<span class="code-fn">find</span>(<span class="code-string">"YouTube"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"YouTube"</span>  <span class="code-comment">-- collapse all YT tabs into one entry</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">if</span> rawName:<span class="code-fn">find</span>(<span class="code-string">"reddit"</span>) <span class="code-keyword">or</span> rawName:<span class="code-fn">find</span>(<span class="code-string">"Twitter"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"Social Media"</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 7. getAlias_Project -->
+          <div class="card fn-card fn-card--alias fade-in" id="getAlias_Project">
+            <div class="fn-signature">getAlias_Project(rawName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              Overrides alias lookup for <strong>project directories</strong>. HPR tracks which project folders you're working in (e.g., your IDE's active workspace). Raw directory names like "my-cool-project-v2-final" can be cleaned up here into something human-readable, or you can group multiple related repos under one umbrella name.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>rawName</code> (string) — the raw project/directory name</span>
+              <span><strong>Returns:</strong> string (custom alias) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Group related project folders</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getAlias_Project = <span class="code-keyword">function</span>(rawName)
+    <span class="code-comment">-- Group all HPR-related repos under one name</span>
+    <span class="code-keyword">if</span> rawName:<span class="code-fn">find</span>(<span class="code-string">"HPR"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"HPR Project"</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 8. getReverseAlias -->
+          <div class="card fn-card fn-card--alias fade-in" id="getReverseAlias">
+            <div class="fn-signature">getReverseAlias(aliasName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              The reverse of <code>getAlias</code> — given a <strong>display alias</strong>, resolve it back to the <strong>raw process name</strong>. HPR uses this internally when it needs to go from pretty names back to actual system identifiers (e.g., for database lookups). Override this if you've custom-mapped aliases and need the reverse mapping to stay consistent.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>aliasName</code> (string) — the display/alias name</span>
+              <span><strong>Returns:</strong> string (raw name) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Reverse lookup for custom aliases</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getReverseAlias = <span class="code-keyword">function</span>(aliasName)
+    <span class="code-keyword">local</span> reverse = {
+        [<span class="code-string">"VS Code"</span>] = <span class="code-string">"code"</span>,
+        [<span class="code-string">"Firefox"</span>] = <span class="code-string">"firefox-esr"</span>,
+        [<span class="code-string">"Terminal"</span>] = <span class="code-string">"alacritty"</span>,
+    }
+    <span class="code-keyword">return</span> reverse[aliasName]
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 9. getReverseAlias_Tab -->
+          <div class="card fn-card fn-card--alias fade-in" id="getReverseAlias_Tab">
+            <div class="fn-signature">getReverseAlias_Tab(aliasName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              Reverse alias lookup for <strong>browser tabs</strong>. If you've grouped tabs via <code>getAlias_Tab</code> (e.g., all YouTube videos → "YouTube"), this hook lets HPR resolve "YouTube" back to whatever raw title you want. Useful when other parts of the engine need the original title for comparison or display purposes.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>aliasName</code> (string) — the tab alias</span>
+              <span><strong>Returns:</strong> string (raw tab title) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Reverse tab alias</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getReverseAlias_Tab = <span class="code-keyword">function</span>(aliasName)
+    <span class="code-keyword">if</span> aliasName == <span class="code-string">"Social Media"</span> <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"reddit.com"</span>  <span class="code-comment">-- pick a representative raw name</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 10. getReverseAlias_Project -->
+          <div class="card fn-card fn-card--alias fade-in" id="getReverseAlias_Project">
+            <div class="fn-signature">getReverseAlias_Project(aliasName)</div>
+            <div class="fn-source">C++ → <code>src/miscellaneous/aliasManager.cpp</code></div>
+            <p class="fn-desc">
+              Reverse alias lookup for <strong>project directories</strong>. Given a display name like "HPR Project", resolve it back to the actual directory name. Keep this in sync with your <code>getAlias_Project</code> override so HPR doesn't get confused when doing reverse lookups.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>aliasName</code> (string) — the project alias</span>
+              <span><strong>Returns:</strong> string (raw folder name) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Reverse project alias</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getReverseAlias_Project = <span class="code-keyword">function</span>(aliasName)
+    <span class="code-keyword">if</span> aliasName == <span class="code-string">"HPR Project"</span> <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> <span class="code-string">"HPR"</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- DATABASE OVERRIDES                                            -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🗃️</span>
+          <h2>Database</h2>
+          <span class="fn-count-badge">6 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 11. dbQuery -->
+          <div class="card fn-card fn-card--db fade-in" id="dbQuery">
+            <div class="fn-signature">dbQuery(sql, params)</div>
+            <div class="fn-source">C++ → <code>src/database/databaseManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>SELECT queries</strong> going to the main active database. Every time an extension calls <code>HPR.dbQuery_E()</code>, this hook fires first. You can return fake/mock data, filter out sensitive rows, or redirect queries entirely. The return format is an array of tables, where each table is a row with column-name → value pairs.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>sql</code> (string), <code>params</code> (array of strings)</span>
+              <span><strong>Returns:</strong> array of {key=value} tables, or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Mock database results for testing</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.dbQuery = <span class="code-keyword">function</span>(sql, params)
+    <span class="code-comment">-- Intercept app_usage queries and return mock data</span>
+    <span class="code-keyword">if</span> sql:<span class="code-fn">find</span>(<span class="code-string">"app_usage"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> {
+            { name = <span class="code-string">"VS Code"</span>, duration = <span class="code-string">"7200000"</span> },
+            { name = <span class="code-string">"Firefox"</span>, duration = <span class="code-string">"3600000"</span> },
+        }
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- all other queries run normally</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 12. dbExecute -->
+          <div class="card fn-card fn-card--db fade-in" id="dbExecute">
+            <div class="fn-signature">dbExecute(sql, params)</div>
+            <div class="fn-source">C++ → <code>src/database/databaseManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>write operations</strong> — INSERT, UPDATE, DELETE, and any other non-SELECT SQL statements. This is a powerful safety net: you can block destructive writes, log all mutations for auditing, or conditionally prevent data from being recorded. Return any value to prevent the write from hitting the database.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>sql</code> (string), <code>params</code> (array of strings)</span>
+              <span><strong>Returns:</strong> any value to block the write, or <code>nil</code> to allow it</span>
+            </div>
+            <div class="fn-example-label">Example — Block DELETE statements as a safety guard</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.dbExecute = <span class="code-keyword">function</span>(sql, params)
+    <span class="code-comment">-- Never allow any DELETE operations</span>
+    <span class="code-keyword">if</span> sql:<span class="code-fn">upper</span>():<span class="code-fn">find</span>(<span class="code-string">"DELETE"</span>) <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[BLOCKED] Attempted DELETE: "</span> .. sql)
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- blocks the execution</span>
+    <span class="code-keyword">end</span>
+    
+    <span class="code-comment">-- Log all writes for auditing</span>
+    <span class="code-fn">print</span>(<span class="code-string">"[DB WRITE] "</span> .. sql)
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- let it through</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 13. dbQueryPath -->
+          <div class="card fn-card fn-card--db fade-in" id="dbQueryPath">
+            <div class="fn-signature">dbQueryPath(dbPath, sql, params)</div>
+            <div class="fn-source">C++ → <code>src/database/databaseManager.cpp</code></div>
+            <p class="fn-desc">
+              Like <code>dbQuery</code>, but for queries targeting a <strong>specific database file path</strong> rather than the main active database. Extensions can query arbitrary .db files on disk, and this hook lets you intercept those. Useful for mocking historical data or redirecting queries to a different database entirely.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>dbPath</code> (string), <code>sql</code> (string), <code>params</code> (array of strings)</span>
+              <span><strong>Returns:</strong> array of {key=value} tables, or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Redirect queries from one db to another</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.dbQueryPath = <span class="code-keyword">function</span>(dbPath, sql, params)
+    <span class="code-fn">print</span>(<span class="code-string">"[dbQueryPath] "</span> .. dbPath .. <span class="code-string">" → "</span> .. sql)
+    
+    <span class="code-comment">-- Block queries to databases outside HPR's data dir</span>
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> dbPath:<span class="code-fn">find</span>(<span class="code-string">"HPR"</span>) <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[BLOCKED] Query to external db!"</span>)
+        <span class="code-keyword">return</span> {}  <span class="code-comment">-- return empty results</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 14. dbQueryHistorical -->
+          <div class="card fn-card fn-card--db fade-in" id="dbQueryHistorical">
+            <div class="fn-signature">dbQueryHistorical(sql, params)</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts SELECT queries against the <strong>currently loaded historical database</strong>. When users view past data (e.g., "show me last Tuesday's stats"), HPR loads a historical .db file. This hook lets you mock historical data for testing, inject computed/aggregated values, or filter out rows you don't want displayed.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>sql</code> (string), <code>params</code> (array of strings)</span>
+              <span><strong>Returns:</strong> array of {key=value} tables, or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Inject fake historical data for demos</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.dbQueryHistorical = <span class="code-keyword">function</span>(sql, params)
+    <span class="code-comment">-- Return fake data for demo mode</span>
+    <span class="code-keyword">if</span> sql:<span class="code-fn">find</span>(<span class="code-string">"app_usage"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> {
+            { name = <span class="code-string">"Productivity Suite"</span>, duration = <span class="code-string">"14400000"</span> },
+            { name = <span class="code-string">"Research"</span>, duration = <span class="code-string">"10800000"</span> },
+            { name = <span class="code-string">"Communication"</span>, duration = <span class="code-string">"3600000"</span> },
+        }
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 15. getLoadedHistDbPath -->
+          <div class="card fn-card fn-card--db fade-in" id="getLoadedHistDbPath">
+            <div class="fn-signature">getLoadedHistDbPath()</div>
+            <div class="fn-source">C++ → <code>src/database/databaseManager.cpp</code></div>
+            <p class="fn-desc">
+              Returns the <strong>file path of the currently loaded historical database</strong>. Other extensions or internal code might use this to know which .db file is active for historical queries. Override this to spoof the path — useful for pointing the system at a custom database location or for testing purposes.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> string (spoofed path) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Point to a custom database file</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getLoadedHistDbPath = <span class="code-keyword">function</span>()
+    <span class="code-comment">-- Always report our custom test database</span>
+    <span class="code-keyword">return</span> <span class="code-string">"/home/user/.local/share/HPR/test_data/demo.db"</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 16. getDbPathForDate -->
+          <div class="card fn-card fn-card--db fade-in" id="getDbPathForDate">
+            <div class="fn-signature">getDbPathForDate(date)</div>
+            <div class="fn-source">C++ → <code>src/database/databaseManager.cpp</code></div>
+            <p class="fn-desc">
+              Resolves <strong>which .db file to use for a given date</strong>. HPR organizes data by date (e.g., <code>01-06-2026.db</code>) in month-based folders. Override this to implement custom database storage schemes — maybe you want all databases in one flat folder, or you want to redirect to a network-mounted path, or you're building a backup system.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>date</code> (string) — date in DD-MM-YYYY format</span>
+              <span><strong>Returns:</strong> string (custom file path) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Custom database storage scheme</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getDbPathForDate = <span class="code-keyword">function</span>(date)
+    <span class="code-comment">-- Store all databases in a flat directory</span>
+    <span class="code-keyword">return</span> <span class="code-string">"/mnt/nas/hpr-data/"</span> .. date .. <span class="code-string">".db"</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- LIVE TIME LOG OVERRIDES                                        -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">⏱️</span>
+          <h2>Live Time Logs</h2>
+          <span class="fn-count-badge">3 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 17. getLiveTimeLogPerApp_E -->
+          <div class="card fn-card fn-card--tracking fade-in" id="getLiveTimeLogPerApp_E">
+            <div class="fn-signature">getLiveTimeLogPerApp_E()</div>
+            <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
+            <p class="fn-desc">
+              Returns a table mapping <strong>application names → tracked duration in milliseconds</strong> for the current live session. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live application time logs.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> table {appName = milliseconds, ...} or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Merge apps into categories for other extensions</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getLiveTimeLogPerApp_E = <span class="code-keyword">function</span>()
+    <span class="code-comment">-- Return custom merged categories</span>
+    <span class="code-keyword">return</span> {
+        [<span class="code-string">"Coding"</span>] = 7200000,       <span class="code-comment">-- 2 hours</span>
+        [<span class="code-string">"Browsing"</span>] = 3600000,     <span class="code-comment">-- 1 hour</span>
+        [<span class="code-string">"Communication"</span>] = 1800000, <span class="code-comment">-- 30 min</span>
+    }
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 18. getLiveTimeLogPerTab_E -->
+          <div class="card fn-card fn-card--tracking fade-in" id="getLiveTimeLogPerTab_E">
+            <div class="fn-signature">getLiveTimeLogPerTab_E()</div>
+            <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
+            <p class="fn-desc">
+              Returns a table mapping <strong>browser tab titles → tracked duration in milliseconds</strong>. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live browser tab time logs.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> table {tabTitle = milliseconds, ...} or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Filter out boring tabs for other extensions</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getLiveTimeLogPerTab_E = <span class="code-keyword">function</span>()
+    <span class="code-comment">-- Only report tabs with meaningful time</span>
+    <span class="code-keyword">return</span> {
+        [<span class="code-string">"GitHub"</span>] = 5400000,
+        [<span class="code-string">"Stack Overflow"</span>] = 2700000,
+    }
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 19. getLiveTimeLogPerProject_E -->
+          <div class="card fn-card fn-card--tracking fade-in" id="getLiveTimeLogPerProject_E">
+            <div class="fn-signature">getLiveTimeLogPerProject_E()</div>
+            <div class="fn-source">C++ → <code>src/extension/window_E.cpp</code></div>
+            <p class="fn-desc">
+              Returns a table mapping <strong>project directories → tracked duration in milliseconds</strong>. <strong>Note:</strong> HPR's core engine does not rely on this function for its own tracking, database logs, or UI rendering. Overriding this will not affect the main HPR application stats, but it will ensure that your overridden value is returned to other extensions that query the live project time logs.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> table {projectName = milliseconds, ...} or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Consolidate monorepo sub-projects for other extensions</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getLiveTimeLogPerProject_E = <span class="code-keyword">function</span>()
+    <span class="code-keyword">return</span> {
+        [<span class="code-string">"HPR (all repos)"</span>] = 14400000,  <span class="code-comment">-- 4 hours combined</span>
+        [<span class="code-string">"Side Projects"</span>] = 3600000,
+    }
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- NETWORK OVERRIDES                                             -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🌐</span>
+          <h2>Network (HTTP)</h2>
+          <span class="fn-count-badge">2 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 20. httpGet -->
+          <!-- <div class="card fn-card fn-card--network fade-in" id="httpGet">
+            <div class="fn-signature">httpGet(host, path, secure, headers)</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>outgoing HTTP GET requests</strong> made by other extensions via <code>HPR.httpGet_E()</code>. This is incredibly useful for testing: return spoofed API responses without hitting the network. You can also use this as a firewall — block requests to domains you don't trust, or log every outgoing request for auditing. Return a table with <code>body</code> (string) and <code>status</code> (number) fields.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>secure</code> (bool), <code>headers</code> (table)</span>
+              <span><strong>Returns:</strong> <code>{body = "...", status = 200}</code> or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Mock API responses for offline development</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.httpGet = <span class="code-keyword">function</span>(host, path, secure, headers)
+    <span class="code-comment">-- Mock the weather API so extensions work offline</span>
+    <span class="code-keyword">if</span> host:<span class="code-fn">find</span>(<span class="code-string">"api.weather"</span>) <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> {
+            body = <span class="code-string">'{"temp": 22, "condition": "sunny"}'</span>,
+            status = 200
+        }
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Block requests to unknown domains</span>
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> host:<span class="code-fn">find</span>(<span class="code-string">"github"</span>) <span class="code-keyword">and</span> <span class="code-keyword">not</span> host:<span class="code-fn">find</span>(<span class="code-string">"hpr"</span>) <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[FIREWALL] Blocked GET → "</span> .. host)
+        <span class="code-keyword">return</span> { body = <span class="code-string">""</span>, status = 403 }
+    <span class="code-keyword">end</span>
+
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- allow the real request</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div> -->
+
+          <!-- 21. httpPost
+          <div class="card fn-card fn-card--network fade-in" id="httpPost">
+            <div class="fn-signature">httpPost(host, path, body, secure, headers)</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>outgoing HTTP POST requests</strong>. Same idea as <code>httpGet</code>, but for POST calls. Extensions that sync data to external services, send webhooks, or post analytics all pass through here. Great for building a "dry run" mode where nothing actually leaves your machine, or for capturing exactly what payload an extension is sending.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>body</code> (string), <code>secure</code> (bool), <code>headers</code> (table)</span>
+              <span><strong>Returns:</strong> <code>{body = "...", status = 200}</code> or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Dry-run mode: log all outgoing POSTs</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.httpPost = <span class="code-keyword">function</span>(host, path, body, secure, headers)
+    <span class="code-fn">print</span>(<span class="code-string">"[DRY RUN] POST → "</span> .. host .. path)
+    <span class="code-fn">print</span>(<span class="code-string">"  Body: "</span> .. body)
+
+    <span class="code-comment">-- Pretend it succeeded without actually sending</span>
+    <span class="code-keyword">return</span> {
+        body = <span class="code-string">'{"ok": true}'</span>,
+        status = 200
+    }
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div> -->
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRACKING CONTROL OVERRIDES                                    -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">⏯️</span>
+          <h2>Tracking Control</h2>
+          <span class="fn-count-badge">2 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 22. stopTracking -->
+          <div class="card fn-card fn-card--tracking fade-in" id="stopTracking">
+            <div class="fn-signature">stopTracking()</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Called when something tells HPR to <strong>pause window tracking</strong>. This might be triggered by the user clicking "Pause" in the UI, or by another extension calling <code>HPR.stopTracking_E()</code>. Override this to prevent tracking from being paused — maybe you want to force continuous tracking during work hours, or add a confirmation step before pausing. Return any value to block the pause.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> any value to block the pause, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Prevent pausing if a custom flag is active</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.stopTracking = <span class="code-keyword">function</span>()
+    <span class="code-keyword">if</span> preventPausing == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Override] Pausing is currently blocked!"</span>)
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- blocks the pause</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- allow pausing</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 23. startTracking -->
+          <div class="card fn-card fn-card--tracking fade-in" id="startTracking">
+            <div class="fn-signature">startTracking()</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Called when something tells HPR to <strong>resume window tracking</strong>. The counterpart to <code>stopTracking</code>. Override this if you want to conditionally block tracking from resuming — for instance, keeping tracking paused on weekends, or only allowing it to resume after a specific condition is met. Return any value to block the resume.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> any value to block the resume, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Block tracking from resuming if a custom flag is active</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.startTracking = <span class="code-keyword">function</span>()
+    <span class="code-keyword">if</span> blockResume == <span class="code-keyword">true</span> <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Override] Resuming tracking is blocked."</span>)
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- keeps tracking paused</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- UI OVERRIDES                                                  -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🎨</span>
+          <h2>UI (Slint Interface)</h2>
+          <span class="fn-count-badge">2 functions</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
+
+          <!-- 24. setUiProperty -->
+          <div class="card fn-card fn-card--ui fade-in" id="setUiProperty">
+            <div class="fn-signature">setUiProperty(name, value)</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts calls to <strong>update a Slint UI property</strong>. When any extension calls <code>HPR.setUiProperty_E("propertyName", value)</code>, this hook fires first. You can block specific property updates, transform the values before they reach the UI, or redirect them entirely. This is how you hijack the visual layer — change colors, text, visibility, or any UI state before it renders.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>name</code> (string), <code>value</code> (any — string/number/bool/table)</span>
+              <span><strong>Returns:</strong> any value to block the update, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Block sensitive UI updates</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.setUiProperty = <span class="code-keyword">function</span>(name, value)
+    <span class="code-comment">-- Prevent any extension from changing the title bar</span>
+    <span class="code-keyword">if</span> name:<span class="code-fn">find</span>(<span class="code-string">"title"</span>) <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Blocked] UI title change to: "</span> .. <span class="code-fn">tostring</span>(value))
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-comment">-- Log all UI updates for debugging</span>
+    <span class="code-fn">print</span>(<span class="code-string">"[UI] "</span> .. name .. <span class="code-string">" = "</span> .. <span class="code-fn">tostring</span>(value))
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 25. registerUiCallback -->
+          <div class="card fn-card fn-card--ui fade-in" id="registerUiCallback">
+            <div class="fn-signature">registerUiCallback(name)</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>UI callback registrations</strong>. When an extension tries to bind a Lua function to a Slint UI action (like a button click or slider change), this hook fires with the callback name. You can block specific registrations to prevent extensions from hooking into certain UI actions, or log them for debugging. Return any value to block the registration.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>name</code> (string) — the callback/action name being registered</span>
+              <span><strong>Returns:</strong> any value to block registration, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Whitelist allowed UI callbacks</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.registerUiCallback = <span class="code-keyword">function</span>(name)
+    <span class="code-keyword">local</span> allowed = {
+        [<span class="code-string">"on-refresh-clicked"</span>] = <span class="code-keyword">true</span>,
+        [<span class="code-string">"on-date-changed"</span>] = <span class="code-keyword">true</span>,
+    }
+    
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> allowed[name] <span class="code-keyword">then</span>
+        <span class="code-fn">print</span>(<span class="code-string">"[Blocked] Callback registration: "</span> .. name)
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- UTILITY OVERRIDES                                             -->
+        <!-- ============================================================ -->
+        <div class="section-divider fade-in">
+          <span class="section-divider-emoji">🔧</span>
+          <h2>Utilities</h2>
+          <span class="fn-count-badge">1 function</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 64px;">
+
+          <!-- 26. getTime_MS -->
+          <div class="card fn-card fn-card--utility fade-in" id="getTime_MS">
+            <div class="fn-signature">getTime_MS()</div>
+            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <p class="fn-desc">
+              Returns the <strong>current system time in milliseconds</strong> (epoch). HPR and extensions use this for timestamping events, calculating durations, and scheduling. Override this to <strong>mock time</strong> — the holy grail for testing. You can freeze time, accelerate it, or set it to any specific moment. Every part of the engine that asks "what time is it?" will get your answer instead.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> none</span>
+              <span><strong>Returns:</strong> number (milliseconds since epoch) or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Toggle between real and frozen time</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.getTime_MS = <span class="code-keyword">function</span>()
+    <span class="code-comment">-- Use a flag to toggle between real time and a mock timestamp</span>
+    <span class="code-keyword">if</span> HPR.useMockTime <span class="code-keyword">then</span>
+        <span class="code-keyword">return</span> 1767225600000 <span class="code-comment">-- Frozen at Jan 1, 2026</span>
+    <span class="code-keyword">end</span>
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span> <span class="code-comment">-- Default to system time</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- QUICK REFERENCE TABLE                                         -->
+        <!-- ============================================================ -->
+        <h2 style="margin-bottom: 24px; font-size: 1.5rem; border-bottom: 1px solid var(--border-primary); padding-bottom: 12px;">Quick Reference</h2>
+        <div class="card fade-in" style="padding: 24px; width: 100%; margin-bottom: 64px; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-primary); text-align: left;">
+                <th style="padding: 8px 12px; color: var(--text-primary);">#</th>
+                <th style="padding: 8px 12px; color: var(--text-primary);">Override Key</th>
+                <th style="padding: 8px 12px; color: var(--text-primary);">Params</th>
+                <th style="padding: 8px 12px; color: var(--text-primary);">Returns</th>
+                <th style="padding: 8px 12px; color: var(--text-primary);">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">1</td><td style="padding: 6px 12px;"><code><a href="#validateAndUpdateWindow_Cross" style="color:var(--accent-green);">validateAndUpdateWindow_Cross</a></code></td><td style="padding: 6px 12px;">windowName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Window</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">2</td><td style="padding: 6px 12px;"><code><a href="#showNotification" style="color:var(--accent-green);">showNotification</a></code></td><td style="padding: 6px 12px;">title, message</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Window</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">3</td><td style="padding: 6px 12px;"><code><a href="#getCurrentWindow_E" style="color:var(--accent-green);">getCurrentWindow_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Window</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">4</td><td style="padding: 6px 12px;"><code><a href="#getCurrentTitle_E" style="color:var(--accent-green);">getCurrentTitle_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Window</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">5</td><td style="padding: 6px 12px;"><code><a href="#getAlias" style="color:var(--accent-amber);">getAlias</a></code></td><td style="padding: 6px 12px;">rawName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">6</td><td style="padding: 6px 12px;"><code><a href="#getAlias_Tab" style="color:var(--accent-amber);">getAlias_Tab</a></code></td><td style="padding: 6px 12px;">rawName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">7</td><td style="padding: 6px 12px;"><code><a href="#getAlias_Project" style="color:var(--accent-amber);">getAlias_Project</a></code></td><td style="padding: 6px 12px;">rawName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">8</td><td style="padding: 6px 12px;"><code><a href="#getReverseAlias" style="color:var(--accent-amber);">getReverseAlias</a></code></td><td style="padding: 6px 12px;">aliasName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">9</td><td style="padding: 6px 12px;"><code><a href="#getReverseAlias_Tab" style="color:var(--accent-amber);">getReverseAlias_Tab</a></code></td><td style="padding: 6px 12px;">aliasName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">10</td><td style="padding: 6px 12px;"><code><a href="#getReverseAlias_Project" style="color:var(--accent-amber);">getReverseAlias_Project</a></code></td><td style="padding: 6px 12px;">aliasName</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Alias</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">11</td><td style="padding: 6px 12px;"><code><a href="#dbQuery" style="color:var(--accent-cyan);">dbQuery</a></code></td><td style="padding: 6px 12px;">sql, params</td><td style="padding: 6px 12px;">array | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">12</td><td style="padding: 6px 12px;"><code><a href="#dbExecute" style="color:var(--accent-cyan);">dbExecute</a></code></td><td style="padding: 6px 12px;">sql, params</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">13</td><td style="padding: 6px 12px;"><code><a href="#dbQueryPath" style="color:var(--accent-cyan);">dbQueryPath</a></code></td><td style="padding: 6px 12px;">dbPath, sql, params</td><td style="padding: 6px 12px;">array | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">14</td><td style="padding: 6px 12px;"><code><a href="#dbQueryHistorical" style="color:var(--accent-cyan);">dbQueryHistorical</a></code></td><td style="padding: 6px 12px;">sql, params</td><td style="padding: 6px 12px;">array | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">15</td><td style="padding: 6px 12px;"><code><a href="#getLoadedHistDbPath" style="color:var(--accent-cyan);">getLoadedHistDbPath</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">16</td><td style="padding: 6px 12px;"><code><a href="#getDbPathForDate" style="color:var(--accent-cyan);">getDbPathForDate</a></code></td><td style="padding: 6px 12px;">date</td><td style="padding: 6px 12px;">string | nil</td><td style="padding: 6px 12px;">Database</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">17</td><td style="padding: 6px 12px;"><code><a href="#getLiveTimeLogPerApp_E" style="color:var(--accent-lime);">getLiveTimeLogPerApp_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">table | nil</td><td style="padding: 6px 12px;">Time Log</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">18</td><td style="padding: 6px 12px;"><code><a href="#getLiveTimeLogPerTab_E" style="color:var(--accent-lime);">getLiveTimeLogPerTab_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">table | nil</td><td style="padding: 6px 12px;">Time Log</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">19</td><td style="padding: 6px 12px;"><code><a href="#getLiveTimeLogPerProject_E" style="color:var(--accent-lime);">getLiveTimeLogPerProject_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">table | nil</td><td style="padding: 6px 12px;">Time Log</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">20</td><td style="padding: 6px 12px;"><code><a href="#httpGet" style="color:var(--accent-purple);">httpGet</a></code></td><td style="padding: 6px 12px;">host, path, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">21</td><td style="padding: 6px 12px;"><code><a href="#httpPost" style="color:var(--accent-purple);">httpPost</a></code></td><td style="padding: 6px 12px;">host, path, body, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">22</td><td style="padding: 6px 12px;"><code><a href="#stopTracking" style="color:var(--accent-lime);">stopTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">23</td><td style="padding: 6px 12px;"><code><a href="#startTracking" style="color:var(--accent-lime);">startTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">24</td><td style="padding: 6px 12px;"><code><a href="#setUiProperty" style="color:#f472b6;">setUiProperty</a></code></td><td style="padding: 6px 12px;">name, value</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">25</td><td style="padding: 6px 12px;"><code><a href="#registerUiCallback" style="color:#f472b6;">registerUiCallback</a></code></td><td style="padding: 6px 12px;">name</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
+              <tr><td style="padding: 6px 12px;">26</td><td style="padding: 6px 12px;"><code><a href="#getTime_MS" style="color:#fbbf24;">getTime_MS</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">number | nil</td><td style="padding: 6px 12px;">Utility</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-middle">
+          <a href="no-access.html">No Access</a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/plexescor/HPR" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://ko-fi.com/plexescor" target="_blank" rel="noopener">Ko-fi</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="installation.html">Install</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+
+</html>

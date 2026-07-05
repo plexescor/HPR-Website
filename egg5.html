@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compile Hero — HPR</title>
+  <link rel="icon" type="image/png" href="assets/logo_256png.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .ui-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .menu-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-primary);
+      padding: 48px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .menu-box h1 {
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+    }
+
+    .game-container {
+      display: none;
+      flex: 1;
+      position: relative;
+      background: #000;
+      justify-content: center;
+    }
+
+    canvas {
+      background: #111;
+      border-left: 2px solid var(--border-primary);
+      border-right: 2px solid var(--border-primary);
+    }
+
+    .hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .health-bar-container {
+      width: 300px;
+      height: 20px;
+      background: #333;
+      border: 2px solid #555;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .health-bar {
+      height: 100%;
+      background: #3ddc84;
+      width: 100%;
+      transition: width 0.1s, background-color 0.2s;
+    }
+
+    #result-screen {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #result-screen h1 {
+      font-family: var(--font-mono);
+      margin-bottom: 20px;
+    }
+
+    #result-screen p {
+      font-size: 20px;
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Menu -->
+  <div class="ui-container" id="menu">
+    <div class="menu-box">
+      <h1>Compile Hero</h1>
+      <p style="margin-bottom: 30px; color: var(--text-secondary);">Select the software you wish to compile.<br>Use Z,
+        X, N, M to hit notes.</p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-direction: column;">
+        <div style="display: flex; gap: 16px; justify-content: center;">
+          <button class="btn btn--primary" id="btn-hpr">Compile HPR</button>
+          <button class="btn btn--ghost" id="btn-aw" style="color: #f1c40f; border-color: #f1c40f;">Compile
+            ActivityWatch</button>
+        </div>
+        <button class="btn btn--ghost" id="btn-rushe"
+          style="color: #e74c3c; border-color: #e74c3c; font-size: 12px; padding: 12px;">Compile ActivityWatch, its
+          dependencies, and its dependencies' dependencies (RUSH-E)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div class="game-container" id="game">
+    <div class="hud">
+      <div>
+        <div style="margin-bottom: 8px;">System Integrity</div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="health-bar"></div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <button id="btn-bot" class="btn btn--ghost"
+          style="pointer-events: auto; padding: 4px 8px; font-size: 14px; margin-bottom: 8px; border-color: #555; color: #aaa;">Bot:
+          OFF</button>
+        <div style="color: var(--accent-cyan);">Dependencies Left</div>
+        <div id="dep-counter" style="font-size: 32px; font-weight: bold;">100</div>
+      </div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="800"></canvas>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen">
+    <h1 id="result-title">Title</h1>
+    <p id="result-desc">Desc</p>
+    <button id="result-btn" class="btn btn--primary" onclick="location.reload()">Return to Setup</button>
+  </div>
+
+  <script>
+    const menu = document.getElementById('menu');
+    const gameDiv = document.getElementById('game');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const resultScreen = document.getElementById('result-screen');
+    const resultBtn = document.getElementById('result-btn');
+    const healthBar = document.getElementById('health-bar');
+    const depCounter = document.getElementById('dep-counter');
+
+    let mode = '';
+    let audioCtx;
+    let reqId;
+    let lastTime = 0;
+
+    // Game State
+    let health = 100;
+    let totalNotes = 0;
+    let notesLeft = 0;
+    let unspawnedNotes = 0;
+    let notes = [];
+    let explosions = [];
+    let isGameOver = false;
+    let laneKeys = [false, false, false, false];
+    let timeSinceLastSpawn = 0;
+    let spawnInterval = 1000;
+    let gameTime = 0;
+    let botEnabled = false;
+
+    const btnBot = document.getElementById('btn-bot');
+    btnBot.addEventListener('click', () => {
+      botEnabled = !botEnabled;
+      btnBot.innerText = botEnabled ? 'Bot: ON' : 'Bot: OFF';
+      btnBot.style.color = botEnabled ? '#3ddc84' : '#aaa';
+      btnBot.style.borderColor = botEnabled ? '#3ddc84' : '#555';
+    });
+
+    // Melody sequences (actual frequencies in Hz)
+    const hprMelody = (() => {
+      let arr = [];
+      const phrase1 = [440.00, 493.88, 587.33, 493.88, 739.99, 739.99, 659.25];
+      const phrase2 = [440.00, 493.88, 587.33, 493.88, 659.25, 659.25, 587.33, 554.37, 493.88];
+      const phrase3 = [440.00, 493.88, 587.33, 493.88, 587.33, 659.25, 554.37, 440.00, 440.00, 659.25, 587.33];
+      // Build 400 notes of structure
+      while (arr.length < 500) {
+        arr.push(...phrase1, ...phrase2, ...phrase1, ...phrase3);
+      }
+      return arr;
+    })();
+
+    const awMelody = (() => {
+      let arr = [];
+      const riff1 = [293.66, 293.66, 587.33, 440.00, 415.30, 392.00, 349.23, 293.66, 349.23, 392.00];
+      const riff2 = [261.63, 261.63, 587.33, 440.00, 415.30, 392.00, 349.23, 293.66, 349.23, 392.00];
+      const riff3 = [246.94, 246.94, 587.33, 440.00, 415.30, 392.00, 349.23, 293.66, 349.23, 392.00];
+      const riff4 = [233.08, 233.08, 587.33, 440.00, 415.30, 392.00, 349.23, 293.66, 349.23, 392.00];
+      const highRiff = [587.33, 587.33, 1174.66, 880.00, 830.61, 783.99, 698.46, 587.33, 698.46, 783.99];
+      while (arr.length < 700) {
+        for (let i = 0; i < 4; i++) arr.push(...riff1, ...riff2, ...riff3, ...riff4);
+        for (let i = 0; i < 2; i++) arr.push(...highRiff, ...highRiff, ...highRiff, ...highRiff);
+      }
+      return arr;
+    })();
+
+    const rushEMelody = (() => {
+      let arr = [];
+      const A3 = 220.00, C4 = 261.63, E4 = 329.63;
+      const A4 = 440.00, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99, A5 = 880.00;
+
+      const bassSpam = [A3, E4, A3, E4, C4, E4, C4, E4];
+      const melody1 = [E5, D5, C5, D5, E5, E5, E5, E5]; // Iconic Rush E riff
+      const melody2 = [E5, D5, C5, B4, A4, B4, C5, D5];
+      const scaleUp = [A4, B4, C5, D5, E5, F5, G5, A5];
+      const scaleDown = [...scaleUp].reverse();
+
+      while (arr.length < 3200) {
+        // Fast alternating E octaves to simulate the impossible spam but spread across lanes
+        for (let i = 0; i < 8; i++) arr.push(E4, E5, E4, E5, E4, E5, E4, E5);
+        arr.push(...scaleUp, ...scaleDown);
+        for (let i = 0; i < 4; i++) arr.push(...melody1);
+        arr.push(...scaleUp, ...scaleUp);
+        for (let i = 0; i < 4; i++) arr.push(...melody2);
+        for (let i = 0; i < 4; i++) arr.push(...bassSpam);
+      }
+      return arr;
+    })();
+
+    let uniqueFreqs = {};
+    uniqueFreqs['hpr'] = [...new Set(hprMelody)].sort((a, b) => a - b);
+    uniqueFreqs['aw'] = [...new Set(awMelody)].sort((a, b) => a - b);
+    uniqueFreqs['rushe'] = [...new Set(rushEMelody)].sort((a, b) => a - b);
+
+    function getLaneForFreq(freq, mode) {
+      let arr = uniqueFreqs[mode];
+      let idx = arr.indexOf(freq);
+      if (arr.length <= 4) return Math.min(3, idx);
+      return Math.floor((idx / arr.length) * 4);
+    }
+
+    let spawnIndex = 0;
+
+    // Lane positions
+    const laneColors = ['#e74c3c', '#f1c40f', '#3ddc84', '#56c8d8'];
+    const laneX = [50, 150, 250, 350];
+    const hitY = 700;
+
+    function playTone(freq, isBad = false) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      if (isBad) {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(50, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      } else {
+        osc.type = mode === 'hpr' ? 'triangle' : 'square';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      }
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.5);
+    }
+
+    function startGame(selectedMode) {
+      if (reqId) cancelAnimationFrame(reqId);
+
+      mode = selectedMode;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      menu.style.display = 'none';
+      gameDiv.style.display = 'flex';
+
+      health = 100;
+      notes = [];
+      explosions = [];
+      isGameOver = false;
+      gameTime = 0;
+      spawnIndex = 0;
+
+      if (mode === 'hpr') {
+        totalNotes = 250;
+        spawnInterval = 500; // Normal predictable speed
+      } else if (mode === 'aw') {
+        totalNotes = 800;
+        spawnInterval = 350; // Greatly nerfed spawn rate
+      } else {
+        totalNotes = 3000; // Insanity
+        spawnInterval = 40; // Machine gun
+      }
+      notesLeft = totalNotes;
+      unspawnedNotes = totalNotes;
+      updateUI();
+
+      lastTime = performance.now();
+      reqId = requestAnimationFrame(loop);
+    }
+
+    document.getElementById('btn-hpr').addEventListener('click', () => startGame('hpr'));
+    document.getElementById('btn-aw').addEventListener('click', () => startGame('aw'));
+    document.getElementById('btn-rushe').addEventListener('click', () => startGame('rushe'));
+
+    // Input Handling
+    window.addEventListener('keydown', e => {
+      if (isGameOver) return;
+      let lane = -1;
+      if (e.key === 'z' || e.key === 'Z') lane = 0;
+      if (e.key === 'x' || e.key === 'X') lane = 1;
+      if (e.key === 'n' || e.key === 'N') lane = 2;
+      if (e.key === 'm' || e.key === 'M') lane = 3;
+
+      if (lane !== -1 && !laneKeys[lane]) {
+        laneKeys[lane] = true;
+        checkHit(lane);
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      let lane = -1;
+      if (e.key === 'z' || e.key === 'Z') lane = 0;
+      if (e.key === 'x' || e.key === 'X') lane = 1;
+      if (e.key === 'n' || e.key === 'N') lane = 2;
+      if (e.key === 'm' || e.key === 'M') lane = 3;
+      if (lane !== -1) laneKeys[lane] = false;
+    });
+
+    function checkHit(lane) {
+      // Find note in lane closest to hitY
+      let hitRange = 60;
+      let closestNote = null;
+      let closestDist = 999;
+      let noteIndex = -1;
+
+      for (let i = 0; i < notes.length; i++) {
+        let n = notes[i];
+        if (n.lane === lane && n.y > hitY - hitRange && n.y < hitY + hitRange) {
+          let dist = Math.abs(n.y - hitY);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestNote = n;
+            noteIndex = i;
+          }
+        }
+      }
+
+      if (closestNote) {
+        if (closestNote.isBad) {
+          triggerExplosion(closestNote);
+          notes.splice(noteIndex, 1);
+        } else {
+          // Good hit
+          playTone(closestNote.freq);
+          health = Math.min(100, health + 2);
+          notesLeft--;
+          notes.splice(noteIndex, 1);
+          createHitVfx(closestNote.lane);
+          updateUI();
+          if (notesLeft <= 0) winGame();
+        }
+      }
+    }
+
+    function triggerExplosion(bombNote) {
+      playTone(0, true);
+
+      // Explosion Visuals
+      explosions.push({ x: laneX[bombNote.lane], y: bombNote.y, life: 1.0 });
+
+      // Destroy nearby notes (chaotic destruction)
+      let radius = 250;
+      notes = notes.filter(n => {
+        let dist = Math.hypot(laneX[n.lane] - laneX[bombNote.lane], n.y - bombNote.y);
+        if (dist < radius) {
+          if (!n.isBad && n.y < hitY) notesLeft--; // You lose these dependencies
+          return false;
+        }
+        return true;
+      });
+
+      health -= 25;
+      updateUI();
+
+      // Flash screen red
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (health <= 0) loseGame("A corrupt package exploded your system.");
+      else if (notesLeft <= 0) winGame();
+    }
+
+    function createHitVfx(lane) {
+      explosions.push({ x: laneX[lane], y: hitY, life: 0.5, isGood: true, lane: lane });
+    }
+
+    let lastHprLane = 0;
+
+    function loop(time) {
+      if (isGameOver) return;
+      let dt = time - lastTime;
+      lastTime = time;
+      gameTime += dt;
+
+      // Spawn Logic - precise rhythmic spacing
+      timeSinceLastSpawn += dt;
+      while (timeSinceLastSpawn >= spawnInterval && unspawnedNotes > 0) {
+        timeSinceLastSpawn -= spawnInterval;
+        let melody = mode === 'hpr' ? hprMelody : (mode === 'aw' ? awMelody : rushEMelody);
+
+        let freq = melody[spawnIndex % melody.length];
+        let lane = getLaneForFreq(freq, mode);
+        let speed = 0;
+
+        if (mode === 'hpr') {
+          speed = 0.35; // Slow, relaxed
+        } else if (mode === 'aw') {
+          speed = 0.45; // All notes must fall at the exact same speed
+        } else {
+          // RUSH E
+          speed = 0.6; // Extremely fast
+        }
+
+        notes.push({
+          lane: lane,
+          y: -50 - (timeSinceLastSpawn * speed), // Interpolate Y for perfect visual spacing
+          speed: speed,
+          isBad: false,
+          freq: freq,
+          name: mode === 'hpr' ? 'hpr.exe' : 'dep'
+        });
+
+        spawnIndex++;
+        unspawnedNotes--;
+      }
+
+      update(dt);
+      draw();
+
+      reqId = requestAnimationFrame(loop);
+    }
+
+    function update(dt) {
+      // Move notes
+      for (let i = notes.length - 1; i >= 0; i--) {
+        let n = notes[i];
+        n.y += n.speed * dt;
+
+        // Random chance for bad package to explode mid-air in AW mode
+        if (n.isBad && n.y > 100 && Math.random() < 0.005) {
+          triggerExplosion(n);
+          continue;
+        }
+
+        if (n.y > canvas.height + 50) {
+          // Missed note
+          if (!n.isBad) {
+            health -= (mode === 'hpr' ? 10 : 2); // HPR misses hurt more because they are easy
+            notesLeft--; // Counts as consumed but failed
+          }
+          notes.splice(i, 1);
+          updateUI();
+
+          if (health <= 0) {
+            loseGame("Health depleted due to missing dependencies.");
+            return;
+          }
+          if (notesLeft <= 0) {
+            winGame();
+            return;
+          }
+        }
+      }
+
+      // Bot Logic
+      if (botEnabled && !isGameOver) {
+        for (let i = 0; i < notes.length; i++) {
+          let n = notes[i];
+          if (!n.isBad && n.y >= hitY - 15 && n.y <= hitY + 15) {
+            let lane = n.lane;
+            laneKeys[lane] = true;
+            checkHit(lane);
+            setTimeout(() => { laneKeys[lane] = false; }, 100);
+          }
+        }
+      }
+
+      // Update explosions
+      for (let i = explosions.length - 1; i >= 0; i--) {
+        explosions[i].life -= dt * 0.002;
+        if (explosions[i].life <= 0) explosions.splice(i, 1);
+      }
+    }
+
+    function updateUI() {
+      if (health < 0) health = 0;
+      healthBar.style.width = health + '%';
+      if (health > 50) healthBar.style.backgroundColor = '#3ddc84';
+      else if (health > 20) healthBar.style.backgroundColor = '#f1c40f';
+      else healthBar.style.backgroundColor = '#e74c3c';
+
+      depCounter.innerText = Math.max(0, notesLeft);
+    }
+
+    function draw() {
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Hit Zone
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, hitY - 30, canvas.width, 60);
+
+      // Draw Lane markers
+      for (let i = 0; i < 4; i++) {
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(laneX[i], 0);
+        ctx.lineTo(laneX[i], canvas.height);
+        ctx.stroke();
+
+        // Hit indicator
+        if (laneKeys[i]) {
+          ctx.fillStyle = laneColors[i];
+          ctx.beginPath();
+          ctx.arc(laneX[i], hitY, 30, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = laneColors[i];
+          ctx.beginPath();
+          ctx.arc(laneX[i], hitY, 30, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      // Draw Notes
+      ctx.textAlign = 'center';
+      ctx.font = '10px monospace';
+      for (let n of notes) {
+        if (n.isBad) {
+          ctx.fillStyle = '#e74c3c';
+          ctx.fillRect(laneX[n.lane] - 30, n.y - 15, 60, 30);
+          ctx.fillStyle = '#000';
+          ctx.fillText("BOMB", laneX[n.lane], n.y + 4);
+        } else {
+          ctx.fillStyle = laneColors[n.lane];
+          ctx.fillRect(laneX[n.lane] - 25, n.y - 10, 50, 20);
+          ctx.fillStyle = '#000';
+          ctx.fillText(mode === 'hpr' ? 'hpr.exe' : 'dep', laneX[n.lane], n.y + 3);
+        }
+      }
+
+      // Draw Explosions
+      for (let e of explosions) {
+        if (e.isGood) {
+          let hex = laneColors[e.lane];
+          let r = parseInt(hex.slice(1, 3), 16);
+          let g = parseInt(hex.slice(3, 5), 16);
+          let b = parseInt(hex.slice(5, 7), 16);
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${e.life})`;
+          ctx.lineWidth = 10 * (1 - e.life);
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, 100 * (1 - e.life), 0, Math.PI * 2);
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = `rgba(231, 76, 60, ${e.life})`;
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, 150 * (1 - e.life), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Draw Controls at bottom
+      ctx.fillStyle = '#555';
+      ctx.font = '16px monospace';
+      ctx.fillText("Z", laneX[0], canvas.height - 20);
+      ctx.fillText("X", laneX[1], canvas.height - 20);
+      ctx.fillText("N", laneX[2], canvas.height - 20);
+      ctx.fillText("M", laneX[3], canvas.height - 20);
+    }
+
+    function winGame() {
+      isGameOver = true;
+      if (reqId) cancelAnimationFrame(reqId);
+      gameDiv.style.display = 'none';
+      resultScreen.style.display = 'flex';
+      document.getElementById('result-title').innerText = "Compilation Successful!";
+      document.getElementById('result-title').style.color = "#3ddc84";
+
+      if (mode === 'hpr') {
+        document.getElementById('result-desc').innerText = "HPR compiled effortlessly. True minimalism.";
+        resultBtn.innerText = "Bask in perfection";
+      } else if (mode === 'aw') {
+        document.getElementById('result-desc').innerText = "ActivityWatch compiled! Your CPU is crying, but you did it.";
+        resultBtn.innerText = "Embrace the bloat";
+      } else {
+        document.getElementById('result-desc').innerText = "Half the Internet Compiled! 3000 dependencies handled. Are you a bot?";
+        resultBtn.innerText = "I am a robot";
+      }
+    }
+
+    function loseGame(reason) {
+      isGameOver = true;
+      if (reqId) cancelAnimationFrame(reqId);
+      gameDiv.style.display = 'none';
+      resultScreen.style.display = 'flex';
+      document.getElementById('result-title').innerText = "Compilation FAILED";
+      document.getElementById('result-title').style.color = "#e74c3c";
+
+      if (mode === 'hpr') {
+        document.getElementById('result-desc').innerText = reason + "\n\nHow did you fail HPR? It's literally the easiest software to compile.";
+        resultBtn.innerText = "Try again, noob";
+      } else if (mode === 'aw') {
+        document.getElementById('result-desc').innerText = reason + "\n\nActivityWatch was simply too bloated for you to handle.";
+        resultBtn.innerText = "Buy more RAM";
+      } else {
+        document.getElementById('result-desc').innerText = reason + "\n\nYou tried to compile half the internet at once and your CPU melted. RUSH E is mathematically impossible for humans anyway.";
+        resultBtn.innerText = "Let the bot do it";
+      }
+    }
+  </script>
+</body>
+
+</html>
