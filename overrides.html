@@ -737,7 +737,7 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
         <div class="section-divider fade-in">
           <span class="section-divider-emoji">🌐</span>
           <h2>Network (HTTP)</h2>
-          <span class="fn-count-badge">3 functions</span>
+          <span class="fn-count-badge">4 functions</span>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
@@ -818,6 +818,26 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
     <span class="code-fn">print</span>(<span class="code-string">"[AUDIT] PUT → "</span> .. host .. path)
     <span class="code-fn">print</span>(<span class="code-string">"  Body: "</span> .. body)
     <span class="code-keyword">return</span> <span class="code-keyword">nil</span> -- allow request to execute natively
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 29. httpDelete -->
+          <div class="card fn-card fn-card--network fade-in" id="httpDelete">
+            <div class="fn-signature">httpDelete(host, path, secure, headers)</div>
+            <div class="fn-source">C++ &rarr; <code>src/extension/netUtilities.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>outgoing HTTP DELETE requests</strong>. Useful for auditing or blocking destructive operations sent by extensions or internal C++ components. Return a table with <code>body</code> (string) and <code>status</code> (number) fields, or <code>nil</code> to proceed with the native request.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>secure</code> (bool), <code>headers</code> (table)</span>
+              <span><strong>Returns:</strong> <code>{body = "...", status = 200}</code> or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example &mdash; Block all DELETE requests in a read-only audit mode</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.httpDelete = <span class="code-keyword">function</span>(host, path, secure, headers)
+    <span class="code-comment">-- Block all DELETE requests and return a fake 403</span>
+    <span class="code-keyword">return</span> { body = <span class="code-string">"blocked"</span>, status = <span class="code-number">403</span> }
 <span class="code-keyword">end</span></pre>
             </div>
           </div>
@@ -1045,11 +1065,13 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
               <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">19</td><td style="padding: 6px 12px;"><code><a href="#getLiveTimeLogPerProject_E" style="color:var(--accent-lime);">getLiveTimeLogPerProject_E</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">table | nil</td><td style="padding: 6px 12px;">Time Log</td></tr>
               <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">20</td><td style="padding: 6px 12px;"><code><a href="#httpGet" style="color:var(--accent-purple);">httpGet</a></code></td><td style="padding: 6px 12px;">host, path, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
               <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">21</td><td style="padding: 6px 12px;"><code><a href="#httpPost" style="color:var(--accent-purple);">httpPost</a></code></td><td style="padding: 6px 12px;">host, path, body, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
-              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">22</td><td style="padding: 6px 12px;"><code><a href="#stopTracking" style="color:var(--accent-lime);">stopTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
-              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">23</td><td style="padding: 6px 12px;"><code><a href="#startTracking" style="color:var(--accent-lime);">startTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
-              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">24</td><td style="padding: 6px 12px;"><code><a href="#setUiProperty" style="color:#f472b6;">setUiProperty</a></code></td><td style="padding: 6px 12px;">name, value</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
-              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">25</td><td style="padding: 6px 12px;"><code><a href="#registerUiCallback" style="color:#f472b6;">registerUiCallback</a></code></td><td style="padding: 6px 12px;">name</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
-              <tr><td style="padding: 6px 12px;">26</td><td style="padding: 6px 12px;"><code><a href="#getTime_MS" style="color:#fbbf24;">getTime_MS</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">number | nil</td><td style="padding: 6px 12px;">Utility</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">22</td><td style="padding: 6px 12px;"><code><a href="#httpPut" style="color:var(--accent-purple);">httpPut</a></code></td><td style="padding: 6px 12px;">host, path, body, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">23</td><td style="padding: 6px 12px;"><code><a href="#httpDelete" style="color:var(--accent-purple);">httpDelete</a></code></td><td style="padding: 6px 12px;">host, path, secure, headers</td><td style="padding: 6px 12px;">{body, status} | nil</td><td style="padding: 6px 12px;">Network</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">24</td><td style="padding: 6px 12px;"><code><a href="#stopTracking" style="color:var(--accent-lime);">stopTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">25</td><td style="padding: 6px 12px;"><code><a href="#startTracking" style="color:var(--accent-lime);">startTracking</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">Tracking</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">26</td><td style="padding: 6px 12px;"><code><a href="#setUiProperty" style="color:#f472b6;">setUiProperty</a></code></td><td style="padding: 6px 12px;">name, value</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
+              <tr style="border-bottom: 1px solid var(--border-primary);"><td style="padding: 6px 12px;">27</td><td style="padding: 6px 12px;"><code><a href="#registerUiCallback" style="color:#f472b6;">registerUiCallback</a></code></td><td style="padding: 6px 12px;">name</td><td style="padding: 6px 12px;">any | nil</td><td style="padding: 6px 12px;">UI</td></tr>
+              <tr><td style="padding: 6px 12px;">28</td><td style="padding: 6px 12px;"><code><a href="#getTime_MS" style="color:#fbbf24;">getTime_MS</a></code></td><td style="padding: 6px 12px;">—</td><td style="padding: 6px 12px;">number | nil</td><td style="padding: 6px 12px;">Utility</td></tr>
             </tbody>
           </table>
         </div>
