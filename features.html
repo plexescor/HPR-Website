@@ -306,10 +306,10 @@
               </div>
             </div>
             <div class="card" style="margin-bottom: 16px;">
-              <h3>How it works &mdash; IntelliJ IDEA <span style="font-size: 0.7em; color: var(--accent-amber);">(In Dev)</span></h3>
-              <p style="margin-bottom: 12px;">IntelliJ IDEA window titles are tracked by HPR with a <code>jetbrains: </code> prefix (resolving to <code>jetbrains: ProjectName – file [module]</code> or <code>jetbrains: ProjectName</code>). HPR parses the project name using the en dash <code>–</code>:</p>
+              <h3>How it works &mdash; JetBrains IDEs <span style="font-size: 0.7em; color: var(--accent-amber);">(Beta)</span></h3>
+              <p style="margin-bottom: 12px;">JetBrains IDE window titles are tracked by HPR with a <code>jetbrains: </code> prefix (resolving to <code>jetbrains: ProjectName – file [module]</code> or <code>jetbrains: ProjectName</code>). HPR parses the project name using the en dash <code>–</code>:</p>
               <div class="code-block" style="margin-top: 12px;">
-                <pre><span class="code-comment"># IntelliJ title format:</span>
+                <pre><span class="code-comment"># JetBrains title format:</span>
 <span class="code-string">jetbrains: ProjectName – file [module]</span>
 
 <span class="code-comment"># HPR strips prefix "jetbrains: ", then</span>
@@ -357,7 +357,7 @@
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <span class="tag">VS Code</span>
-              <span class="tag">IntelliJ IDEA</span>
+              <span class="tag">JetBrains IDEs</span>
               <span class="tag">No Extension</span>
               <span class="tag">Raw View</span>
               <span class="tag">Formatted View</span>
@@ -389,11 +389,16 @@
                   <td>Matches <code>code</code>, <code>vscode</code>, or <code>visual studio code</code> in window title/process name</td>
                 </tr>
                 <tr>
-                  <td><strong>IntelliJ IDEA</strong></td>
+                  <td>
+                    <strong>JetBrains IDEs</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4;">
+                      IntelliJ, WebStorm, PyCharm, CLion, Rider, GoLand, RustRover, PhpStorm, RubyMine, DataGrip, DataSpell
+                    </div>
+                  </td>
                   <td>Linux</td>
-                  <td><span class="badge badge--amber">⚠️ In Development</span></td>
+                  <td><span class="badge badge--amber">✅ Working (⚠️ may be unstable)</span></td>
                   <td>No</td>
-                  <td>Matches <code>jetbrains</code> in window title/process name; only tested on Linux</td>
+                  <td>Matches <code>jetbrains</code> in window title/process name; extracts project name before the en dash (–). Tested on Linux only.</td>
                 </tr>
               </tbody>
             </table>
