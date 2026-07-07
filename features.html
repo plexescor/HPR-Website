@@ -149,7 +149,7 @@
         <h2 class="section-title fade-in">Browser Tab Tracking <span
             style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          Chrome, Edge, Firefox, Brave — HPR tracks which tab is active by reading the window title the OS already
+          Chrome, Edge, Firefox, Brave, Zen Browser — HPR tracks which tab is active by reading the window title the OS already
           exposes. No browser extension. No manifest. No permissions dialog. No marketplace install. It has always been
           there.
         </p>
@@ -211,11 +211,66 @@
           </div>
         </div>
 
+        <div class="card fade-in" style="margin-top: 32px; width: 100%;">
+          <h3 style="margin-bottom: 16px;">Browser Support Matrix</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Browser</th>
+                  <th>Platform Support</th>
+                  <th>Status</th>
+                  <th>Extension Required</th>
+                  <th>Parsing Strategy / Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Google Chrome</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>chrome</code> in window title/process name</td>
+                </tr>
+                <tr>
+                  <td><strong>Microsoft Edge</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>edge</code> in window title/process name</td>
+                </tr>
+                <tr>
+                  <td><strong>Mozilla Firefox</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>firefox</code> in window title/process name</td>
+                </tr>
+                <tr>
+                  <td><strong>Brave</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>brave</code> in window title/process name</td>
+                </tr>
+                <tr>
+                  <td><strong>Zen Browser</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>zen</code> in window title/process name</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="fade-in" style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;">
           <span class="tag">Chrome</span>
           <span class="tag">Edge</span>
           <span class="tag">Firefox</span>
           <span class="tag">Brave</span>
+          <span class="tag">Zen Browser</span>
           <span class="tag">No Extension</span>
           <span class="tag">Tab View</span>
           <span class="tag">Site View</span>
@@ -228,17 +283,16 @@
     <section class="section section-border" id="vscode">
       <div class="container">
         <span class="section-label fade-in" style="color: var(--accent-amber);">&#9733; Standout Feature</span>
-        <h2 class="section-title fade-in">VS Code Project Tracking <span
-            style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without an extension</span></h2>
+        <h2 class="section-title fade-in">Code Editor &amp; IDE Project Tracking <span
+            style="font-size: 0.55em; color: var(--text-tertiary); font-weight: 400;">without extensions</span></h2>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          HPR tracks which VS Code project you are in, not just that VS Code is open. No VS Code extension. No plugin.
-          No marketplace install. HPR reads the window title the OS already exposes.
+          HPR tracks which project you are currently working in, not just whether the editor is open. No editor extensions, plugins, or marketplace installs are required.
         </p>
 
         <div class="two-col fade-in">
           <div>
             <div class="card" style="margin-bottom: 16px;">
-              <h3>How it works</h3>
+              <h3>How it works &mdash; VS Code</h3>
               <p style="margin-bottom: 12px;">VS Code puts the active project name in its window title as
                 <code>filename - project - Visual Studio Code</code>. HPR reads that title on every poll tick and parses
                 it:</p>
@@ -248,7 +302,18 @@
 
 <span class="code-comment"># HPR strips trailing suffix, then</span>
 <span class="code-comment"># splits on last " - " separator</span>
-<span class="code-comment"># (spaces around dash, safe split point)</span>
+<span class="code-fn">result</span> = project_name</pre>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom: 16px;">
+              <h3>How it works &mdash; IntelliJ IDEA <span style="font-size: 0.7em; color: var(--accent-amber);">(In Dev)</span></h3>
+              <p style="margin-bottom: 12px;">IntelliJ IDEA window titles are tracked by HPR with a <code>jetbrains: </code> prefix (resolving to <code>jetbrains: ProjectName – file [module]</code> or <code>jetbrains: ProjectName</code>). HPR parses the project name using the en dash <code>–</code>:</p>
+              <div class="code-block" style="margin-top: 12px;">
+                <pre><span class="code-comment"># IntelliJ title format:</span>
+<span class="code-string">jetbrains: ProjectName – file [module]</span>
+
+<span class="code-comment"># HPR strips prefix "jetbrains: ", then</span>
+<span class="code-comment"># takes everything before the first en dash " – "</span>
 <span class="code-fn">result</span> = project_name</pre>
               </div>
             </div>
@@ -282,23 +347,56 @@
           <div>
             <div class="card" style="margin-bottom: 16px;">
               <h3>Works on Every Platform</h3>
-              <p>Hyprland, GNOME, KDE Plasma 6+, Cinnamon, and Windows. Every backend already has a window title getter and VS
-                Code puts the project name in the title on all of them. No platform-specific setup.</p>
+              <p>Hyprland, GNOME, KDE Plasma 6+, Cinnamon, and Windows. Every backend already has a window title getter and the supported editors put the project name in the title on all of them. No platform-specific setup.</p>
             </div>
             <div class="callout" style="margin-bottom: 24px;">
               <div class="callout-title">No Extension Needed</div>
-              <p>Zero VS Code plugins. Zero marketplace installs. Zero configuration inside VS Code. HPR reads the
+              <p>Zero plugins. Zero marketplace installs. Zero configuration inside your IDE/editor. HPR reads the
                 single string the OS already exposes as the window title. The project name has been there the whole
                 time.</p>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <span class="tag">VS Code</span>
+              <span class="tag">IntelliJ IDEA</span>
               <span class="tag">No Extension</span>
               <span class="tag">Raw View</span>
               <span class="tag">Formatted View</span>
               <span class="tag">projectAliases.csv</span>
               <span class="tag">All Platforms</span>
             </div>
+          </div>
+        </div>
+
+        <div class="card fade-in" style="margin-top: 32px; width: 100%;">
+          <h3 style="margin-bottom: 16px;">IDE &amp; Code Editor Support Matrix</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Application</th>
+                  <th>Platform Support</th>
+                  <th>Status</th>
+                  <th>Extension Required</th>
+                  <th>Parsing Strategy / Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Visual Studio Code</strong></td>
+                  <td>Windows / Linux</td>
+                  <td><span class="badge badge--green">✅ Working</span></td>
+                  <td>No</td>
+                  <td>Matches <code>code</code>, <code>vscode</code>, or <code>visual studio code</code> in window title/process name</td>
+                </tr>
+                <tr>
+                  <td><strong>IntelliJ IDEA</strong></td>
+                  <td>Linux</td>
+                  <td><span class="badge badge--amber">⚠️ In Development</span></td>
+                  <td>No</td>
+                  <td>Matches <code>jetbrains</code> in window title/process name; only tested on Linux</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
