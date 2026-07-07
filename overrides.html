@@ -737,17 +737,17 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
         <div class="section-divider fade-in">
           <span class="section-divider-emoji">🌐</span>
           <h2>Network (HTTP)</h2>
-          <span class="fn-count-badge">2 functions</span>
+          <span class="fn-count-badge">3 functions</span>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 16px;">
 
           <!-- 20. httpGet -->
-          <!-- <div class="card fn-card fn-card--network fade-in" id="httpGet">
+          <div class="card fn-card fn-card--network fade-in" id="httpGet">
             <div class="fn-signature">httpGet(host, path, secure, headers)</div>
-            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <div class="fn-source">C++ → <code>src/extension/netUtilities.cpp</code></div>
             <p class="fn-desc">
-              Intercepts <strong>outgoing HTTP GET requests</strong> made by other extensions via <code>HPR.httpGet_E()</code>. This is incredibly useful for testing: return spoofed API responses without hitting the network. You can also use this as a firewall — block requests to domains you don't trust, or log every outgoing request for auditing. Return a table with <code>body</code> (string) and <code>status</code> (number) fields.
+              Intercepts <strong>outgoing HTTP GET requests</strong> made by other extensions via <code>HPR.httpGet_E()</code> or internal C++ logic. This is incredibly useful for testing: return spoofed API responses without hitting the network. You can also use this as a firewall — block requests to domains you don't trust, or log every outgoing request for auditing. Return a table with <code>body</code> (string) and <code>status</code> (number) fields, or <code>nil</code> to proceed with the native request.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>secure</code> (bool), <code>headers</code> (table)</span>
@@ -773,14 +773,14 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
     <span class="code-keyword">return</span> <span class="code-keyword">nil</span>  <span class="code-comment">-- allow the real request</span>
 <span class="code-keyword">end</span></pre>
             </div>
-          </div> -->
+          </div>
 
-          <!-- 21. httpPost
+          <!-- 21. httpPost -->
           <div class="card fn-card fn-card--network fade-in" id="httpPost">
             <div class="fn-signature">httpPost(host, path, body, secure, headers)</div>
-            <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
+            <div class="fn-source">C++ → <code>src/extension/netUtilities.cpp</code></div>
             <p class="fn-desc">
-              Intercepts <strong>outgoing HTTP POST requests</strong>. Same idea as <code>httpGet</code>, but for POST calls. Extensions that sync data to external services, send webhooks, or post analytics all pass through here. Great for building a "dry run" mode where nothing actually leaves your machine, or for capturing exactly what payload an extension is sending.
+              Intercepts <strong>outgoing HTTP POST requests</strong>. Same idea as <code>httpGet</code>, but for POST calls. Extensions that sync data to external services, send webhooks, or post analytics all pass through here. Great for building a "dry run" mode where nothing actually leaves your machine, or for capturing exactly what payload an extension is sending. Return a table with <code>body</code> (string) and <code>status</code> (number) fields, or <code>nil</code> to proceed with the native request.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>body</code> (string), <code>secure</code> (bool), <code>headers</code> (table)</span>
@@ -799,7 +799,28 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
     }
 <span class="code-keyword">end</span></pre>
             </div>
-          </div> -->
+          </div>
+
+          <!-- 21b. httpPut -->
+          <div class="card fn-card fn-card--network fade-in" id="httpPut">
+            <div class="fn-signature">httpPut(host, path, body, secure, headers)</div>
+            <div class="fn-source">C++ → <code>src/extension/netUtilities.cpp</code></div>
+            <p class="fn-desc">
+              Intercepts <strong>outgoing HTTP PUT requests</strong>. Allows auditing or redirecting PUT payloads sent by extensions or C++ internal components. Return a table with <code>body</code> (string) and <code>status</code> (number) fields, or <code>nil</code> to proceed with the native request.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>host</code>, <code>path</code>, <code>body</code> (string), <code>secure</code> (bool), <code>headers</code> (table)</span>
+              <span><strong>Returns:</strong> <code>{body = "...", status = 200}</code> or <code>nil</code></span>
+            </div>
+            <div class="fn-example-label">Example — Intercept and print PUT payloads</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.httpPut = <span class="code-keyword">function</span>(host, path, body, secure, headers)
+    <span class="code-fn">print</span>(<span class="code-string">"[AUDIT] PUT → "</span> .. host .. path)
+    <span class="code-fn">print</span>(<span class="code-string">"  Body: "</span> .. body)
+    <span class="code-keyword">return</span> <span class="code-keyword">nil</span> -- allow request to execute natively
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
 
         </div>
 
@@ -856,6 +877,27 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
         <span class="code-keyword">return</span> <span class="code-keyword">true</span>  <span class="code-comment">-- keeps tracking paused</span>
     <span class="code-keyword">end</span>
     <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <!-- 23b. limitReached -->
+          <div class="card fn-card fn-card--tracking fade-in" id="limitReached">
+            <div class="fn-signature">limitReached(appName)</div>
+            <div class="fn-source">C++ → <code>src/limits/limitsManager.cpp</code></div>
+            <p class="fn-desc">
+              Triggered when a time limit for a specific application is reached. HPR natively attempts to kill the target application (via pkill/taskkill). Override this hook to block application killing or implement custom handling (e.g. sending customized alerts, logging to a database, or invoking external commands). Return any string value to bypass HPR's default application termination logic.
+            </p>
+            <div class="fn-meta">
+              <span><strong>Params:</strong> <code>appName</code></span>
+              <span><strong>Returns:</strong> <code>string</code> to block the native application termination, or <code>nil</code> to allow</span>
+            </div>
+            <div class="fn-example-label">Example — Custom alarm sound when limit reached</div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.overrides.limitReached = <span class="code-keyword">function</span>(appName)
+    HPR.log_E(<span class="code-string">"Limits"</span>, <span class="code-string">"App limit reached for: "</span> .. appName)
+    <span class="code-comment">-- Block native termination and handle custom logic</span>
+    <span class="code-keyword">return</span> <span class="code-string">"Bypass termination"</span>
 <span class="code-keyword">end</span></pre>
             </div>
           </div>

@@ -64,7 +64,7 @@
             <h1>HPR Extension <span class="text-accent">Documentation</span></h1>
             <p class="hero-tagline" style="margin: 0 auto 40px auto; max-width: 650px;">
               HPR ships with a built-in Lua scripting engine that lets you extend its behavior without touching a single
-              line of C++. Write a script, drop it in a folder, and HPR loads it automatically. The API is designed to be <strong>easy for beginners</strong> — if you can write a simple function, you can build an extension. For advanced users, the <strong>Function Overriding API</strong> lets you intercept and hijack 24 core C++ functions directly from Lua.
+              line of C++. Write a script, drop it in a folder, and HPR loads it automatically. The API is designed to be <strong>easy for beginners</strong> — if you can write a simple function, you can build an extension. For advanced users, the <strong>Function Overriding API</strong> lets you intercept and hijack 28 core C++ functions directly from Lua.
             </p>
             <div class="hero-actions" style="justify-content: center;">
               <a href="#guides" class="btn btn--primary" style="padding: 8px 18px;">↓ Read the Docs</a>
@@ -93,7 +93,7 @@
           that HPR doesn't natively support.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
-          <strong>Two levels of power:</strong> The standard <a href="api.html" style="color: var(--accent-green);">Extension API</a> gives you read/write access to HPR's tracking data, UI, events, and networking — perfect for building widgets, dashboards, and integrations. For those who want to go deeper, the <a href="overrides.html" style="color: var(--accent-green);">Function Overriding API</a> lets you intercept and replace 24 core C++ engine functions directly from Lua — rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, and more.
+          <strong>Two levels of power:</strong> The standard <a href="api.html" style="color: var(--accent-green);">Extension API</a> gives you read/write access to HPR's tracking data, UI, events, and networking — perfect for building widgets, dashboards, and integrations. For those who want to go deeper, the <a href="overrides.html" style="color: var(--accent-green);">Function Overriding API</a> lets you intercept and replace 28 core C++ engine functions directly from Lua — rename windows before they're stored, mock database queries, block notifications, spoof timestamps, hijack HTTP requests, and more.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
           Extensions are designed to be small and focused. The most powerful extension currently possible — registering
@@ -395,7 +395,7 @@
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column; border: 1px solid rgba(255, 140, 0, 0.3);">
             <h3 style="color: var(--accent-green); margin-bottom: 12px;">⚡ Function Overriding API <span style="font-size: 0.65em; font-weight: 400; color: var(--text-tertiary);">Advanced</span></h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              For advanced users who want maximum control: intercept and override <strong>24 core C++ engine functions</strong> directly from Lua. Rename windows before they hit the database, mock SQL query results, block desktop notifications, spoof system time, hijack HTTP requests, control tracking state, and filter UI updates. Every function documented with a working Lua code example.
+              For advanced users who want maximum control: intercept and override <strong>28 core C++ engine functions</strong> directly from Lua. Rename windows before they hit the database, mock SQL query results, block desktop notifications, spoof system time, hijack HTTP requests, control tracking state, and filter UI updates. Every function documented with a working Lua code example.
             </p>
             <a href="overrides.html" class="btn btn--primary" style="margin-top: auto;">View Overrides API →</a>
           </div>
