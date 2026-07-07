@@ -90,7 +90,7 @@
             If you write a Lua extension for a compositor or desktop environment that is <strong>already natively supported</strong> by HPR (such as Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), your extension's implementation will be <strong>preferred and prioritized</strong> over the built-in one!
           </p>
           <p style="margin-top: 10px;">
-            Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment and reports that it <code>isUsable</code>, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code!
+            Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code!
           </p>
         </div>
 
