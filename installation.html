@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Install HPR — Available on AUR, Windows installer, or build from source. Three commands on Linux, one installer on Windows.">
+  <meta name="description" content="Install HPR — Available on AUR, Windows installer, universal script, or build from source. Single command on Linux, one installer on Windows.">
   <title>Installation — HPR</title>
   <link rel="icon" type="image/png" href="assets/logo_256png.png">
   <link rel="stylesheet" href="style.css">
@@ -43,7 +43,7 @@
         <span class="section-label">Installation</span>
         <h1>Get running in seconds.</h1>
         <p class="hero-tagline">
-          AUR package, Windows installer, manual setup, or build from source. Pick your path.
+          AUR package, Windows installer, universal install script, or build from source. Pick your path.
         </p>
       </div>
     </section>
@@ -60,7 +60,7 @@
         <!-- Tabs -->
         <div class="tabs fade-in" id="installTabs">
           <button class="tab-btn active" data-tab="arch">Arch Linux (AUR)</button>
-          <button class="tab-btn" data-tab="linux">Linux (Manual)</button>
+          <button class="tab-btn" data-tab="linux">Linux (Universal)</button>
           <button class="tab-btn" data-tab="windows">Windows</button>
           <button class="tab-btn" data-tab="source">Build from Source</button>
         </div>
@@ -101,34 +101,32 @@
           </div>
         </div>
 
-        <!-- Linux Manual -->
+        <!-- Linux Universal -->
         <div class="tab-panel" id="tab-linux">
           <div class="two-col fade-in">
             <div>
-              <h3 style="margin-bottom: 16px;">Manual Install (Any Distro)</h3>
+              <h3 style="margin-bottom: 16px;">Universal Install Script</h3>
               <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
-                Download the release binary and run the setup script. Three commands.
+                Install or update HPR on Linux automatically with a single command:
               </p>
               <div class="code-block" style="margin-bottom: 24px;">
                 <span class="code-label">Terminal</span>
-                <pre><span class="code-comment"># 1. Make the install script executable</span>
-<span class="code-fn">chmod</span> +x <span class="code-string">installHPRConfigAndUi.sh</span>
-
-<span class="code-comment"># 2. Run the setup (copies config + UI files)</span>
-<span class="code-fn">./installHPRConfigAndUi.sh</span>
-
-<span class="code-comment"># 3. Launch HPR</span>
-<span class="code-fn">./HPR</span></pre>
+                <pre><span class="code-fn">curl</span> -fsSL https://raw.githubusercontent.com/plexescor/HPR/main/install.sh | <span class="code-fn">bash</span></pre>
               </div>
-              <div class="callout" style="margin-bottom: 24px;">
-                <div class="callout-title">Safe Overwrite</div>
-                <p>The setup script provides safe-overwrite prompts. If you've already customized your config or UI files, it asks before replacing them.</p>
-              </div>
-              <div class="callout" style="margin-bottom: 24px;">
-                <div class="callout-title">Desktop Entry — Automatic</div>
-                <p>On first launch HPR automatically creates a desktop entry at <code>~/.local/share/applications/hpr.desktop</code>. This registers HPR with your desktop environment so it appears in your application launcher and the taskbar/dock correctly associates the window with its icon. No manual <code>.desktop</code> setup required.</p>
-                <p style="margin-top: 8px; font-size: 0.85rem; color: var(--text-tertiary);">The entry is only written when missing or stale. On subsequent launches HPR checks whether the <code>Exec=</code> and <code>Icon=</code> fields already point to the current binary. If they match, the file is left completely untouched.</p>
-              </div>
+              <details class="script-details" style="margin-bottom: 24px;">
+                <summary>What does the installation script do?</summary>
+                <div class="details-content">
+                  <ul>
+                    <li><strong>Dependency Verification</strong>: Checks for required CLI tools (<code>curl</code>, <code>tar</code>, <code>xz</code>, <code>dbus-send</code>, <code>git</code>).</li>
+                    <li><strong>Version Check</strong>: Queries the GitHub API to fetch and download the latest release asset package (<code>HPRv{VERSION}-Linux.tar.xz</code>).</li>
+                    <li><strong>System Binary Installation</strong>: Prompts you for your preferred system-wide installation path (defaults to <code>/usr/local/bin/HPR</code>) and installs the binary (uses <code>sudo</code> for binary copy only).</li>
+                    <li><strong>Configuration Setup</strong>: Creates the config directories (<code>~/.config/HPR</code> and <code>~/.local/share/HPR</code>) and writes default CSV configurations if they don't exist.</li>
+                    <li><strong>User Customization Protection</strong>: Detects if you have modified your CSV configuration files or the custom <code>ui/</code> folder, and preserves your changes. Only untouched default configurations are updated.</li>
+                    <li><strong>GNOME Extension Installation</strong>: Detects if you are running the GNOME Desktop and prompts you to install the custom window-tracking extension (<code>lol-another-window-extension</code>) if it's missing.</li>
+                    <li><strong>Launcher Creation</strong>: Configures high-resolution app icon paths, creates a desktop launcher entry (<code>~/.local/share/applications/hpr.desktop</code>), and refreshes application menu databases.</li>
+                  </ul>
+                </div>
+              </details>
             </div>
             <div>
               <div class="card" style="margin-bottom: 16px;">
