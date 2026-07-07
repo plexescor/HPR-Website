@@ -737,9 +737,8 @@
               </div>
 
               <div class="callout--amber callout">
-                <div class="callout-title">⚠ Contract</div>
-                <p>Structs, properties, and callbacks are referenced by name from C++. Renaming them breaks the
-                  connection silently. Read <code>READ_ME_BEFORE_MODIFYING_UI.txt</code> before editing.</p>
+                <div class="callout-title">💡 UI/C++ Contract is Optional</div>
+                <p>Structs, properties, and callbacks are referenced by name from C++. Note that satisfying this contract is optional; if you omit any properties or callbacks, the application will still load and run, but you will not receive data or trigger those callbacks. Renaming them breaks the connection silently for those specific fields. Read <code>READ_ME_BEFORE_MODIFYING_UI.txt</code> before editing.</p>
               </div>
             </div>
             <div>
@@ -1183,7 +1182,7 @@ destructor  → set running=false, <span class="code-fn">join()</span></pre>
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

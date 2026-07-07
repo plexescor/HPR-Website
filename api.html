@@ -203,17 +203,13 @@
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
               <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the author or developer name of the loaded extension. This must be defined at the <strong>top
-                level</strong> of your extension's script (outside of <code>init()</code> or any other lifecycle
-              functions).
+              Configures the author or developer name of the loaded extension. This can be defined at the top level of your extension's script or inside <code>init()</code>.
             </p>
             <div class="callout callout--danger fade-in"
               style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong> CRITICAL: Must be declared at top-level!</strong><br>
-                HPR queries these identity properties immediately after loading the Lua file and <em>before</em>
-                spawning the dedicated execution thread or running <code>init()</code>. Defining them inside
-                <code>init()</code> or omitting them entirely means HPR will fall back to registering the extension with a <strong>randomly generated name</strong> in the Loaded Extensions manager UI (though the extension will still load and execute normally). Declaring these at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+                <strong> Recommended: Declare at top-level or in init()!</strong><br>
+                HPR queries these identity properties immediately after parsing the Lua file and after running <code>init()</code>. Omitting them entirely means HPR will fall back to registering the extension with a <strong>randomly generated name</strong> in the Loaded Extensions manager UI (though the extension will still load and execute normally). Declaring these is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -226,16 +222,13 @@
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
               <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the custom display name of the loaded extension. This must be defined at the <strong>top
-                level</strong> of your extension's script (outside of <code>init()</code> or any other lifecycle
-              functions).
+              Configures the custom display name of the loaded extension. This can be defined at the top level of your extension's script or inside <code>init()</code>.
             </p>
             <div class="callout callout--danger fade-in"
               style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong> CRITICAL: Declare at top-level!</strong><br>
-                Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script. If placed inside
-                <code>init()</code> or omitted, the extension will fall back to being displayed under a <strong>randomly generated name</strong> in the Loaded Extensions manager UI. Declaring this at the top level is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+                <strong> Recommended: Declare at top-level or in init()!</strong><br>
+                Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script or inside <code>init()</code>. If omitted, the extension will fall back to being displayed under a <strong>randomly generated name</strong> in the Loaded Extensions manager UI. Declaring this is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -1582,7 +1575,7 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

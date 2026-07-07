@@ -46,7 +46,7 @@
           <div class="hero-text">
             <div class="hero-badge">
               <span class="hero-badge-dot"></span>
-              v0.9.2 — Free & Open Source
+              v0.9.3 — Free & Open Source
             </div>
             <h1>Know where<br>your time <span class="text-accent">actually</span> went.</h1>
             <p class="hero-tagline">
@@ -218,9 +218,8 @@
           </div>
 
           <div class="callout--amber callout" style="margin-top: 32px;">
-            <div class="callout-title">⚠ Important</div>
-            <p>Do not rename structs, properties, or callbacks. HPR's C++ backend references these by exact name to push data into the UI. 
-            A reference copy is always available in <code>ui-REFERENCEONLY/</code> for diffing.</p>
+            <div class="callout-title">💡 UI/C++ Contract is Optional</div>
+            <p>Satisfying the UI/C++ contract is optional. HPR's C++ backend references structs, properties, or callbacks by exact name to push data into the UI. If you omit any properties or callbacks, the application will still load and run successfully, but you will not get their data or events. Do not rename the ones you do choose to use. A reference copy is always available in <code>ui-REFERENCEONLY/</code> for diffing.</p>
           </div>
         </div>
       </div>
@@ -594,7 +593,7 @@ Historical Loader: spawns ad-hoc thread on date selection → emits result via E
     <div class="container">
       <div class="footer-inner">
         <div class="footer-left">
-          HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3
+          HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3
         </div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>

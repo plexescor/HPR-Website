@@ -234,13 +234,13 @@
         <h3 style="margin-bottom: 16px; font-size: 1.3rem;">The Complete Watcher Code</h3>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
           Put it all together, and your <code>burnout-monitor.lua</code> looks like this. Note that we define the
-          extension identity metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>) at the
-          <strong>top level</strong> (outside of <code>init()</code>). This is a best practice that is <strong>EXTREMELY
-            HIGHLY RECOMMENDED</strong>. If they are omitted or placed inside <code>init()</code>, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+          extension identity metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>).
+          Declaring these metadata variables is a best practice that is <strong>EXTREMELY
+            HIGHLY RECOMMENDED</strong>. You can define them at the top level or inside <code>init()</code>. If they are omitted, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">burnout-monitor.lua</span>
-          <pre><span class="code-comment">-- Define extension metadata at the top-level (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level or in init() (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</span>
 
@@ -430,14 +430,13 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
         <h3 style="margin-bottom: 16px; font-size: 1.3rem;">The Complete Enforcer Code</h3>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
           The final <code>wellness-officer.lua</code> is incredibly short, but incredibly powerful.
-          Just like the watcher, we define the metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>)
-          at the <strong>top level</strong> of the script (outside of <code>init()</code>).
-          Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong>. If omitted or defined inside <code>init()</code>, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+          Just like the watcher, we define the metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>).
+          Declaring these metadata variables is a best practice that is <strong>EXTREMELY HIGHLY
+            RECOMMENDED</strong>. You can place them at the top level or inside <code>init()</code>. If omitted, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">wellness-officer.lua</span>
-          <pre><span class="code-comment">-- Define extension metadata at the top-level (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level or in init() (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</span>
 
@@ -525,7 +524,7 @@ HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

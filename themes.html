@@ -165,7 +165,7 @@
             <p style="margin: 0; font-size: 0.92rem; line-height: 1.65; color: var(--text-secondary);">
               <strong>Minimal Layout Content:</strong> Your theme folder only needs three files to work:
               <br>&bull; <code>metadata.csv</code> (contains the theme name and version)
-              <br>&bull; <code>types.slint</code> (defines the data models - must be kept exactly as it is to ensure proper data communication)
+              <br>&bull; <code>types.slint</code> (defines the data models - if you choose to omit any properties or models, the app still functions but you will not receive data for those fields)
               <br>&bull; <code>app-window.slint</code> (the main layout entry point - this filename is mandatory)
               <br>You are completely free to add other helper <code>.slint</code> files, custom components, or assets of your choice, or remove unused elements, as long as the mandatory files are present.
             </p>
@@ -209,7 +209,7 @@
     neon-cyber/
         metadata.csv      <span class="code-comment"># Registered details</span>
         app-window.slint  <span class="code-comment"># Main layout entry point (mandatory name)</span>
-        types.slint       <span class="code-comment"># Data models contract (keep exactly as-is)</span>
+        types.slint       <span class="code-comment"># Data models contract (optional properties/models; omitting them is fine, but you won't get their data)</span>
         1.png             <span class="code-comment"># Preview slide 1 (optional)</span>
         2.png             <span class="code-comment"># Preview slide 2 (optional)</span></pre>
         </div>
@@ -220,9 +220,9 @@
     <section id="contract" class="section section-border anchor">
       <div class="container">
         <div class="callout callout--amber fade-in" style="border-left-color: var(--accent-purple); background: var(--accent-purple-dim); margin: 0; margin-bottom: 32px;">
-          <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">⚠️ Do Not Break C++ Bindings</div>
+          <div class="callout-title" style="color: var(--accent-purple); font-weight: 700;">💡 C++ Bindings & Contract are Optional</div>
           <p style="margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--text-secondary);">
-            HPR's C++ backend communicates with the Slint interface by looking for specific component, callback, and property names inside the <code>MainWindow</code> component. <strong>Do not rename or delete these bindings in your Slint file.</strong> However, after declaring these required properties and callbacks to satisfy the contract, <strong>you have FULL FREEDOM with no limits</strong> to build any layout, visual style, or logic of your choice!
+            HPR's C++ backend communicates with the Slint interface by looking for specific component, callback, and property names inside the <code>MainWindow</code> component. <strong>Note that satisfying this contract is not strictly required.</strong> If you choose to omit any of these properties, callbacks, or components, the application will still load and run successfully. However, the specific features, data, or callbacks associated with those omitted bindings will simply not function or receive data. After declaring any properties or callbacks you wish to use, <strong>you have FULL FREEDOM with no limits</strong> to build any layout, visual style, or logic of your choice!
           </p>
         </div>
 
@@ -695,7 +695,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

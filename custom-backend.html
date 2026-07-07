@@ -292,10 +292,9 @@ end,  -- argument 5</pre>
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
           Putting all six arguments together, here is the complete working Hyprland backend extension.
-          Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
-            level</strong> of the script (outside of <code>init()</code>).
-          Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> (though not required for execution). If you place them inside <code>init()</code> or omit them entirely, HPR will still load and run your extension successfully, but it will show up in the <strong>Loaded Extensions</strong> manager UI under a <strong>randomly generated name</strong>.
+          Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code>.
+          Declaring these metadata variables is a best practice that is <strong>EXTREMELY HIGHLY
+            RECOMMENDED</strong> (though not required for execution). You can place them at the top level or inside <code>init()</code>. If you omit them entirely, HPR will still load and run your extension successfully, but it will show up in the <strong>Loaded Extensions</strong> manager UI under a <strong>randomly generated name</strong>.
         </p>
 
         <div class="callout callout--danger fade-in"
@@ -313,7 +312,7 @@ end,  -- argument 5</pre>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">hyprland.lua</span>
-          <pre><span class="code-comment">-- Declare extension metadata at the top level (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Declare extension metadata at the top level or inside init() (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Extension"</span>
 
@@ -424,7 +423,7 @@ HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

@@ -358,12 +358,9 @@
         <div class="callout callout--danger fade-in"
           style="margin-bottom: 24px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
-            <strong> Best Practice Callout: Declare metadata at the script's top level!</strong><br>
+            <strong> Best Practice Callout: Declare metadata!</strong><br>
             It is a best practice to set <code>HPR.authorName = "Your Name"</code> and
-            <code>HPR.extensionName = "Your Extension"</code> at the top level of your script, completely outside of
-            <code>init()</code>. HPR queries these fields immediately after loading the Lua file, <em>before</em>
-            spawning the dedicated execution thread or running the <code>init()</code> hook. Defining them inside
-            <code>init()</code> or omitting them entirely means your extension will still load and execute successfully, but it will fall back to being displayed in HPR's Loaded Extensions manager UI under a <strong>randomly generated name</strong>. Declaring these at the top level is <strong>not required but EXTREMELY HIGHLY RECOMMENDED</strong>.
+            <code>HPR.extensionName = "Your Extension"</code> at the top level of your script or inside <code>init()</code>. HPR queries these fields immediately after loading the Lua file and after running the <code>init()</code> hook. If you omit them entirely, your extension will still load and execute successfully, but it will fall back to being displayed in HPR's Loaded Extensions manager UI under a <strong>randomly generated name</strong>. Declaring these is <strong>not required but EXTREMELY HIGHLY RECOMMENDED</strong>.
           </p>
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
@@ -385,7 +382,7 @@
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">persistence</span>
-          <pre><span class="code-comment">-- Define the extension metadata identity at the top-level</span>
+          <pre><span class="code-comment">-- Define the extension metadata identity (at top-level or inside init())</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</span>
 
@@ -891,7 +888,7 @@ end</pre>
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>

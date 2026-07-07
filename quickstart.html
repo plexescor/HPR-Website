@@ -125,8 +125,8 @@
           your extension inside HPR's <strong>Extensions tab</strong>, which is also where hot reloading lives. If you
           skip them, HPR will still load and run your extension, but it will show up in the Extensions tab with a
           <strong>randomly generated name</strong> — so you can still Reload or Disable it, but good luck figuring out
-          which one it is if you have multiple unnamed extensions. Make sure to define them at the
-          <strong>top level</strong> of your script and not inside a function, otherwise HPR won't be able to read them.
+          which one it is if you have multiple unnamed extensions. You can define them at the
+          <strong>top level</strong> of your script or inside <code>init()</code>. If you omit them, you will get a randomly generated name.
         </p>
 
         <div class="callout callout--amber fade-in" style="margin-bottom: 20px;">
@@ -465,7 +465,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.2 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.3 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>
