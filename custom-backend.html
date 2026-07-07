@@ -125,15 +125,15 @@
           <span class="code-label">skeleton</span>
           <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
     HPR.registerBackend_E(
-        <span class="code-comment">-- 7 arguments go here</span>
+        <span class="code-comment">-- 6 arguments go here</span>
     )
 <span class="code-keyword">end</span></pre>
         </div>
 
-        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 7 arguments of <code>registerBackend_E</code>
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 6 arguments of <code>registerBackend_E</code>
         </h2>
         <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
-           The function takes 7 positional arguments in a fixed order. Here is each one explained in detail.
+           The function takes 6 positional arguments in a fixed order. Here is each one explained in detail.
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
@@ -204,29 +204,7 @@
           </div>
 
           <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 4 — <code>isUsable</code> (function)
-            </h3>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              A function that returns <code>true</code> if your backend can currently provide valid window data, or
-              <code>false</code> if not. HPR calls this to verify that your backend is actually functional before
-              committing to it. It is also called periodically to detect if the backend has stopped working.
-            </p>
-            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              A common pattern is to run your compositor's IPC command and check whether the output contains the field
-              you need. For Hyprland, a valid <code>hyprctl -j activewindow</code> response always contains the key
-              <code>"class"</code>. If there is no active window at all, the output will be empty or
-              <code>Invalid</code>, so the check naturally returns false in those cases too.
-            </p>
-            <div class="code-block" style="margin: 0;">
-              <pre><span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(<span class="code-string">"hyprctl -j activewindow"</span>)
-    <span class="code-keyword">return</span> <span class="code-fn">string.find</span>(result, <span class="code-string">"class"</span>) ~= <span class="code-keyword">nil</span>
-<span class="code-keyword">end</span><span class="code-comment">,  -- argument 4</span></pre>
-            </div>
-          </div>
-
-          <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 5 — <code>getCurrentWindow</code>
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 4 — <code>getCurrentWindow</code>
               (function)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               This is the core tracking function. It must return a string representing the <b>application class</b> of
@@ -265,12 +243,12 @@
         <span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>
     )
     <span class="code-keyword">return</span> result
-<span class="code-keyword">end</span><span class="code-comment">,  -- argument 5</span></pre>
+<span class="code-keyword">end</span><span class="code-comment">,  -- argument 4</span></pre>
             </div>
           </div>
 
           <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 6 — <code>getCurrentTitle</code>
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 5 — <code>getCurrentTitle</code>
               (function)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Similar to <code>getCurrentWindow</code> but returns the <b>window title</b> — the full text shown in the
@@ -289,12 +267,12 @@
         "hyprctl -j activewindow | jq -r '.title'"
     )
     return result
-end,  -- argument 6</pre>
+end,  -- argument 5</pre>
             </div>
           </div>
 
           <div class="card fade-in" style="padding: 28px;">
-            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 7 — <code>getCurrentPid</code>
+            <h3 style="color: var(--text-primary); margin-bottom: 4px;">Argument 6 — <code>getCurrentPid</code>
               (function)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Returns a string representing the <b>process ID (PID)</b> of the currently focused window. HPR uses this value to correlate active windows with their parent processes for advanced tracking features and terminal workspace context detection.
@@ -305,7 +283,7 @@ end,  -- argument 6</pre>
         <span class="code-string">"hyprctl -j activewindow | jq -r '.pid'"</span>
     )
     <span class="code-keyword">return</span> result
-<span class="code-keyword">end</span>  <span class="code-comment">-- argument 7</span></pre>
+<span class="code-keyword">end</span>  <span class="code-comment">-- argument 6</span></pre>
             </div>
           </div>
 
@@ -313,7 +291,7 @@ end,  -- argument 6</pre>
 
         <h2 style="margin-bottom: 24px; font-size: 1.6rem;">The Complete Extension</h2>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          Putting all seven arguments together, here is the complete working Hyprland backend extension.
+          Putting all six arguments together, here is the complete working Hyprland backend extension.
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code> at the <strong>top
             level</strong> of the script (outside of <code>init()</code>).
           Declaring these metadata variables at the top level is a best practice that is <strong>EXTREMELY HIGHLY
@@ -350,11 +328,6 @@ HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Exten
 
         <span class="code-keyword">function</span>()
             <span class="code-fn">print</span>(<span class="code-string">"Hyprland backend loaded"</span>)
-        <span class="code-keyword">end</span>,
-
-        <span class="code-keyword">function</span>()
-            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(<span class="code-string">"hyprctl -j activewindow"</span>)
-            <span class="code-keyword">return</span> <span class="code-fn">string.find</span>(result, <span class="code-string">"class"</span>) ~= <span class="code-keyword">nil</span>
         <span class="code-keyword">end</span>,
 
         <span class="code-keyword">function</span>()

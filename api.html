@@ -944,7 +944,7 @@ HPR.startTracking_E()</pre>
             <div class="api-signature">HPR.registerBackend_E(...)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong>
-              <code>(name, matchesEnvironment, initialize, isUsable, getCurrentWindow, getCurrentTitle, getCurrentPid)</code>
+              <code>(name, matchesEnvironment, initialize, getCurrentWindow, getCurrentTitle, getCurrentPid)</code>
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Registers a completely new custom tracking backend dynamically. HPR's backend manager calls the registered
@@ -958,7 +958,6 @@ HPR.startTracking_E()</pre>
         <span class="code-string">"MyCompositor"</span>,
         <span class="code-keyword">function</span>(env) <span class="code-keyword">return</span> env:find(<span class="code-string">"MyCompositor"</span>) ~= <span class="code-keyword">nil</span> <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-fn">print</span>(<span class="code-string">"Loaded!"</span>) <span class="code-keyword">end</span>,
-        <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-keyword">true</span> <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"browser"</span> <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"Home Page"</span> <span class="code-keyword">end</span>,
         <span class="code-keyword">function</span>() <span class="code-keyword">return</span> <span class="code-string">"1234"</span> <span class="code-keyword">end</span>
