@@ -1008,7 +1008,7 @@ HPR.extensionName = <span class="code-string">"MyOverrides"</span>
             <div class="fn-signature">getTime_MS()</div>
             <div class="fn-source">C++ → <code>src/extension/extensionManager.cpp</code></div>
             <p class="fn-desc">
-              Returns the <strong>current system time in milliseconds</strong> (epoch). HPR and extensions use this for timestamping events, calculating durations, and scheduling. Override this to <strong>mock time</strong> — the holy grail for testing. You can freeze time, accelerate it, or set it to any specific moment. Every part of the engine that asks "what time is it?" will get your answer instead.
+              Returns the <strong>current system time in milliseconds</strong> (epoch). Override this to <strong>mock time</strong> for Lua extensions — allowing you to freeze, accelerate, or set a mock timestamp for testing purposes. Note that this override <strong>only affects extension time queries</strong> (calls to <code>HPR.getTime_MS_E()</code>); it does not affect HPR's internal time tracking, event timestamps, or database logs.
             </p>
             <div class="fn-meta">
               <span><strong>Params:</strong> none</span>
