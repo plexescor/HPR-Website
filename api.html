@@ -584,6 +584,19 @@ HPR.connect_E(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class=
           </div>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.applyTheme_E(themeName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>themeName: string</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Dynamically loads and applies a theme by its name, automatically reloading the interpreter UI with the theme's stylesheet path.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.applyTheme_E(<span class="code-string">"Dracula"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.crash_E([message])</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>message: string</code> (optional) &mdash; 
@@ -598,10 +611,10 @@ HPR.connect_E(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class=
             </div>
           </div>
 
-          <!-- ── Environment & OS Identification ────────────────────────── -->
-          <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Environment &amp; OS Identification</h3>
+          <!-- ── Environment, OS & Extension Control ────────────────────── -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Environment, OS &amp; Extension Control</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            Exposes environment and operating system properties so cross-platform extensions can adjust their logic accordingly.
+            Exposes environment, operating system, and loaded extension properties, alongside utilities to dynamically load, unload, and refresh extensions.
           </p>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
@@ -639,6 +652,45 @@ HPR.connect_E(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class=
 <span class="code-keyword">for</span> i, ext <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(plugins) <span class="code-keyword">do</span>
     <span class="code-fn">print</span>(<span class="code-string">"Loaded extension: "</span> .. ext.extensionName .. <span class="code-string">" by "</span> .. ext.authorName)
 <span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.unloadExtension_E(authorName, extensionName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>authorName: string</code>, <code>extensionName: string</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Unloads an active extension by matching its author and extension names.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.unloadExtension_E(<span class="code-string">"Plexescor"</span>, <span class="code-string">"My Custom HPR Extension"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.reloadExtension_E(authorName, extensionName)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>authorName: string</code>, <code>extensionName: string</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Reloads an active extension by matching its author and extension names, triggering its initialization sequence again.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.reloadExtension_E(<span class="code-string">"Plexescor"</span>, <span class="code-string">"My Custom HPR Extension"</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.refreshExtensions_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Scans the extensions directory for new, updated, or removed extensions, dynamically syncing the application's extension state.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.refreshExtensions_E()</pre>
             </div>
           </div>
 
