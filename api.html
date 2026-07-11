@@ -1647,6 +1647,54 @@ HPR.setUiProperty_E(<span class="code-string">"spotifySongs_S"</span>, {
             </p>
           </div>
 
+          <!-- ── Dynamic Library Loading (Dynamic Libraries) ───────────────── -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #ef4444;">Dynamic Library Loading (Dynamic Libraries)</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            HPR supports dynamic library loading to give extensions unlimited execution capabilities.
+            By enabling the <strong>"Allow Extensions to Load Native Libraries"</strong> toggle in Settings, Lua scripts gain access to the standard <code>package</code> library, allowing loading of compiled C/C++ libraries (<code>.so</code> / <code>.dll</code>) via <code>package.loadlib()</code> or <code>require()</code>.
+            This enables developers to run low-level OS operations, custom tray menus, high-performance algorithms, or anything they want.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #ef4444;">
+            <div class="api-signature">Loading Shared Libraries (C/C++ Lua Module Template)</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              To build a compatible module, compile it with the <code>extern "C"</code> entrypoint. This entrypoint is executed when the library is loaded and returns the module table or registers global functions.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%; margin-bottom: 16px;">
+              <pre><span class="code-comment">// mylib.cpp (Vanilla C++)</span>
+#include &lt;lua.hpp&gt;
+#include &lt;iostream&gt;
+
+<span class="code-comment">// The native function called from Lua</span>
+static int l_hello(lua_State* L) {
+    std::cout &lt;&lt; "Yo i am native" &lt;&lt; std::endl;
+    return 0;
+}
+
+<span class="code-comment">// Entry point called by Lua's package loader</span>
+extern "C" int luaopen_mylib(lua_State* L) {
+    lua_register(L, "hello", l_hello); <span class="code-comment">// Registers function globally</span>
+    return 0;
+}</pre>
+            </div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Compile the library:
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%; margin-bottom: 16px;">
+              <pre>g++ -shared -fPIC -o mylib.so mylib.cpp</pre>
+            </div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Then, load and run it inside your extension:
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">-- main.lua</span>
+local loader = package.loadlib("/path/to/mylib.so", "luaopen_mylib")
+loader() -- Runs luaopen_mylib to register global function
+
+hello() -- Prints: Yo i am native</pre>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

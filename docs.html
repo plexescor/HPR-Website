@@ -122,12 +122,8 @@
           </div>
           <div class="card fade-in">
             <div class="card-icon card-icon--cyan">🔒</div>
-            <h3>Sandboxed Lua environment</h3>
-            <p>Extensions only have access to the Lua standard libraries that HPR explicitly opens — <code>base</code>,
-              <code>string</code>, and <code>table</code>. File I/O, OS execution, and package loading are not available
-              directly. Any system interaction goes through HPR's own controlled API functions, keeping the extension
-              environment predictable and safe.
-            </p>
+            <h3>Sandboxed by Default, Unlocked optionally</h3>
+            <p>Extensions are restricted to safe Lua libraries: <code>base</code>, <code>string</code>, <code>table</code>, and <code>math</code>. Unsafe modules like <code>package</code> or <code>os</code> are blocked by default. However, advanced users can enable the <strong>"Allow Extensions to Load Native Libraries"</strong> toggle in Settings to grant access to <code>package.loadlib</code>/<code>require</code> for loading compiled binary files (.so/.dll).</p>
           </div>
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">⚡</div>
