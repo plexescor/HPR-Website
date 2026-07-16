@@ -360,7 +360,7 @@
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
             <strong> Best Practice Callout: Declare metadata!</strong><br>
             It is a best practice to set <code>HPR.authorName = "Your Name"</code> and
-            <code>HPR.extensionName = "Your Extension"</code> at the top level of your script or inside <code>init()</code>. HPR queries these fields immediately after loading the Lua file and after running the <code>init()</code> hook. If you omit them entirely, your extension will still load and execute successfully, but it will fall back to being displayed in HPR's Loaded Extensions manager UI under a <strong>randomly generated name</strong>. Declaring these is <strong>not required but EXTREMELY HIGHLY RECOMMENDED</strong>.
+            <code>HPR.extensionName = "Your Extension"</code> at the top level of your script, completely outside of any functions (do not define them inside <code>init()</code> or other hooks). HPR queries these fields immediately after parsing the Lua file. If you omit them entirely, your extension will still load and execute successfully, but it will fall back to being displayed in HPR's Loaded Extensions manager UI under a <strong>randomly generated name</strong>. Declaring these is <strong>not required but EXTREMELY HIGHLY RECOMMENDED</strong>.
           </p>
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">

@@ -301,7 +301,7 @@ end,  -- argument 5</pre>
           Putting all six arguments together, here is the complete working Hyprland backend extension.
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code>.
           Declaring these metadata variables is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> (though not required for execution). You can place them at the top level or inside <code>init()</code>. If you omit them entirely, HPR will still load and run your extension successfully, but it will show up in the <strong>Loaded Extensions</strong> manager UI under a <strong>randomly generated name</strong>.
+            RECOMMENDED</strong> (though not required for execution). These properties must be declared at the top level of your script, completely outside of any functions (do not place them inside <code>init()</code>). If you omit them entirely, HPR will still load and run your extension successfully, but it will show up in the <strong>Loaded Extensions</strong> manager UI under a <strong>randomly generated name</strong>.
         </p>
 
         <div class="callout callout--danger fade-in"

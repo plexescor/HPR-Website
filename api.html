@@ -203,13 +203,13 @@
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
               <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the author or developer name of the loaded extension. This can be defined at the top level of your extension's script or inside <code>init()</code>.
+              Configures the author or developer name of the loaded extension. This must be defined at the top level of your extension's script, outside of any functions.
             </p>
             <div class="callout callout--danger fade-in"
               style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong> Recommended: Declare at top-level or in init()!</strong><br>
-                HPR queries these identity properties immediately after parsing the Lua file and after running <code>init()</code>. Omitting them entirely means HPR will fall back to registering the extension with a <strong>randomly generated name</strong> in the Loaded Extensions manager UI (though the extension will still load and execute normally). Declaring these is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+                <strong> Recommended: Declare at the top level!</strong><br>
+                HPR queries these identity properties immediately after parsing the Lua file. You must place them outside of any function blocks (such as <code>init()</code>). Omitting them entirely means HPR will fall back to registering the extension with a <strong>randomly generated name</strong> in the Loaded Extensions manager UI (though the extension will still load and execute normally). Declaring these is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">
@@ -222,13 +222,13 @@
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
               <code>string</code> (property)</p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Configures the custom display name of the loaded extension. This can be defined at the top level of your extension's script or inside <code>init()</code>.
+              Configures the custom display name of the loaded extension. This must be defined at the top level of your extension's script, outside of any functions.
             </p>
             <div class="callout callout--danger fade-in"
               style="margin-bottom: 16px; border-left-color: var(--accent-green); background-color: var(--accent-green-dim);">
               <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
-                <strong> Recommended: Declare at top-level or in init()!</strong><br>
-                Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script or inside <code>init()</code>. If omitted, the extension will fall back to being displayed under a <strong>randomly generated name</strong> in the Loaded Extensions manager UI. Declaring this is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+                <strong> Recommended: Declare at the top level!</strong><br>
+                Must be set alongside <code>HPR.authorName</code> at the top level of the Lua script, outside of any function blocks. If omitted, the extension will fall back to being displayed under a <strong>randomly generated name</strong> in the Loaded Extensions manager UI. Declaring this is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
               </p>
             </div>
             <div class="code-block" style="margin: 0; width: 100%;">

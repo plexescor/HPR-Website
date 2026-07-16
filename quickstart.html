@@ -125,8 +125,8 @@
           your extension inside HPR's <strong>Extensions tab</strong>, which is also where hot reloading lives. If you
           skip them, HPR will still load and run your extension, but it will show up in the Extensions tab with a
           <strong>randomly generated name</strong> — so you can still Reload or Disable it, but good luck figuring out
-          which one it is if you have multiple unnamed extensions. You can define them at the
-          <strong>top level</strong> of your script or inside <code>init()</code>. If you omit them, you will get a randomly generated name.
+          which one it is if you have multiple unnamed extensions. Note that these properties <strong>must be defined at the
+          top level</strong> of your script, outside of any functions (do not place them inside <code>init()</code> or other routines).
         </p>
 
         <div class="callout callout--amber fade-in" style="margin-bottom: 20px;">

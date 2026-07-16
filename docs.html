@@ -308,10 +308,8 @@
               Extensions</strong> manager UI. To do this, simply set the global <code>HPR.authorName</code> and
             <code>HPR.extensionName</code> properties.
             <br><br>
-            <strong style="color: var(--text-primary);"> Declare at the Top Level or in init()!</strong>
-            These properties can be defined at the top level of your script or inside the
-            <code>init()</code> function. HPR inspects the Lua VM immediately after parsing the
-            file and executing <code>init()</code>.
+            <strong style="color: var(--text-primary);"> Declare at the Top Level (Outside Functions)!</strong>
+            These properties must be defined at the top level of your script, outside of any functions. HPR inspects the Lua VM immediately after parsing the file, so these values must be set in the global scope rather than inside <code>init()</code> or other blocks.
             <br><br>
             If you omit them entirely, HPR will <strong>still load and run your extension successfully</strong>, but it will show up in the Extensions manager UI under a <strong>randomly generated name</strong>. This makes it much harder to identify which extension is which when you want to reload or disable them.
             <br><br>

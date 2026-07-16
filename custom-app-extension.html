@@ -910,12 +910,12 @@ liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <spa
           <code>main.lua</code> file — copy it into your extensions folder and it works out of the box.
           Note that we define <code>HPR.authorName</code> and <code>HPR.extensionName</code>.
           Declaring these metadata variables is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong> (though not required for script execution). You can place them at the top level or inside <code>init()</code>. If you omit them entirely, your extension will still load and run successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+            RECOMMENDED</strong> (though not required for script execution). These properties must be declared at the top level of your script, completely outside of any functions (do not place them inside <code>init()</code>). If you omit them entirely, your extension will still load and run successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">main.lua</span>
-          <pre><span class="code-comment">-- Declare extension metadata at the top level or inside init() (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Declare extension metadata at the top level, outside of any functions (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Spotify Watcher HPR Extension"</span>
 

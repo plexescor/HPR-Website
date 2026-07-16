@@ -236,11 +236,11 @@
           Put it all together, and your <code>burnout-monitor.lua</code> looks like this. Note that we define the
           extension identity metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>).
           Declaring these metadata variables is a best practice that is <strong>EXTREMELY
-            HIGHLY RECOMMENDED</strong>. You can define them at the top level or inside <code>init()</code>. If they are omitted, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+            HIGHLY RECOMMENDED</strong>. These properties must be declared at the top level of your script, completely outside of any functions (do not place them inside <code>init()</code>). If they are omitted, your extension will still load and execute successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">burnout-monitor.lua</span>
-          <pre><span class="code-comment">-- Define extension metadata at the top-level or in init() (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level, outside of any functions (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</span>
 
@@ -432,11 +432,11 @@ HPR.extensionName = <span class="code-string">"Burnout Monitor HPR Extension"</s
           The final <code>wellness-officer.lua</code> is incredibly short, but incredibly powerful.
           Just like the watcher, we define the metadata (<code>HPR.authorName</code> and <code>HPR.extensionName</code>).
           Declaring these metadata variables is a best practice that is <strong>EXTREMELY HIGHLY
-            RECOMMENDED</strong>. You can place them at the top level or inside <code>init()</code>. If omitted, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
+            RECOMMENDED</strong>. These properties must be declared at the top level of your script, completely outside of any functions (do not place them inside <code>init()</code>). If omitted, HPR will still load and run your extension successfully, but it will show up in the Loaded Extensions manager UI under a <strong>randomly generated name</strong>.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 64px;">
           <span class="code-label">wellness-officer.lua</span>
-          <pre><span class="code-comment">-- Define extension metadata at the top-level or in init() (highly recommended for UI registration!)</span>
+          <pre><span class="code-comment">-- Define extension metadata at the top-level, outside of any functions (highly recommended for UI registration!)</span>
 HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Wellness Officer HPR Extension"</span>
 
