@@ -1018,6 +1018,12 @@ HPR.startTracking_E()</pre>
                 HPR checks registered backends in <strong>reverse order</strong> of registration. Because Lua extensions load after the native backends are registered, your custom extension backend is positioned last in the registry and will be evaluated first during startup checks.
               </p>
             </div>
+            <div class="callout callout--amber fade-in" style="margin-top: 16px; margin-bottom: 0; border-left-color: var(--accent-red); background-color: var(--accent-red-dim);">
+              <div class="callout-title" style="color: var(--accent-red); font-weight: 700;">⚠️ Experimental Feature Notice</div>
+              <p style="line-height: 1.7; font-size: 0.85rem; margin: 0;">
+                <strong>Warning:</strong> Dynamically registered custom Lua backends are considered experimental. You may experience bugs, instability, or memory leaks depending on how system commands are polled and the stability of your compositor integrations. Native C++ backends should be preferred when available.
+              </p>
+            </div>
           </div>
 
           <!-- ── Event Hub & Messaging ──────────────────────────────────── -->

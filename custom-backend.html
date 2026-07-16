@@ -65,6 +65,13 @@
           The full finished example at the bottom is fewer than 30 lines.
         </p>
 
+        <div class="callout fade-in" style="margin-bottom: 32px; border-left-color: var(--accent-red); background-color: var(--accent-red-dim); border-left-width: 4px; padding: 20px;">
+          <div class="callout-title" style="color: var(--accent-red); font-weight: 700; font-size: 1.1rem; margin-bottom: 8px;">⚠️ Experimental Feature Notice</div>
+          <p style="margin: 0; line-height: 1.7; font-size: 0.95rem; color: var(--text-primary);">
+            <strong>Important:</strong> Custom tracking backends registered dynamically via Lua extensions are currently in an <strong>experimental phase</strong>. While functional, this API is subject to unexpected behavior, stability issues, or memory overhead under different desktop environments and compositors. Native backends should always be preferred for production tracking.
+          </p>
+        </div>
+
         <div class="callout fade-in" style="margin-bottom: 24px;">
           <div class="callout-title">Before you start</div>
           <p>
@@ -90,7 +97,7 @@
             If you write a Lua extension for a compositor or desktop environment that is <strong>already natively supported</strong> by HPR (such as Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), your extension's implementation will be <strong>preferred and prioritized</strong> over the built-in one!
           </p>
           <p style="margin-top: 10px;">
-            Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code!
+            Here's how it works under the hood: HPR maintains a list of all registered window tracking backends. During startup, it evaluates this list in <strong>reverse order</strong> (from newest to oldest). Since Lua extensions are loaded after HPR's native backends are registered, your custom backend gets positioned at the end of the list. If it matches the environment, HPR will select your backend and skip the native one entirely. This makes it incredibly easy to customize or override window-tracking logic on any system without ever modifying the C++ source code! <em>However, overriding native backends is currently an experimental feature and may introduce tracking latency or subtle bugs if the Lua scripts are not carefully optimized.</em>
           </p>
         </div>
 

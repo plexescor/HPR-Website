@@ -89,7 +89,7 @@
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
           Inside your script, you have access to a global object called <code>HPR</code>. This object exposes a set of
           functions that let your script communicate with HPR's internals — reading the currently active window, querying
-          databases, making HTTP requests, subscribing to system events, and even registering entirely new window-tracking backends for compositors or desktop environments
+          databases, making HTTP requests, subscribing to system events, and even registering entirely new window-tracking backends (currently experimental) for compositors or desktop environments
           that HPR doesn't natively support.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 24px;">
@@ -102,7 +102,7 @@
           you already know 90% of what you need. Start with the <a href="quickstart.html" style="color: var(--accent-green);">QuickStart Guide</a> and you'll have your first extension running in under 5 minutes.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          💡 <strong>Preferring Extension Backends over Native:</strong> If you register a custom window tracking backend for a compositor or desktop environment that is already natively supported by HPR (like Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), your Lua extension's implementation will be preferred and activated instead of the built-in C++ one. This is because HPR searches registered backends in reverse order, giving your newly loaded Lua extension priority.
+          💡 <strong>Preferring Extension Backends over Native:</strong> If you register a custom window tracking backend for a compositor or desktop environment that is already natively supported by HPR (like Hyprland, GNOME, KDE, Cinnamon, niri, or Windows), your Lua extension's implementation will be preferred and activated instead of the built-in C++ one. This is because HPR searches registered backends in reverse order, giving your newly loaded Lua extension priority. <em>Note: Custom Lua backends are currently an experimental feature and may exhibit instability or bugs depending on system polling rates and environment variables.</em>
         </p>
 
         <div class="feature-grid feature-grid--2">
