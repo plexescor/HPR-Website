@@ -159,12 +159,12 @@
         <div class="step-card fade-in" style="border-left-color: var(--accent-purple);">
           <h3 style="margin-bottom: 8px; color: var(--text-primary);"><span style="color: var(--accent-purple);">Step 3:</span> Write the Layout</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-            The HPR user interface is built using <a href="https://docs.slint.dev/latest/docs/slint/" target="_blank" rel="noopener" style="color: var(--accent-green); text-decoration: underline;">Slint</a>. To write or modify themes, you will need a basic understanding of Slint UI design. You can download the <a href="assets/boilerplate-theme.zip" download style="color: var(--accent-green); font-weight: 700; text-decoration: underline;">Minimal Boilerplate Theme</a> to use as a starting template.
+            The HPR user interface is built using <a href="https://docs.slint.dev/latest/docs/slint/" target="_blank" rel="noopener" style="color: var(--accent-green); text-decoration: underline;">Slint</a>. To write or modify themes, you will need a basic understanding of Slint UI design.
           </p>
           <div class="callout" style="margin-bottom: 0; border-left: 3px solid var(--accent-cyan); background: var(--accent-cyan-dim);">
             <p style="margin: 0; font-size: 0.92rem; line-height: 1.65; color: var(--text-secondary);">
               <strong>Minimal Layout Content:</strong> Your theme folder only needs three files to work:
-              <br>&bull; <code>metadata.csv</code> (contains the theme name and version)
+              <br>&bull; <code>metadata.csv</code> (contains the theme name, author, and version)
               <br>&bull; <code>types.slint</code> (defines the data models - if you choose to omit any properties or models, the app still functions but you will not receive data for those fields)
               <br>&bull; <code>app-window.slint</code> (the main layout entry point - this filename is mandatory)
               <br>You are completely free to add other helper <code>.slint</code> files, custom components, or assets of your choice, or remove unused elements, as long as the mandatory files are present.
@@ -207,7 +207,7 @@
           <span class="code-label">File Structure</span>
           <pre>themes/
     neon-cyber/
-        metadata.csv      <span class="code-comment"># Registered details</span>
+        metadata.csv      <span class="code-comment"># Theme details (name, author, version)</span>
         app-window.slint  <span class="code-comment"># Main layout entry point (mandatory name)</span>
         types.slint       <span class="code-comment"># Data models contract (optional properties/models; omitting them is fine, but you won't get their data)</span>
         1.png             <span class="code-comment"># Preview slide 1 (optional)</span>
@@ -585,6 +585,10 @@
                 <td style="padding: 12px 16px; color: var(--text-secondary);">Version of current theme metadata.</td>
               </tr>
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;string&gt; themeAuthor_S</td>
+                <td style="padding: 12px 16px; color: var(--text-secondary);">Author name specified in the current theme's metadata.csv.</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 12px 16px; font-family: var(--font-mono); color: var(--accent-cyan);">in property &lt;bool&gt; useThemesEnabled_S</td>
                 <td style="padding: 12px 16px; color: var(--text-secondary);">True when interpreted UI is active in HPR config.</td>
               </tr>
@@ -695,7 +699,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.4 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.6 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>
