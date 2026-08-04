@@ -380,6 +380,44 @@
           </div>
 
 
+          <!-- ── Theme Customization ────────────────────────────────────── -->
+          <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a3e635;">Theme Customization</h3>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+            Exposes system level theme settings and available themes directly to extensions.
+          </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.getThemeNames_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; 
+              <strong>Returns:</strong> <code>table</code> (list of available theme names)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a Lua list containing the names of all themes currently registered or available in HPR.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> themes = HPR.getThemeNames_E()
+<span class="code-keyword">for</span> _, themeName <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(themes) <span class="code-keyword">do</span>
+    <span class="code-fn">print</span>(<span class="code-string">"Available theme: "</span> .. themeName)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%; border-left: 3px solid #a3e635;">
+            <div class="api-signature">HPR.getCurrentThemeName_E()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; 
+              <strong>Returns:</strong> <code>string</code> (name of the active theme)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Retrieves the name of the theme currently selected and active in the system settings.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> activeTheme = HPR.getCurrentThemeName_E()
+<span class="code-fn">print</span>(<span class="code-string">"Currently active theme: "</span> .. activeTheme)</pre>
+            </div>
+          </div>
+
           <!-- ── Pattern Analyzer Insights ──────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-green);">Pattern Analyzer Insights</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
