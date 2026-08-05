@@ -769,6 +769,34 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
             </div>
           </div>
 
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getExtensionDir()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; <strong>Returns:</strong> <code>string</code> (relative path)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the relative directory path of the running extension relative to HPR's root extension directory (ending with a trailing slash). Returns an empty string <code>""</code> if the extension file resides directly in the root extensions folder.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> relDir = HPR.getExtensionDir()
+<span class="code-fn">print</span>(<span class="code-string">"Relative extension dir: "</span> .. relDir)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getExtensionAbsoluteDir()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; <strong>Returns:</strong> <code>string</code> (full absolute directory path)
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the full canonical absolute filesystem directory path of the running extension (ending with a trailing <code>/</code> or <code>\</code>). Recommended when constructing absolute paths for loading native shared libraries via <code>package.loadlib()</code> or accessing external files.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> absDir = HPR.getExtensionAbsoluteDir()
+<span class="code-fn">print</span>(<span class="code-string">"Absolute extension dir: "</span> .. absDir)</pre>
+            </div>
+          </div>
+
           <!-- ── Window State Information ───────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-cyan);">Window State Information</h3>
 
@@ -1769,10 +1797,16 @@ extern "C" int luaopen_mylib(lua_State* L) {
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- main.lua</span>
-local loader = package.loadlib("/path/to/mylib.so", "luaopen_mylib")
-loader() -- Runs luaopen_mylib to register global function
+<span class="code-keyword">local</span> extDir = HPR.getExtensionAbsoluteDir()
+<span class="code-keyword">local</span> dllPath = (HPR.getOsName() == <span class="code-string">"Windows"</span>) <span class="code-keyword">and</span> (extDir .. <span class="code-string">"mylib.dll"</span>) <span class="code-keyword">or</span> (extDir .. <span class="code-string">"mylib.so"</span>)
 
-hello() -- Prints: Yo i am native</pre>
+<span class="code-keyword">local</span> loader, err = package.loadlib(dllPath, <span class="code-string">"luaopen_mylib"</span>)
+<span class="code-keyword">if</span> loader <span class="code-keyword">then</span>
+    loader() <span class="code-comment">-- Runs luaopen_mylib to register global function</span>
+    hello()  <span class="code-comment">-- Prints: Yo i am native</span>
+<span class="code-keyword">else</span>
+    HPR.log(<span class="code-string">"MyExtension"</span>, <span class="code-string">"Failed to load native library: "</span> .. <span class="code-fn">tostring</span>(err))
+<span class="code-keyword">end</span></pre>
             </div>
           </div>
 
