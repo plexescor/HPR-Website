@@ -636,6 +636,25 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
           </div>
 
           <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.showUiPopup(text, leftBtnText, rightBtnText, callback)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>text: string</code>, <code>leftBtnText: string</code>, <code>rightBtnText: string</code>, <code>callback: function</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Shows a custom modal popup dialog in the HPR Slint UI overlay. Clicking the left button in the UI returns <code>0</code> (integer) to the callback function, while clicking the right button returns <code>1</code> (integer). Multiple requests to show a popup are queued internally and processed sequentially.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.showUiPopup(<span class="code-string">"Save changes?"</span>, <span class="code-string">"No"</span>, <span class="code-string">"Yes"</span>, <span class="code-keyword">function</span>(btn)
+    <span class="code-keyword">if</span> btn == <span class="code-number">1</span> <span class="code-keyword">then</span>
+        print(<span class="code-string">"User clicked Yes!"</span>)
+    <span class="code-keyword">else</span>
+        print(<span class="code-string">"User clicked No!"</span>)
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card api-card--utility fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.applyTheme(themeName)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>themeName: string</code> &mdash; <strong>Returns:</strong> nothing
