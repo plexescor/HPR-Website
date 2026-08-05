@@ -244,7 +244,7 @@
                 <span class="interpreter-step-num" style="background: rgba(240, 160, 48, 0.15); color: var(--accent-amber);">1</span>
                 <div class="interpreter-step-text">
                   <h4>Interactive UI Callbacks</h4>
-                  <p>Register handlers using <code>registerUiCallback_E</code>. Pass nested structures (arrays, objects) dynamically from Slint UI triggers directly to Lua VM handlers as arguments (with a void return in C++).</p>
+                  <p>Register handlers using <code>registerUiCallback</code>. Pass nested structures (arrays, objects) dynamically from Slint UI triggers directly to Lua VM handlers as arguments (with a void return in C++).</p>
                 </div>
               </div>
               <div class="interpreter-step">
@@ -273,9 +273,9 @@
               <div class="code-block" style="margin-bottom: 20px;">
                 <span class="code-label">extension.lua</span>
                 <pre><span class="code-comment">-- Subscribe to EventHub securely</span>
-<span class="code-keyword">HPR.connect_E</span>(<span class="code-string">"TICK"</span>, <span class="code-keyword">function</span>(data)
+<span class="code-keyword">HPR.connect</span>(<span class="code-string">"TICK"</span>, <span class="code-keyword">function</span>(data)
     <span class="code-comment">-- Direct database query</span>
-    <span class="code-keyword">local</span> res = <span class="code-keyword">HPR.dbQuery_E</span>(<span class="code-string">"SELECT count(*) FROM active"</span>)
+    <span class="code-keyword">local</span> res = <span class="code-keyword">HPR.dbQuery</span>(<span class="code-string">"SELECT count(*) FROM active"</span>)
     <span class="code-keyword">print</span>(<span class="code-string">"Active tracking entries: "</span> .. res[<span class="code-number">1</span>][<span class="code-number">1</span>])
 <span class="code-keyword">end</span>)</pre>
               </div>

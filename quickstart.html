@@ -53,6 +53,20 @@
   </nav>
 
   <main class="page-content">
+    <!-- Deprecation Banner -->
+    <div style="max-width: var(--max-width); margin: 32px auto 0 auto; padding: 0 32px;">
+      <div class="api-notice-banner" style="background: var(--accent-amber-dim); border: 1px solid var(--accent-amber); padding: 16px 24px; border-radius: var(--radius-md); font-family: var(--font-sans); color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber);">
+          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped
+        </div>
+        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+          The <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
+          <br>
+          <strong>Backward Compatibility:</strong> If you want to run legacy extensions that still use <code>_E</code> without modifying their code, simply add <code>HPR.useLegacyAPISuffix = true</code> at the very top of your Lua extension scripts.
+        </div>
+      </div>
+    </div>
+
     <section class="hero grid-bg">
       <div class="container">
         <div class="hero-grid" style="grid-template-columns: 1fr;">
@@ -166,7 +180,7 @@
 <span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
-    <span class="code-keyword">local</span> currentApp = <span class="code-fn">HPR.getCurrentWindow_E</span>()
+    <span class="code-keyword">local</span> currentApp = <span class="code-fn">HPR.getCurrentWindow</span>()
     <span class="code-fn">print</span>(<span class="code-string">"Currently focused: "</span> .. currentApp .. <span class="code-string">" | Delta: "</span> .. delta .. <span class="code-string">"ms"</span>)
 <span class="code-keyword">end</span></pre>
         </div>
@@ -212,19 +226,19 @@
           </p>
 
           <!-- 2. Difference between polling and events -->
-          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Polling (onTick) vs. Event-Driven (connect_E)</h3>
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Polling (onTick) vs. Event-Driven (connect)</h3>
           <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
             The <code>onTick</code> polling approach we built in Step 3 works fine, but let's be honest: it is kind of dumb. Your extension has to wake up every few hundred milliseconds, run code to check the state, and go back to sleep—even if you've been working in the exact same text editor window for three hours straight! That is a waste of clock cycles. 
             <br><br>
             <strong>Event-driven programming is way smarter.</strong> Your callback function only wakes up and executes when something actually happens in the real world. For window tracking in particular, events are the correct tool because users do not switch windows on a fixed, predictable schedule.
           </p>
 
-          <!-- 3. connect_E and what it returns -->
-          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">How connect_E works (and your subscription receipt)</h3>
+          <!-- 3. connect and what it returns -->
+          <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">How connect works (and your subscription receipt)</h3>
           <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
-            To tune in, we call <code>HPR.connect_E()</code>. This function takes two arguments: the name of the event string we want to listen to, and a callback function to run when the event occurs. 
+            To tune in, we call <code>HPR.connect()</code>. This function takes two arguments: the name of the event string we want to listen to, and a callback function to run when the event occurs. 
             <br><br>
-            Crucially, <code>HPR.connect_E()</code> returns a <strong>subscription ID integer</strong>. Think of this ID as your <strong>claim receipt</strong>. It is the only way HPR knows how to identify your listener, and it is the only way you can cancel that subscription later. Because of this, you should always save this ID in a variable at the very top of your script so that your entire file has access to it.
+            Crucially, <code>HPR.connect()</code> returns a <strong>subscription ID integer</strong>. Think of this ID as your <strong>claim receipt</strong>. It is the only way HPR knows how to identify your listener, and it is the only way you can cancel that subscription later. Because of this, you should always save this ID in a variable at the very top of your script so that your entire file has access to it.
           </p>
 
           <!-- 4. WHY you must disconnect -->
@@ -234,7 +248,7 @@
             <br><br>
             To prevent classic <strong>use-after-free bugs</strong> and <strong>segmentation faults (segfaults)</strong> upon extension shutdown, HPR's C++ manager features an elegant, automatic <strong>RAII lifecycle tracking</strong> architecture. The core engine dynamically registers and monitors every Event Hub subscription established by your extension. 
             <br><br>
-            When your extension is stopped, disabled, or reloaded, HPR automatically and cleanly disconnects all active subscriptions from the C++ event loop before the Lua VM is destroyed. Manual cleanup via <code>HPR.disconnect_E()</code> is completely optional but still a great practice to keep your code organized!
+            When your extension is stopped, disabled, or reloaded, HPR automatically and cleanly disconnects all active subscriptions from the C++ event loop before the Lua VM is destroyed. Manual cleanup via <code>HPR.disconnect()</code> is completely optional but still a great practice to keep your code organized!
           </p>
 
           <!-- Explanation of WINDOW_CHANGED data payload -->
@@ -260,7 +274,7 @@
     
     <span class="code-comment">-- Listen to a REAL built-in event when focus changes.</span>
     <span class="code-comment">-- data will be a table containing fromWindow and toWindow strings</span>
-    changeSubId = <span class="code-fn">HPR.connect_E</span>(<span class="code-string">"WINDOW_CHANGED"</span>, <span class="code-keyword">function</span>(data)
+    changeSubId = <span class="code-fn">HPR.connect</span>(<span class="code-string">"WINDOW_CHANGED"</span>, <span class="code-keyword">function</span>(data)
         <span class="code-fn">print</span>(<span class="code-string">"[Event] Active application class switched to: "</span> .. data.toWindow)
     <span class="code-keyword">end</span>)
     
@@ -276,7 +290,7 @@
     
     <span class="code-comment">-- Optional/Best Practice: Unregister event hook (HPR automatically disconnects on exit)</span>
     <span class="code-keyword">if</span> changeSubId <span class="code-keyword">then</span>
-        <span class="code-fn">HPR.disconnect_E</span>(<span class="code-string">"WINDOW_CHANGED"</span>, changeSubId)
+        <span class="code-fn">HPR.disconnect</span>(<span class="code-string">"WINDOW_CHANGED"</span>, changeSubId)
     <span class="code-keyword">end</span>
 <span class="code-keyword">end</span></pre>
 
@@ -345,10 +359,10 @@
           <h3 style="color: var(--accent-amber); margin-bottom: 8px;">1. Forgetting to save subscription IDs (when early/dynamic disconnection is needed)
           </h3>
           <p style="margin-bottom: 12px; color: var(--text-secondary);">
-            <strong>Why it matters:</strong> Previously, failing to manually call <code>HPR.disconnect_E()</code> upon exit was a severe issue that caused use-after-free crashes. Fortunately, HPR's C++ manager now features <strong>automatic RAII connection tracking</strong>, meaning all active listeners are automatically unregistered when your extension stops, completely preventing any shutdown segfaults.
+            <strong>Why it matters:</strong> Previously, failing to manually call <code>HPR.disconnect()</code> upon exit was a severe issue that caused use-after-free crashes. Fortunately, HPR's C++ manager now features <strong>automatic RAII connection tracking</strong>, meaning all active listeners are automatically unregistered when your extension stops, completely preventing any shutdown segfaults.
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            However, keeping track of your subscription IDs is still highly recommended! If you need to stop listening to an event dynamically mid-execution (for example, after a specific state is reached, or to switch behaviors), you will still need to invoke <code>HPR.disconnect_E()</code> using the saved subscription ID.
+            However, keeping track of your subscription IDs is still highly recommended! If you need to stop listening to an event dynamically mid-execution (for example, after a specific state is reached, or to switch behaviors), you will still need to invoke <code>HPR.disconnect()</code> using the saved subscription ID.
           </p>
 
           <div
@@ -357,7 +371,7 @@
               <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Outdated / Loose Code</span>
               <pre style="margin: 0;"><span class="code-comment">-- Subscribed, but no ID saved to disconnect early</span>
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
+    HPR.connect(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
 <span class="code-keyword">end</span></pre>
             </div>
 
@@ -366,13 +380,13 @@
               <pre style="margin: 0;"><span class="code-keyword">local</span> subId = <span class="code-keyword">nil</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    subId = HPR.connect_E(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
+    subId = HPR.connect(<span class="code-string">"WINDOW_CHANGED"</span>, callback)
 <span class="code-keyword">end</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">onExit</span>()
     <span class="code-comment">-- Explicit cleanup is still a great practice!</span>
     <span class="code-keyword">if</span> subId <span class="code-keyword">then</span>
-        HPR.disconnect_E(<span class="code-string">"WINDOW_CHANGED"</span>, subId)
+        HPR.disconnect(<span class="code-string">"WINDOW_CHANGED"</span>, subId)
     <span class="code-keyword">end</span>
 <span class="code-keyword">end</span></pre>
             </div>
@@ -384,10 +398,10 @@
           style="margin-bottom: 32px; padding: 28px; width: 100%; border-left: 3px solid var(--accent-amber);">
           <h3 style="color: var(--accent-amber); margin-bottom: 8px;">2. Treating CSV paths as relative to your subfolder</h3>
           <p style="margin-bottom: 12px; color: var(--text-secondary);">
-            <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods (like `readCsv_E`, `writeCsv_E`, etc.) are resolved relative to the global <strong>extensions root directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
+            <strong>Why it happens:</strong> Because HPR is sandboxed for safety, all filesystem interaction methods (like `readCsv`, `writeCsv`, etc.) are resolved relative to the global <strong>extensions root directory</strong> (e.g. <code>~/.config/HPR/extensions/</code>).
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>), writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create it right at the global root extensions directory. To resolve this perfectly, HPR exposes the <code>HPR.getExtensionDir_E()</code> function, which dynamically returns the relative path (from the extensions root) to your specific subdirectory so you can write bulletproof path code!
+            If your extension is organized inside a subfolder (like <code>extensions/cool-addon/script.lua</code>), writing a file to <code>"settings.csv"</code> won't save it inside your subfolder. Instead, it will create it right at the global root extensions directory. To resolve this perfectly, HPR exposes the <code>HPR.getExtensionDir()</code> function, which dynamically returns the relative path (from the extensions root) to your specific subdirectory so you can write bulletproof path code!
           </p>
 
           <div
@@ -395,14 +409,14 @@
             <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
               <pre style="margin: 0;"><span class="code-comment">-- Saves at global root (extensions/settings.csv)</span>
-<span class="code-keyword">local</span> data = HPR.readCsv_E(<span class="code-string">"settings.csv"</span>)</pre>
+<span class="code-keyword">local</span> data = HPR.readCsv(<span class="code-string">"settings.csv"</span>)</pre>
             </div>
 
             <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
               <pre style="margin: 0;"><span class="code-comment">-- Dynamically resolve paths relative to your folder</span>
-<span class="code-keyword">local</span> myDir = HPR.getExtensionDir_E()
-<span class="code-keyword">local</span> data = HPR.readCsv_E(myDir .. <span class="code-string">"settings.csv"</span>)</pre>
+<span class="code-keyword">local</span> myDir = HPR.getExtensionDir()
+<span class="code-keyword">local</span> data = HPR.readCsv(myDir .. <span class="code-string">"settings.csv"</span>)</pre>
             </div>
           </div>
         </div>
@@ -427,7 +441,7 @@
             <div class="code-block" style="border: 1px solid rgba(224, 82, 82, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-red); font-weight: bold;">❌ Wrong Code</span>
               <pre style="margin: 0;"><span class="code-comment">-- Fails or times out on IPv6 loopback resolution</span>
-<span class="code-keyword">local</span> body, status = HPR.httpGet_E(
+<span class="code-keyword">local</span> body, status = HPR.httpGet(
     <span class="code-string">"localhost:5600"</span>, 
     <span class="code-string">"/api/0/buckets"</span>, 
     <span class="code-keyword">false</span>
@@ -437,7 +451,7 @@
             <div class="code-block" style="border: 1px solid rgba(61, 220, 132, 0.4); margin: 0;">
               <span class="code-label" style="color: var(--accent-green); font-weight: bold;">✅ Correct Code</span>
               <pre style="margin: 0;"><span class="code-comment">-- Bypasses DNS lookup and hits IPv4 directly</span>
-<span class="code-keyword">local</span> body, status = HPR.httpGet_E(
+<span class="code-keyword">local</span> body, status = HPR.httpGet(
     <span class="code-string">"127.0.0.1:5600"</span>, 
     <span class="code-string">"/api/0/buckets"</span>, 
     <span class="code-keyword">false</span>
@@ -453,7 +467,7 @@
             <strong>Why it happens:</strong> Each extension runs on its own dedicated C++ background thread. If your callback or <code>onTick</code> blocks for a long time — for example, a slow HTTP request without a timeout — that extension's tick schedule falls further and further behind. The core tracker and all other extensions keep running fine, but yours will lag.
           </p>
           <p style="margin-bottom: 16px; color: var(--text-secondary);">
-            Keep callbacks fast. For HTTP requests, always pass a sensible timeout via the <code>timeout</code> parameter of <code>httpGet_E</code> / <code>httpPost_E</code> so your extension doesn't hang indefinitely waiting on a dead server.
+            Keep callbacks fast. For HTTP requests, always pass a sensible timeout via the <code>timeout</code> parameter of <code>httpGet</code> / <code>httpPost</code> so your extension doesn't hang indefinitely waiting on a dead server.
           </p>
         </div>
 

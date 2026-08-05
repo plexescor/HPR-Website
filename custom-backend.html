@@ -46,6 +46,20 @@
   </nav>
 
   <main class="page-content">
+    <!-- Deprecation Banner -->
+    <div style="max-width: var(--max-width); margin: 32px auto 0 auto; padding: 0 32px;">
+      <div class="api-notice-banner" style="background: var(--accent-amber-dim); border: 1px solid var(--accent-amber); padding: 16px 24px; border-radius: var(--radius-md); font-family: var(--font-sans); color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber);">
+          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped
+        </div>
+        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+          The <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
+          <br>
+          <strong>Backward Compatibility:</strong> If you want to run legacy extensions that still use <code>_E</code> without modifying their code, simply add <code>HPR.useLegacyAPISuffix = true</code> at the very top of your Lua extension scripts.
+        </div>
+      </div>
+    </div>
+
     <section class="section">
       <div class="container">
         <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
@@ -60,7 +74,7 @@
           your extensions folder.
         </p>
         <p class="section-desc fade-in" style="margin-bottom: 48px;">
-          This tutorial will walk you through every part of <code>HPR.registerBackend_E()</code> in detail. By the end
+          This tutorial will walk you through every part of <code>HPR.registerBackend()</code> in detail. By the end
           you will understand exactly what each argument does, why it exists, and how to write one for your own system.
           The full finished example at the bottom is fewer than 30 lines.
         </p>
@@ -123,7 +137,7 @@
           loop begins. This guarantees your backend is registered before HPR starts its first window detection cycle.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-          If you put <code>registerBackend_E</code> inside <code>onTick(delta)</code>, HPR would attempt to register the
+          If you put <code>registerBackend</code> inside <code>onTick(delta)</code>, HPR would attempt to register the
           same
           backend once every second, causing duplicate registrations and undefined behavior. Always use
           <code>init()</code> for one-time setup.
@@ -131,13 +145,13 @@
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">skeleton</span>
           <pre><span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    HPR.registerBackend_E(
+    HPR.registerBackend(
         <span class="code-comment">-- 6 arguments go here</span>
     )
 <span class="code-keyword">end</span></pre>
         </div>
 
-        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 6 arguments of <code>registerBackend_E</code>
+        <h2 style="margin-bottom: 24px; font-size: 1.6rem;">Step 3 — The 6 arguments of <code>registerBackend</code>
         </h2>
         <p style="color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7;">
            The function takes 6 positional arguments in a fixed order. Here is each one explained in detail.
@@ -246,7 +260,7 @@
             </div>
             <div class="code-block" style="margin: 0;">
               <pre><span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+    <span class="code-keyword">local</span> result = HPR.runSystemCommand(
         <span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>
     )
     <span class="code-keyword">return</span> result
@@ -270,7 +284,7 @@
             </p>
             <div class="code-block" style="margin: 0;">
               <pre><span class="code-keyword">function</span>()
-    local result = HPR.runSystemCommand_E(
+    local result = HPR.runSystemCommand(
         "hyprctl -j activewindow | jq -r '.title'"
     )
     return result
@@ -286,7 +300,7 @@ end,  -- argument 5</pre>
             </p>
             <div class="code-block" style="margin: 0;">
               <pre><span class="code-keyword">function</span>()
-    <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+    <span class="code-keyword">local</span> result = HPR.runSystemCommand(
         <span class="code-string">"hyprctl -j activewindow | jq -r '.pid'"</span>
     )
     <span class="code-keyword">return</span> result
@@ -324,7 +338,7 @@ HPR.authorName    = <span class="code-string">"Plexescor"</span>
 HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Extension"</span>
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
-    HPR.registerBackend_E(
+    HPR.registerBackend(
 
         <span class="code-string">"Hyprland"</span>,
 
@@ -337,21 +351,21 @@ HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Exten
         <span class="code-keyword">end</span>,
 
         <span class="code-keyword">function</span>()
-            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand(
                 <span class="code-string">"hyprctl -j activewindow | jq -r '.class'"</span>
             )
             <span class="code-keyword">return</span> result
         <span class="code-keyword">end</span>,
 
         <span class="code-keyword">function</span>()
-            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand(
                 <span class="code-string">"hyprctl -j activewindow | jq -r '.title'"</span>
             )
             <span class="code-keyword">return</span> result
         <span class="code-keyword">end</span>,
 
         <span class="code-keyword">function</span>()
-            <span class="code-keyword">local</span> result = HPR.runSystemCommand_E(
+            <span class="code-keyword">local</span> result = HPR.runSystemCommand(
                 <span class="code-string">"hyprctl -j activewindow | jq -r '.pid'"</span>
             )
             <span class="code-keyword">return</span> result
@@ -380,13 +394,13 @@ HPR.extensionName = <span class="code-string">"Hyprland Custom Backend HPR Exten
 env:find(<span class="code-string">"sway"</span>) ~= <span class="code-keyword">nil</span>
 
 <span class="code-comment">-- getCurrentWindow</span>
-HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .app_id // empty'"</span>)
+HPR.runSystemCommand(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .app_id // empty'"</span>)
 
 <span class="code-comment">-- getCurrentTitle</span>
-HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .name // empty'"</span>)
+HPR.runSystemCommand(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .name // empty'"</span>)
 
 <span class="code-comment">-- getCurrentPid</span>
-HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .pid // empty'"</span>)</pre>
+HPR.runSystemCommand(<span class="code-string">"swaymsg -t get_tree | jq -r '.. | select(.focused?) | .pid // empty'"</span>)</pre>
             </div>
           </div>
 
@@ -402,13 +416,13 @@ HPR.runSystemCommand_E(<span class="code-string">"swaymsg -t get_tree | jq -r '.
 env:find(<span class="code-string">"niri"</span>) ~= <span class="code-keyword">nil</span>
 
 <span class="code-comment">-- getCurrentWindow</span>
-HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.app_id // empty'"</span>)
+HPR.runSystemCommand(<span class="code-string">"niri msg focused-window | jq -r '.app_id // empty'"</span>)
 
 <span class="code-comment">-- getCurrentTitle</span>
-HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.title // empty'"</span>)
+HPR.runSystemCommand(<span class="code-string">"niri msg focused-window | jq -r '.title // empty'"</span>)
 
 <span class="code-comment">-- getCurrentPid</span>
-HPR.runSystemCommand_E(<span class="code-string">"niri msg focused-window | jq -r '.pid // empty'"</span>)</pre>
+HPR.runSystemCommand(<span class="code-string">"niri msg focused-window | jq -r '.pid // empty'"</span>)</pre>
             </div>
           </div>
         </div>

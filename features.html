@@ -836,7 +836,7 @@
               <h3>Single-Instance Lock</h3>
               <p><strong>Windows:</strong> <code>CreateFileA</code> with <code>FILE_FLAG_DELETE_ON_CLOSE</code>.
                 Auto-deletes on crash.</p>
-              <p style="margin-top: 8px;"><strong>Linux:</strong> <code>flock(LOCK_EX | LOCK_NB)</code>. Kernel releases
+              <p style="margin-top: 8px;"><strong>Linux:</strong> <code>flock(LOCKX | LOCK_NB)</code>. Kernel releases
                 on process death.</p>
             </div>
             <div class="callout">
@@ -982,7 +982,7 @@
           <div class="two-col">
             <div class="card">
               <h3>Interactive UI Callbacks</h3>
-              <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
+              <p>Register UI callbacks using <code>registerUiCallback</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
             </div>
             <div class="card" style="border: 1px solid rgba(240, 160, 48, 0.3);">
               <h3 style="color: var(--accent-amber);">C++ RAII Auto-Disconnection</h3>
@@ -1020,7 +1020,7 @@
           <div class="card">
             <div class="card-icon card-icon--cyan">↻</div>
             <h3>Recursive Subdirectory Scan</h3>
-            <p>RESCAN walks the extensions folder recursively. Organize your scripts into subdirectories freely — HPR finds them all. Use <code>HPR.getExtensionDir_E()</code> to get the relative path to your extension's own subfolder for safe file I/O.</p>
+            <p>RESCAN walks the extensions folder recursively. Organize your scripts into subdirectories freely — HPR finds them all. Use <code>HPR.getExtensionDir()</code> to get the relative path to your extension's own subfolder for safe file I/O.</p>
           </div>
           <div class="card">
             <div class="card-icon">🛡️</div>

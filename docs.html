@@ -53,6 +53,20 @@
   </nav>
 
   <main class="page-content">
+    <!-- Deprecation Banner -->
+    <div style="max-width: var(--max-width); margin: 32px auto 0 auto; padding: 0 32px;">
+      <div class="api-notice-banner" style="background: var(--accent-amber-dim); border: 1px solid var(--accent-amber); padding: 16px 24px; border-radius: var(--radius-md); font-family: var(--font-sans); color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber);">
+          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped
+        </div>
+        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+          The <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
+          <br>
+          <strong>Backward Compatibility:</strong> If you want to run legacy extensions that still use <code>_E</code> without modifying their code, simply add <code>HPR.useLegacyAPISuffix = true</code> at the very top of your Lua extension scripts.
+        </div>
+      </div>
+    </div>
+
     <section class="hero grid-bg">
       <div class="container">
         <div class="hero-grid" style="grid-template-columns: 1fr;">
@@ -128,7 +142,7 @@
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(139,92,246,0.15); color: #a78bfa;">⚡</div>
             <h3>Live memory access, no HTTP overhead</h3>
-            <p>When your extension calls <code>HPR.getCurrentWindow_E()</code>, it reads directly from HPR's in-memory
+            <p>When your extension calls <code>HPR.getCurrentWindow()</code>, it reads directly from HPR's in-memory
               state
               through a mutex-protected C++ lambda. There is no serialization, no network stack, no JSON parsing. The
               call is nanoseconds. Compare this to ActivityWatch where every data read is a full HTTP round-trip to a
@@ -142,7 +156,7 @@
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">🧩</div>
             <h3>Interactive Callback Forwarding</h3>
-            <p>Register UI callbacks using <code>registerUiCallback_E</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
+            <p>Register UI callbacks using <code>registerUiCallback</code>. Slint callback arguments (Strings, Doubles, Booleans, Arrays, and Structs) are recursively mapped and forwarded directly to Lua VM event listeners as parameters (with a void return in C++).</p>
           </div>
           <div class="card fade-in">
             <div class="card-icon" style="background: rgba(239,68,68,0.15); color: #ef4444;">🔀</div>
@@ -323,7 +337,7 @@
         <div class="code-block fade-in">
           <span class="code-label">hello.lua</span>
           <pre><span class="code-keyword">function</span> <span class="code-fn">onTick</span>(delta)
-    <span class="code-fn">print</span>(HPR.getCurrentWindow_E())
+    <span class="code-fn">print</span>(HPR.getCurrentWindow())
 <span class="code-keyword">end</span></pre>
         </div>
       </div>
@@ -352,7 +366,7 @@
           <div class="card fade-in" style="padding: 32px; display: flex; flex-direction: column;">
             <h3 style="color: var(--text-primary); margin-bottom: 12px;">Building a Custom Window Backend</h3>
             <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
-              Learn how to use <code>HPR.registerBackend_E()</code> to add tracking support for any compositor or
+              Learn how to use <code>HPR.registerBackend()</code> to add tracking support for any compositor or
               desktop.
               Covers all 6 arguments with a real working example using Hyprland.
             </p>

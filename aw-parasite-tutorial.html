@@ -49,6 +49,20 @@
   </nav>
 
   <main class="page-content">
+    <!-- Deprecation Banner -->
+    <div style="max-width: var(--max-width); margin: 32px auto 0 auto; padding: 0 32px;">
+      <div class="api-notice-banner" style="background: var(--accent-amber-dim); border: 1px solid var(--accent-amber); padding: 16px 24px; border-radius: var(--radius-md); font-family: var(--font-sans); color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber);">
+          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped
+        </div>
+        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+          The <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
+          <br>
+          <strong>Backward Compatibility:</strong> If you want to run legacy extensions that still use <code>_E</code> without modifying their code, simply add <code>HPR.useLegacyAPISuffix = true</code> at the very top of your Lua extension scripts.
+        </div>
+      </div>
+    </div>
+
     <section class="section">
       <div class="container">
         <a href="docs.html" class="btn btn--ghost btn--small" style="margin-bottom: 32px;">← Back to Docs</a>
@@ -95,7 +109,7 @@
 
         <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 48px;">
           <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
-            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.httpGet_E(host, path, secure, headers?)</h3>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.httpGet(host, path, secure, headers?)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Performs a synchronous HTTP or HTTPS GET request using HPR's native, multithreaded network engine. This
               function allows your script to communicate directly with local services, devices, or remote web services.
@@ -140,7 +154,7 @@
 
           <!-- PARSE JSON Card -->
           <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
-            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.parseJSON_E(jsonStr,
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.parseJSON(jsonStr,
               [fieldPath])</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               A fast, high-performance JSON deserialization utility compiled directly in native C++. It avoids the high
@@ -165,7 +179,7 @@
 
             <h4 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.05rem;">Usage in this Tutorial:</h4>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0;">
-              We will use this function to process the text returned by <code>HPR.httpGet_E</code>. In <strong>Step
+              We will use this function to process the text returned by <code>HPR.httpGet</code>. In <strong>Step
                 3</strong>, we translate the raw bucket list JSON into a searchable table to identify our browser
               bucket. In <strong>Step 4</strong>, we parse the active page event JSON array, enabling us to read
               properties like <code>url</code> and <code>title</code> from the first event element.
@@ -174,7 +188,7 @@
 
           <!-- TO JSON Card -->
           <div class="card fade-in" style="padding: 28px; border-left: 4px solid var(--accent-green);">
-            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.toJSON_E(luaTable)</h3>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">HPR.toJSON(luaTable)</h3>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               A C++ native serialization function that transforms a structured Lua table into a minified, standardized
               JSON string. Highly useful for preparing request bodies before sending them out.
@@ -204,14 +218,14 @@
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-comment">-- 1. Fetch raw JSON payload synchronously</span>
-<span class="code-keyword">local</span> body, status = HPR.httpGet_E(<span class="code-string">"127.0.0.1:5600"</span>, <span class="code-string">"/api/0/buckets"</span>, <span class="code-keyword">false</span>)
+<span class="code-keyword">local</span> body, status = HPR.httpGet(<span class="code-string">"127.0.0.1:5600"</span>, <span class="code-string">"/api/0/buckets"</span>, <span class="code-keyword">false</span>)
 
 <span class="code-keyword">if</span> status == 200 <span class="code-keyword">then</span>
     <span class="code-comment">-- 2. Decode the raw response text directly into a Lua table</span>
-    <span class="code-keyword">local</span> data = HPR.parseJSON_E(body)
+    <span class="code-keyword">local</span> data = HPR.parseJSON(body)
     
     <span class="code-comment">-- 3. Alternatively, extract a single specific value instantly</span>
-    <span class="code-keyword">local</span> webBucketName = HPR.parseJSON_E(body, <span class="code-string">"aw-watcher-web-chrome.id"</span>)
+    <span class="code-keyword">local</span> webBucketName = HPR.parseJSON(body, <span class="code-string">"aw-watcher-web-chrome.id"</span>)
     <span class="code-fn">print</span>(<span class="code-string">"Found bucket: "</span> .. tostring(webBucketName))
 <span class="code-keyword">end</span></pre>
             </div>
@@ -269,7 +283,7 @@
         <h2 style="margin-bottom: 16px; font-size: 1.6rem;">Step 3 — Scan and locate the browser bucket</h2>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           ActivityWatch registers tracking sources inside hostname-specific directories called buckets. We query the
-          local bucket directory using HPR's <code>httpGet_E</code> utility and identify the browser watcher key.
+          local bucket directory using HPR's <code>httpGet</code> utility and identify the browser watcher key.
         </p>
         <div class="callout callout--danger fade-in"
           style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
@@ -280,21 +294,21 @@
           </p>
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          <strong>How the API Helpers are used here:</strong> In the function below, we call <code>HPR.httpGet_E</code>
+          <strong>How the API Helpers are used here:</strong> In the function below, we call <code>HPR.httpGet</code>
           to fetch the list of buckets from our local address. We then immediately pass that response body to
-          <code>HPR.parseJSON_E</code> to convert the raw JSON text into a Lua table of bucket keys so we can search
+          <code>HPR.parseJSON</code> to convert the raw JSON text into a Lua table of bucket keys so we can search
           them.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">discovery</span>
           <pre><span class="code-keyword">local</span> <span class="code-keyword">function</span> <span class="code-fn">discoverBucket</span>()
-    <span class="code-keyword">local</span> body, status = HPR.httpGet_E(AW_HOST, <span class="code-string">"/api/0/buckets/"</span>, <span class="code-keyword">false</span>)
+    <span class="code-keyword">local</span> body, status = HPR.httpGet(AW_HOST, <span class="code-string">"/api/0/buckets/"</span>, <span class="code-keyword">false</span>)
     <span class="code-keyword">if</span> status ~= 200 <span class="code-keyword">then</span>
         <span class="code-fn">print</span>(<span class="code-string">"[aw_parasite] cannot reach local host server"</span>)
         <span class="code-keyword">return</span> <span class="code-keyword">nil</span>
     <span class="code-keyword">end</span>
 
-    <span class="code-keyword">local</span> buckets = HPR.parseJSON_E(body)
+    <span class="code-keyword">local</span> buckets = HPR.parseJSON(body)
     <span class="code-keyword">if</span> <span class="code-keyword">not</span> buckets <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
 
     <span class="code-keyword">for</span> id, _ <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(buckets) <span class="code-keyword">do</span>
@@ -321,8 +335,8 @@
           </p>
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          <strong>How the API Helpers are used here:</strong> We use <code>HPR.httpGet_E</code> to fetch the latest
-          event from the resolved bucket path. We then invoke <code>HPR.parseJSON_E</code> to parse the returned JSON
+          <strong>How the API Helpers are used here:</strong> We use <code>HPR.httpGet</code> to fetch the latest
+          event from the resolved bucket path. We then invoke <code>HPR.parseJSON</code> to parse the returned JSON
           string into a structured Lua table, enabling us to read the active webpage's URL and title.
         </p>
         <div class="code-block fade-in" style="margin-bottom: 48px;">
@@ -333,10 +347,10 @@
         <span class="code-keyword">if</span> <span class="code-keyword">not</span> AW_BUCKET <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
     <span class="code-keyword">end</span>
 
-    <span class="code-keyword">local</span> body, status = HPR.httpGet_E(AW_HOST, <span class="code-string">"/api/0/buckets/"</span> .. AW_BUCKET .. <span class="code-string">"/events?limit=1"</span>, <span class="code-keyword">false</span>)
+    <span class="code-keyword">local</span> body, status = HPR.httpGet(AW_HOST, <span class="code-string">"/api/0/buckets/"</span> .. AW_BUCKET .. <span class="code-string">"/events?limit=1"</span>, <span class="code-keyword">false</span>)
     <span class="code-keyword">if</span> status ~= 200 <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
 
-    <span class="code-keyword">local</span> events = HPR.parseJSON_E(body)
+    <span class="code-keyword">local</span> events = HPR.parseJSON(body)
     <span class="code-keyword">if</span> <span class="code-keyword">not</span> events <span class="code-keyword">or</span> #events == 0 <span class="code-keyword">then</span> <span class="code-keyword">return</span> <span class="code-keyword">nil</span>, <span class="code-keyword">nil</span> <span class="code-keyword">end</span>
 
     <span class="code-keyword">local</span> latest = events[1]
@@ -365,8 +379,8 @@
         </div>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
           To persist browser records across reloads, we also initialize a custom SQLite table on startup. HPR provides
-          simple SQL utilities: <code>HPR.dbExecute_E()</code> for writing to the database, and
-          <code>HPR.dbQuery_E()</code> for reading rows back. Inside <code>init()</code>, we ensure our table exists and
+          simple SQL utilities: <code>HPR.dbExecute()</code> for writing to the database, and
+          <code>HPR.dbQuery()</code> for reading rows back. Inside <code>init()</code>, we ensure our table exists and
           preload any existing tracking durations back into our memory cache.
         </p>
 
@@ -408,7 +422,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
 
 <span class="code-keyword">local function</span> <span class="code-fn">flushToDatabase</span>()
     <span class="code-keyword">for</span> u, data <span class="code-keyword">in</span> <span class="code-fn">pairs</span>(url_history) <span class="code-keyword">do</span>
-        HPR.dbExecute_E([[
+        HPR.dbExecute([[
             insert into aw_parasite_url_usage (url, title, duration_ms)
             values (?, ?, ?)
             on conflict(url) do update set
@@ -420,7 +434,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
     <span class="code-comment">-- Ensure the database table exists</span>
-    HPR.dbExecute_E([[
+    HPR.dbExecute([[
         create table if not exists aw_parasite_url_usage (
             url         text unique,
             title       text,
@@ -429,7 +443,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
     ]])
 
     <span class="code-comment">-- Preload today's records back into memory</span>
-    <span class="code-keyword">local</span> rows = HPR.dbQuery_E(<span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
+    <span class="code-keyword">local</span> rows = HPR.dbQuery(<span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
     <span class="code-keyword">for</span> _, row <span class="code-keyword">in</span> <span class="code-fn">ipairs</span>(rows) <span class="code-keyword">do</span>
         url_history[row.url] = {
             title       = row.title,
@@ -450,7 +464,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
           understand.
         </p>
         <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.7;">
-          We call <code>HPR.connect_E()</code> to bind Lua callbacks to system events. We reset our memory cache at
+          We call <code>HPR.connect()</code> to bind Lua callbacks to system events. We reset our memory cache at
           midnight, and load historical database files when a user switches dates. We use <code>pcall</code> to safely
           execute database queries and catch potential exceptions without stopping the extension.
         </p>
@@ -469,18 +483,18 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
           style="margin-bottom: 24px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
           <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
             <strong> Teardown Warning: Strict 200ms Exit grace period!</strong><br>
-            Whenever you connect to Event Hub events via <code>HPR.connect_E</code>, HPR's C++ manager automatically tracks these subscriptions and safely cleans them up upon exit to prevent crashes, segfaults, or memory leaks. Manual disconnection in <code>onExit()</code> is no longer mandatory for stability, but you must still keep your <code>onExit()</code> handler fast! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace period to complete its teardown. If your code takes longer than 200ms, HPR will forcefully detach the extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with <code>_exit(0)</code> to prevent lingering background hangs. Keep your exit teardown highly optimized!
+            Whenever you connect to Event Hub events via <code>HPR.connect</code>, HPR's C++ manager automatically tracks these subscriptions and safely cleans them up upon exit to prevent crashes, segfaults, or memory leaks. Manual disconnection in <code>onExit()</code> is no longer mandatory for stability, but you must still keep your <code>onExit()</code> handler fast! HPR gives every extension thread a strict <strong>200 milliseconds</strong> grace period to complete its teardown. If your code takes longer than 200ms, HPR will forcefully detach the extension thread (calling <code>ext->thread.detach()</code>) and force close the entire application with <code>_exit(0)</code> to prevent lingering background hangs. Keep your exit teardown highly optimized!
           </p>
         </div>
 
         <div class="code-block fade-in" style="margin-bottom: 48px;">
           <span class="code-label">events</span>
-          <pre>    midnightId = HPR.connect_E(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>()
+          <pre>    midnightId = HPR.connect(<span class="code-string">"MIDNIGHT_ROLLOVER"</span>, <span class="code-keyword">function</span>()
         url_history = {}
     <span class="code-keyword">end</span>)
 
-    pastDbId = HPR.connect_E(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, <span class="code-keyword">function</span>()
-        <span class="code-keyword">local</span> ok, histRows = <span class="code-fn">pcall</span>(HPR.dbQueryHistorical_E, 
+    pastDbId = HPR.connect(<span class="code-string">"LOAD_DATABASE_SINGULAR"</span>, <span class="code-keyword">function</span>()
+        <span class="code-keyword">local</span> ok, histRows = <span class="code-fn">pcall</span>(HPR.dbQueryHistorical, 
             <span class="code-string">"select url, title, duration_ms from aw_parasite_url_usage;"</span>)
         
         <span class="code-keyword">if</span> ok <span class="code-keyword">and</span> histRows <span class="code-keyword">and</span> #histRows &gt; 0 <span class="code-keyword">then</span>
@@ -498,7 +512,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
         <span class="code-keyword">end</span>
     <span class="code-keyword">end</span>)
 
-    liveDbId = HPR.connect_E(<span class="code-string">"LOAD_LIVE_DATA"</span>, <span class="code-keyword">function</span>()
+    liveDbId = HPR.connect(<span class="code-string">"LOAD_LIVE_DATA"</span>, <span class="code-keyword">function</span>()
         is_showing_historical = <span class="code-keyword">false</span>
     <span class="code-keyword">end</span>)</pre>
         </div>
@@ -543,7 +557,7 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
         table.insert(formatted, {
             url        = extractDomain(u),
             title      = data.title,
-            duration   = HPR.formatTime_HHMMSS_E(math.floor(data.duration_ms)),
+            duration   = HPR.formatTime_HHMMSS(math.floor(data.duration_ms)),
             duration_i = math.floor(data.duration_ms)
         })
     <span class="code-keyword">end</span>
@@ -552,8 +566,8 @@ HPR.extensionName = <span class="code-string">"AW URL Parasite HPR Extension"</s
     table.sort(formatted, <span class="code-keyword">function</span>(a, b) <span class="code-keyword">return</span> a.duration_i &gt; b.duration_i <span class="code-keyword">end</span>)
 
     <span class="code-comment">-- Push values directly to UI properties</span>
-    HPR.setUiProperty_E(<span class="code-string">"awUrls_S"</span>, formatted)
-    HPR.setUiProperty_E(<span class="code-string">"trackedTime_Aw_S"</span>, math.floor(total_ms))
+    HPR.setUiProperty(<span class="code-string">"awUrls_S"</span>, formatted)
+    HPR.setUiProperty(<span class="code-string">"trackedTime_Aw_S"</span>, math.floor(total_ms))
 
     time_since_last_flush = time_since_last_flush + delta
     <span class="code-keyword">if</span> time_since_last_flush &gt;= 10000 <span class="code-keyword">then</span>
@@ -594,13 +608,13 @@ local function extractDomain(url)
 end
 
 local function discoverBucket()
-    local body, status = HPR.httpGet_E(AW_HOST, "/api/0/buckets/", false)
+    local body, status = HPR.httpGet(AW_HOST, "/api/0/buckets/", false)
     if status ~= 200 then
         print("[aw_parasite] cannot reach local host server")
         return nil
     end
 
-    local buckets = HPR.parseJSON_E(body)
+    local buckets = HPR.parseJSON(body)
     if not buckets then return nil end
 
     for id, _ in pairs(buckets) do
@@ -617,10 +631,10 @@ local function fetchLatestUrl()
         if not AW_BUCKET then return nil, nil end
     end
 
-    local body, status = HPR.httpGet_E(AW_HOST, "/api/0/buckets/" .. AW_BUCKET .. "/events?limit=1", false)
+    local body, status = HPR.httpGet(AW_HOST, "/api/0/buckets/" .. AW_BUCKET .. "/events?limit=1", false)
     if status ~= 200 then return nil, nil end
 
-    local events = HPR.parseJSON_E(body)
+    local events = HPR.parseJSON(body)
     if not events or #events == 0 then return nil, nil end
 
     local latest = events[1]
@@ -633,7 +647,7 @@ end
 
 local function flushToDatabase()
     for u, data in pairs(url_history) do
-        HPR.dbExecute_E([[
+        HPR.dbExecute([[
             insert into aw_parasite_url_usage (url, title, duration_ms)
             values (?, ?, ?)
             on conflict(url) do update set
@@ -645,7 +659,7 @@ end
 
 function init()
     -- Ensure the database table exists
-    HPR.dbExecute_E([[
+    HPR.dbExecute([[
         create table if not exists aw_parasite_url_usage (
             url         text unique,
             title       text,
@@ -654,7 +668,7 @@ function init()
     ]])
 
     -- Preload today's records back into memory
-    local rows = HPR.dbQuery_E("select url, title, duration_ms from aw_parasite_url_usage;")
+    local rows = HPR.dbQuery("select url, title, duration_ms from aw_parasite_url_usage;")
     for _, row in ipairs(rows) do
         url_history[row.url] = {
             title       = row.title,
@@ -662,12 +676,12 @@ function init()
         }
     end
 
-    midnightId = HPR.connect_E("MIDNIGHT_ROLLOVER", function()
+    midnightId = HPR.connect("MIDNIGHT_ROLLOVER", function()
         url_history = {}
     end)
 
-    pastDbId = HPR.connect_E("LOAD_DATABASE_SINGULAR", function()
-        local ok, histRows = pcall(HPR.dbQueryHistorical_E, 
+    pastDbId = HPR.connect("LOAD_DATABASE_SINGULAR", function()
+        local ok, histRows = pcall(HPR.dbQueryHistorical, 
             "select url, title, duration_ms from aw_parasite_url_usage;")
         
         if ok and histRows and #histRows > 0 then
@@ -685,7 +699,7 @@ function init()
         end
     end)
 
-    liveDbId = HPR.connect_E("LOAD_LIVE_DATA", function()
+    liveDbId = HPR.connect("LOAD_LIVE_DATA", function()
         is_showing_historical = false
     end)
 
@@ -716,7 +730,7 @@ function onTick(delta)
         table.insert(formatted, {
             url        = extractDomain(u),
             title      = data.title,
-            duration   = HPR.formatTime_HHMMSS_E(math.floor(data.duration_ms)),
+            duration   = HPR.formatTime_HHMMSS(math.floor(data.duration_ms)),
             duration_i = math.floor(data.duration_ms)
         })
     end
@@ -725,8 +739,8 @@ function onTick(delta)
     table.sort(formatted, function(a, b) return a.duration_i > b.duration_i end)
 
     -- Push values directly to UI properties
-    HPR.setUiProperty_E("awUrls_S", formatted)
-    HPR.setUiProperty_E("trackedTime_Aw_S", math.floor(total_ms))
+    HPR.setUiProperty("awUrls_S", formatted)
+    HPR.setUiProperty("trackedTime_Aw_S", math.floor(total_ms))
 
     time_since_last_flush = time_since_last_flush + delta
     if time_since_last_flush >= 10000 then
