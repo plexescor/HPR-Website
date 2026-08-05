@@ -644,13 +644,22 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
               Shows a custom modal popup dialog in the HPR Slint UI overlay. Clicking the left button in the UI returns <code>0</code> (integer) to the callback function, while clicking the right button returns <code>1</code> (integer). Multiple requests to show a popup are queued internally and processed sequentially. Popups automatically dismiss after a configurable timeout (default <code>7500</code> ms, read from config key <code>extension-popup-timeout</code>) and return <code>-1</code> (integer) to the callback.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
-              <pre>HPR.showUiPopup(<span class="code-string">"Save changes?"</span>, <span class="code-string">"No"</span>, <span class="code-string">"Yes"</span>, <span class="code-keyword">function</span>(btn)
-    <span class="code-keyword">if</span> btn == <span class="code-number">1</span> <span class="code-keyword">then</span>
-        print(<span class="code-string">"User clicked Yes!"</span>)
-    <span class="code-keyword">else</span>
-        print(<span class="code-string">"User clicked No!"</span>)
-    <span class="code-keyword">end</span>
-<span class="code-keyword">end</span>)</pre>
+              <pre><span class="code-keyword">function</span> <span class="code-keyword">init</span>()
+    HPR.sleep(<span class="code-number">2000</span>)
+
+    HPR.showUiPopup(<span class="code-string">"Can you see this?"</span>, <span class="code-string">"No"</span>, <span class="code-string">"Yes"</span>, <span class="code-keyword">function</span>(btn)
+        <span class="code-keyword">if</span> btn == <span class="code-number">1</span> <span class="code-keyword">then</span>
+            HPR.log(<span class="code-string">"UI"</span>, <span class="code-string">"User clicked Yes!"</span>)
+            HPR.writeCsv(HPR.getExtensionDir() .. <span class="code-string">"output/ui.csv"</span>, <span class="code-string">"ShowUIPopup"</span>, <span class="code-string">"PASSED"</span>)
+        <span class="code-keyword">elseif</span> btn == <span class="code-number">0</span> <span class="code-keyword">then</span>
+            HPR.log(<span class="code-string">"UI"</span>, <span class="code-string">"User clicked No!"</span>)
+            HPR.writeCsv(HPR.getExtensionDir() .. <span class="code-string">"output/ui.csv"</span>, <span class="code-string">"ShowUIPopup"</span>, <span class="code-string">"PASSED"</span>)
+        <span class="code-keyword">else</span>
+            HPR.log(<span class="code-string">"UI"</span>, <span class="code-string">"Timeout reached, no button clicked."</span>)
+            HPR.writeCsv(HPR.getExtensionDir() .. <span class="code-string">"output/ui.csv"</span>, <span class="code-string">"ShowUIPopup"</span>, <span class="code-string">"FAILED"</span>)
+        <span class="code-keyword">end</span>
+    <span class="code-keyword">end</span>)
+<span class="code-keyword">end</span></pre>
             </div>
           </div>
 
