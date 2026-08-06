@@ -318,14 +318,14 @@
             💡 Best Practice: Registering Extension Identity
           </h3>
           <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
-            HPR supports registering your extension's name and author so it displays nicely in the <strong>Loaded
-              Extensions</strong> manager UI. To do this, simply set the global <code>HPR.authorName</code> and
-            <code>HPR.extensionName</code> properties.
+            HPR supports registering your extension's name, author, and supported application versions so it displays cleanly in the <strong>Loaded
+              Extensions</strong> manager UI. To do this, simply set the global <code>HPR.authorName</code>, 
+            <code>HPR.extensionName</code>, and <code>HPR.versionSupport</code> properties.
             <br><br>
             <strong style="color: var(--text-primary);"> Declare at the Top Level (Outside Functions)!</strong>
             These properties must be defined at the top level of your script, outside of any functions. HPR inspects the Lua VM immediately after parsing the file, so these values must be set in the global scope rather than inside <code>init()</code> or other blocks.
             <br><br>
-            If you omit them entirely, HPR will <strong>still load and run your extension successfully</strong>, but it will show up in the Extensions manager UI under a <strong>randomly generated name</strong>. This makes it much harder to identify which extension is which when you want to reload or disable them.
+            If you omit name and author properties, HPR will <strong>still load and run your extension successfully</strong>, but it will show up in the Extensions manager UI under a <strong>randomly generated name</strong>. Omitting <code>HPR.versionSupport</code> displays a yellow <code>Unknown version compatibility for HPR &lt;version&gt;</code> warning badge.
             <br><br>
             Declaring these metadata properties is <em>not strictly required</em> for your script logic to execute, but
             it is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.

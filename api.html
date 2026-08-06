@@ -250,6 +250,26 @@
             </div>
           </div>
 
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.versionSupport</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
+              <code>table</code> (array of strings)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Configures the array of supported HPR application versions for the loaded extension. This must be defined at the top level of your extension's script outside of any function blocks. Version strings are automatically normalized (leading <code>v</code> or <code>V</code> prefixes are stripped).
+            </p>
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: #facc15; background-color: rgba(250, 204, 21, 0.1);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> Version Compatibility & UI Warnings:</strong><br>
+                If omitted, the extension still loads, but displays a yellow warning in the Loaded Extensions manager UI: <code>Unknown version compatibility for HPR &lt;version&gt;</code>.<br>
+                If specified and the current HPR version is missing, a detailed yellow warning is shown: <code>This extension is incompatible with HPR &lt;version&gt;, the versions supported by the extension are: (&lt;supported versions&gt;)</code>.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.versionSupport = {<span class="code-string">"0.9.7"</span>, <span class="code-string">"0.9.6"</span>, <span class="code-string">"0.9.5"</span>}</pre>
+            </div>
+          </div>
+
           <!-- ── General Utilities ─────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a3e635;">General Utilities</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">

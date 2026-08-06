@@ -126,20 +126,18 @@
           <span class="code-label">hello.lua</span>
           <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
 <span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"Mini"</span>
+<span class="code-keyword">HPR.versionSupport</span> = {<span class="code-string">"0.9.3"</span>, <span class="code-string">"0.9.4"</span>, <span class="code-string">"0.9.5"</span>, <span class="code-string">"0.9.6"</span>, <span class="code-string">"0.9.7"</span>}
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
     <span class="code-fn">print</span>(<span class="code-string">"Hello from inside HPR!"</span>)
 <span class="code-keyword">end</span></pre>
         </div>
 
         <!-- Explanation of metadata -->
-        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Do I really need HPR.authorName and HPR.extensionName?</h3>
+        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Do I really need HPR.authorName, HPR.extensionName, and HPR.versionSupport?</h3>
         <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
           Technically, these lines are <strong>not strictly required</strong> to make your code run — your script will
-          still execute fine without them! However, defining them is <strong>strongly recommended</strong>. They register
-          your extension inside HPR's <strong>Extensions tab</strong>, which is also where hot reloading lives. If you
-          skip them, HPR will still load and run your extension, but it will show up in the Extensions tab with a
-          <strong>randomly generated name</strong> — so you can still Reload or Disable it, but good luck figuring out
-          which one it is if you have multiple unnamed extensions. Note that these properties <strong>must be defined at the
+          still execute fine without them! However, defining them is <strong>strongly recommended</strong>. Setting <code>HPR.authorName</code> and <code>HPR.extensionName</code> registers
+          your extension inside HPR's <strong>Extensions tab</strong> (omitting them displays a randomly generated name). Declaring <code>HPR.versionSupport</code> lists the HPR application versions your extension supports. Omitting it displays a yellow <code>Unknown version compatibility for HPR &lt;version&gt;</code> warning in the Extensions UI. Note that these properties <strong>must be defined at the
           top level</strong> of your script, outside of any functions (do not place them inside <code>init()</code> or other routines).
         </p>
 
@@ -174,6 +172,7 @@
           <span class="code-label">hello.lua</span>
           <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
 <span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"ActiveWatcher"</span>
+<span class="code-keyword">HPR.versionSupport</span> = {<span class="code-string">"0.9.3"</span>, <span class="code-string">"0.9.4"</span>, <span class="code-string">"0.9.5"</span>, <span class="code-string">"0.9.6"</span>, <span class="code-string">"0.9.7"</span>}
 
 <span class="code-keyword">function</span> <span class="code-fn">init</span>()
     <span class="code-keyword">return</span> <span class="code-keyword">1000</span> <span class="code-comment">-- Ticks every 1000ms (1 second)</span>
@@ -266,6 +265,7 @@
           <span class="code-label">hello.lua</span>
           <pre style="margin: 0;"><span class="code-keyword">HPR.authorName</span> = <span class="code-string">"DevFriend"</span>
 <span class="code-keyword">HPR.extensionName</span> = <span class="code-string">"EventMaster"</span>
+<span class="code-keyword">HPR.versionSupport</span> = {<span class="code-string">"0.9.3"</span>, <span class="code-string">"0.9.4"</span>, <span class="code-string">"0.9.5"</span>, <span class="code-string">"0.9.6"</span>, <span class="code-string">"0.9.7"</span>}
 
 <span class="code-keyword">local</span> changeSubId = <span class="code-keyword">nil</span>
 
