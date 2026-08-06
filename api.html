@@ -751,6 +751,19 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.amICompatible()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>boolean</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns <code>true</code> if the current extension is determined to be compatible with the running version of HPR (i.e. the current HPR version is present in the extension's top-level <code>HPR.versionSupport</code> table), or <code>false</code> if it is incompatible or missing version support.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">if</span> <span class="code-keyword">not</span> HPR.amICompatible() <span class="code-keyword">then</span>
+    <span class="code-fn">print</span>(<span class="code-string">"Warning: Running extension on an untested HPR version!"</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.unloadExtension(authorName, extensionName)</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> <code>authorName: string</code>, <code>extensionName: string</code> &mdash; <strong>Returns:</strong> nothing
