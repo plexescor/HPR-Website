@@ -194,6 +194,26 @@
             </div>
           </div>
 
+          <!-- onAction() -->
+          <div class="card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">onAction() Hook</div>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Triggered whenever the user clicks the yellow <strong>ACTION</strong> button on your extension's card in the Loaded Extensions manager UI.
+            </p>
+            <div class="callout" style="margin-bottom: 20px;">
+              <div class="callout-title">Interactive UI Callback</div>
+              <p>
+                Declare <code>function onAction() ... end</code> (or <code>function HPR.onAction() ... end</code>) in your extension script. This allows your extension to provide custom interactive actions, trigger on-demand tasks, or execute diagnostic routines directly from the Slint UI.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">function</span> <span class="code-fn">onAction</span>()
+    <span class="code-fn">print</span>(<span class="code-string">"Action button clicked from UI extension card!"</span>)
+    <span class="code-fn">HPR.showUiPopup</span>(<span class="code-string">"Extension Action"</span>, <span class="code-string">"Action routine executed successfully!"</span>, <span class="code-string">"OK"</span>, <span class="code-string">"Cancel"</span>, <span class="code-keyword">function</span>(choice) <span class="code-keyword">end</span>)
+<span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
         </div>
 
         <!-- ============================================================ -->
