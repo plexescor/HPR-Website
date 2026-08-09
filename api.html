@@ -810,6 +810,19 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
           </div>
 
           <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.reloadMyself()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> None &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Asynchronously triggers a full reload of the calling extension after a short 50ms delay, allowing an extension to safely re-initialize itself without hanging its own execution thread.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.reloadMyself()</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
             <div class="api-signature">HPR.refreshExtensions()</div>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
               <strong>Parameters:</strong> None &mdash; <strong>Returns:</strong> nothing
@@ -1860,6 +1873,55 @@ extern "C" int luaopen_mylib(lua_State* L) {
 <span class="code-keyword">else</span>
     HPR.log(<span class="code-string">"MyExtension"</span>, <span class="code-string">"Failed to load native library: "</span> .. <span class="code-fn">tostring</span>(err))
 <span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">Native Slint Thread Invocation (HPR_invokeOnSlintThread)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>C Signature:</strong> <code>extern "C" HPR_API void HPR_invokeOnSlintThread(void(*fn)(void*), void* userdata);</code>
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              <strong>Why use it:</strong> Slint UI components, windowing, and property bindings are thread-bound and must strictly execute on Slint's main event loop thread. When writing compiled C/C++ extensions (`.so` on Linux / `.dll` on Windows) loaded via Lua, attempting to construct UI instances or mutate Slint values from background worker threads causes thread assertions or application crashes. <code>HPR_invokeOnSlintThread</code> safely dispatches arbitrary C/C++ callbacks to run directly on the Slint main thread loop.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              <strong>How to use it:</strong> Dynamically resolve <code>HPR_invokeOnSlintThread</code> using <code>GetProcAddress</code> (Windows) or <code>dlsym</code> (Linux). Pass a static callback function pointer <code>void(*)(void*)</code> and payload context pointer <code>void*</code>. Use <code>std::promise</code> and <code>std::future</code> if the calling thread needs to block until main-thread execution finishes.
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <em>The code snippet below is adapted from the official <a href="https://github.com/plexescor/HPR-Store" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">HPR-Store repository</a> (<code>src/library.cpp</code>):</em>
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-comment">// Example from HPR-Store: https://github.com/plexescor/HPR-Store</span>
+<span class="code-keyword">typedef</span> <span class="code-keyword">void</span> (*SlintInvokeFn)(<span class="code-keyword">void</span> (*)(<span class="code-keyword">void</span> *), <span class="code-keyword">void</span> *);
+
+<span class="code-keyword">static</span> SlintInvokeFn g_hprInvoke = <span class="code-keyword">nullptr</span>;
+
+<span class="code-keyword">extern</span> <span class="code-string">"C"</span> HPR_EXPORT <span class="code-keyword">void</span> initialize(lua_State *L) {
+    <span class="code-comment">// Dynamically resolve the export symbol from HPR host executable</span>
+<span class="code-keyword">#ifdef</span> _WIN32
+    HMODULE hpr = GetModuleHandleA(<span class="code-keyword">nullptr</span>);
+    g_hprInvoke = (SlintInvokeFn)GetProcAddress(hpr, <span class="code-string">"HPR_invokeOnSlintThread"</span>);
+<span class="code-keyword">#else</span>
+    g_hprInvoke = (SlintInvokeFn)dlsym(RTLD_DEFAULT, <span class="code-string">"HPR_invokeOnSlintThread"</span>);
+<span class="code-keyword">#endif</span>
+
+    <span class="code-keyword">if</span> (!g_hprInvoke) <span class="code-keyword">return</span>;
+
+    <span class="code-keyword">struct</span> InitData { std::promise&lt;<span class="code-keyword">void</span>&gt; *ready; };
+    <span class="code-keyword">auto</span> data = <span class="code-keyword">new</span> InitData{ <span class="code-keyword">new</span> std::promise&lt;<span class="code-keyword">void</span>&gt;() };
+    <span class="code-keyword">auto</span> fut = data-&gt;ready-&gt;get_future();
+
+    <span class="code-comment">// Safely dispatch UI creation to Slint event loop thread</span>
+    g_hprInvoke([](<span class="code-keyword">void</span> *ud) {
+        <span class="code-keyword">auto</span> d = static_cast&lt;InitData *&gt;(ud);
+        gui = std::make_unique&lt;GUI&gt;();
+        d-&gt;ready-&gt;set_value();
+        <span class="code-keyword">delete</span> d-&gt;ready;
+        <span class="code-keyword">delete</span> d;
+    }, data);
+
+    fut.wait(); <span class="code-comment">// Block caller until main-thread Slint GUI init completes</span>
+}</pre>
             </div>
           </div>
 
