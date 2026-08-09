@@ -53,10 +53,10 @@
     <div style="max-width: var(--max-width); margin: 32px auto 0 auto; padding: 0 32px;">
       <div class="api-notice-banner" style="background: var(--accent-amber-dim); border: 1px solid var(--accent-amber); padding: 16px 24px; border-radius: var(--radius-md); font-family: var(--font-sans); color: var(--text-primary); display: flex; flex-direction: column; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent-amber);">
-          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped
+          <span style="font-size: 1.2rem;">⚠️</span> Deprecation Notice: _E Suffix Dropped (Effective from v0.9.7 onwards)
         </div>
         <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
-          The <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
+          Starting from HPR <strong>v0.9.7</strong> onwards, the <code>_E</code> suffix has been dropped from all HPR API functions for cleaner syntax (e.g., <code>HPR.writeCsv_E</code> is now <code>HPR.writeCsv</code>).
           <br>
           <strong>Backward Compatibility:</strong> If you want to run legacy extensions that still use <code>_E</code> without modifying their code, simply add <code>HPR.useLegacyAPISuffix = true</code> at the very top of your Lua extension scripts.
         </div>
