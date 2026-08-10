@@ -700,7 +700,7 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
               <strong>Parameters:</strong> <code>text: string</code>, <code>leftBtnText: string</code>, <code>rightBtnText: string</code>, <code>callback: function</code> &mdash; <strong>Returns:</strong> nothing
             </p>
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-              Shows a custom modal popup dialog in the HPR Slint UI overlay. Clicking the left button in the UI returns <code>0</code> (integer) to the callback function, while clicking the right button returns <code>1</code> (integer). Multiple requests to show a popup are queued internally and processed sequentially. Popups automatically dismiss after a configurable timeout (default <code>7500</code> ms, read from config key <code>extension-popup-timeout</code>) and return <code>-1</code> (integer) to the callback.
+              Shows a custom modal popup dialog in the HPR Slint UI overlay. Clicking the left-positioned button in the UI returns <code>0</code> (integer) to the callback function, while clicking the right-positioned button returns <code>1</code> (integer) (note that these refer to UI button positions on the screen, not mouse buttons). Multiple requests to show a popup are queued internally and processed sequentially. Popups automatically dismiss after a configurable timeout (default <code>7500</code> ms, read from config key <code>extension-popup-timeout</code>) and return <code>-1</code> (integer) to the callback.
             </p>
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">function</span> <span class="code-keyword">init</span>()
