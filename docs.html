@@ -335,6 +335,8 @@
             <br><br>
             Declaring these metadata properties is <em>not strictly required</em> for your script logic to execute, but
             it is <strong>EXTREMELY HIGHLY RECOMMENDED</strong>.
+            <br><br>
+            <strong style="color: var(--accent-amber);">Prefix Namespace Requirement:</strong> Metadata properties (like <code>HPR.extensionName</code>, <code>HPR.authorName</code>, <code>HPR.versionSupport</code>, and <code>HPR.useHPRTablePrefix</code>) are <strong>never</strong> prefix-stripped. Even if you turn off the API prefix namespace using <code>HPR.useHPRTablePrefix = false</code>, you <strong>must</strong> continue to prefix these metadata properties with <code>HPR.</code>.
           </p>
         </div>
 

@@ -141,6 +141,11 @@
           top level</strong> of your script, outside of any functions (do not place them inside <code>init()</code> or other routines).
         </p>
 
+        <h3 style="color: var(--text-primary); margin-bottom: 12px; margin-top: 24px;">Can I call HPR functions directly without prefixing HPR?</h3>
+        <p class="section-desc" style="margin-bottom: 24px; max-width: 100%;">
+          Yes! By defining <code>HPR.useHPRTablePrefix = false</code> at the top level of your script, you can call functions directly (e.g. <code>writeCsv()</code> or <code>sleep()</code>). Note that this <strong>only</strong> binds API functions globally. Metadata properties (like <code>HPR.extensionName</code>, <code>HPR.authorName</code>, and <code>HPR.versionSupport</code>) <strong>must still use the HPR. namespace prefix</strong>.
+        </p>
+
         <div class="callout callout--amber fade-in" style="margin-bottom: 20px;">
           <div class="callout-title" style="color: var(--accent-amber);">Hot Reloading</div>
             <p style="margin: 0; font-size: 0.9rem;">

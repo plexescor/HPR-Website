@@ -290,6 +290,25 @@
             </div>
           </div>
 
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.useHPRTablePrefix</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Type:</strong>
+              <code>boolean</code> (property)</p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Configures whether API functions must be prefixed with <code>HPR.</code>. If set to <code>false</code>, API functions are registered to both the <code>HPR</code> namespace and the global environment namespace, allowing direct calling (e.g. <code>log()</code> instead of <code>HPR.log()</code>). Defaults to <code>true</code>.
+            </p>
+            <div class="callout callout--danger fade-in"
+              style="margin-bottom: 16px; border-left-color: var(--accent-amber); background-color: var(--accent-amber-dim);">
+              <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem; line-height: 1.6;">
+                <strong> CRITICAL: Metadata Properties are Unaffected!</strong><br>
+                Setting <code>useHPRTablePrefix</code> to <code>false</code> <strong>only</strong> binds API functions globally. Metadata properties (like <code>HPR.extensionName</code>, <code>HPR.authorName</code>, <code>HPR.useLegacyAPISuffix</code>, and <code>HPR.versionSupport</code>) are unaffected and <strong>must always</strong> use the <code>HPR.</code> namespace prefix.
+              </p>
+            </div>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.useHPRTablePrefix = <span class="code-keyword">false</span></pre>
+            </div>
+          </div>
+
           <!-- ── General Utilities ─────────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: #a3e635;">General Utilities</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
@@ -860,6 +879,45 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
             <div class="code-block" style="margin: 0; width: 100%;">
               <pre><span class="code-keyword">local</span> absDir = HPR.getExtensionAbsoluteDir()
 <span class="code-fn">print</span>(<span class="code-string">"Absolute extension dir: "</span> .. absDir)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setUseHPRTablePrefix(bool)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>bool: boolean</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Dynamically configures whether API functions must be prefixed with <code>HPR.</code> at runtime. If toggled to <code>false</code>, API functions are instantly exposed globally.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.setUseHPRTablePrefix(<span class="code-keyword">false</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setLegacyAPISuffix(bool)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>bool: boolean</code> &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Dynamically configures whether HPR API functions require the legacy <code>_E</code> suffix (e.g. <code>writeCsv_E</code>) at runtime.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.setLegacyAPISuffix(<span class="code-keyword">true</span>)</pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.setVersionSupport(versions)</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+              <strong>Parameters:</strong> <code>versions: table</code> (array of version strings) &mdash; <strong>Returns:</strong> nothing
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Dynamically configures the list of supported HPR application versions at runtime, instantly re-triggering the application's compatibility check logic.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre>HPR.setVersionSupport({<span class="code-string">"0.9.8"</span>, <span class="code-string">"0.9.7"</span>})</pre>
             </div>
           </div>
 
