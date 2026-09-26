@@ -278,10 +278,10 @@ h4 { font-size: 1rem; }
 }
 
 .hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: stretch;
 }
 
 .hero-badge {
@@ -695,7 +695,7 @@ tr:hover td {
 
 .interpreter-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.5fr;
   gap: 48px;
   align-items: start;
 }
@@ -915,6 +915,8 @@ tr:hover td {
 .screenshot-container img {
   display: block;
   width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 /* --- Inline code --- */
@@ -1023,9 +1025,13 @@ code {
 /* --- Two column info --- */
 .two-col {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.5fr;
   gap: 48px;
   align-items: start;
+}
+
+.two-col--img-first {
+  grid-template-columns: 1.5fr 1fr;
 }
 
 /* --- Tag --- */
