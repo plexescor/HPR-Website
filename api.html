@@ -559,8 +559,78 @@
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
               Returns the application class name to which the user switched most frequently during active tracking.
             </p>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getEscapePattern()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a human-readable description of the user's most common context-switching pattern away from a focused app (e.g., which app they flee to when distracted).
+            </p>
           </div>
 
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getReturnRate()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the rate at which the user returns to a previously active application after switching away, as a formatted string from the pattern analyser.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getAvgFocusSession()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the average uninterrupted focus session duration as a formatted string.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getMostDistractedDay()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the day of the week with the highest number of app context switches, indicating the most distracted day.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getProductiveDaysThisWeek()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a formatted count or description of how many days in the current week were considered productive based on tracked usage patterns.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getScreenTimeVsAverage()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a formatted comparison of today's total tracked screen time against the user's historical daily average.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getFocusDipHour()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the hour of the day where the user's focus is typically at its lowest, based on historical session analysis.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getDeepWorkRelativeNoon_Random()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a formatted insight about how much deep work was completed before noon, selected from a random insight variant by the pattern analyser.
+            </p>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getWeekendVsWeekday()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns a formatted comparison of the user's tracked usage habits on weekends versus weekdays.
+            </p>
+          </div>
           <!-- ── Live Time Tracking Data ────────────────────────────────── -->
           <h3 style="font-size: 1.3rem; margin-top: 24px; color: var(--accent-cyan);">Live Time Tracking Data</h3>
           <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
@@ -806,6 +876,18 @@ HPR.connect(<span class="code-string">"MISC_KEY_RELEASED"</span>, <span class="c
               <pre><span class="code-keyword">if</span> <span class="code-keyword">not</span> HPR.amICompatible() <span class="code-keyword">then</span>
     <span class="code-fn">print</span>(<span class="code-string">"Warning: Running extension on an untested HPR version!"</span>)
 <span class="code-keyword">end</span></pre>
+            </div>
+          </div>
+
+          <div class="card api-card fade-in" style="padding: 28px; width: 100%;">
+            <div class="api-signature">HPR.getHPRVersion()</div>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;"><strong>Returns:</strong> <code>string</code></p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              Returns the current HPR version string (e.g. <code>"0.9.12"</code>). Useful for version-guarded feature detection inside extensions.
+            </p>
+            <div class="code-block" style="margin: 0; width: 100%;">
+              <pre><span class="code-keyword">local</span> v = HPR.getHPRVersion()
+<span class="code-fn">print</span>(<span class="code-string">"Running on HPR v"</span> .. v)</pre>
             </div>
           </div>
 
@@ -1998,7 +2080,7 @@ extern "C" int luaopen_mylib(lua_State* L) {
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-left">HPR v0.9.11 — C++23 · Slint 1.16.1 · SQLite3</div>
+        <div class="footer-left">HPR v0.9.12 — C++23 · Slint 1.16.1 · SQLite3</div>
         <div class="footer-middle">
           <a href="no-access.html">No Access</a>
         </div>
